@@ -25,8 +25,12 @@ else
 fi
 
 DEPLOY_JAR="$DEPLOY_PATH$JAR_NAME"
+
 echo "> DEPLOY_JAR 배포" >> $DEPLOY_LOG_PATH
-echo "파일 이름 $DEPLOY_JAR" >> $DEPLOY_LOG_PATH
+echo "JAR_PATH : $JAR_PATH" >> $DEPLOY_LOG_PATH
+echo "BUILD_JAR : $BUILD_JAR" >> $DEPLOY_LOG_PATH
+echo "DEPLOY_PATH : $DEPLOY_PATH" >> $DEPLOY_LOG_PATH
+echo "JAR_NAME : $JAR_NAME" >> $DEPLOY_LOG_PATH
 nohup java -jar -Dspring.profiles.active=local $DEPLOY_JAR --server.port=8080 >> $APPLICATION_LOG_PATH 2> $DEPLOY_ERR_LOG_PATH &
 
 sleep 3
