@@ -7,7 +7,7 @@ on:
 
 env:
   S3_BUCKET_NAME: myauctionbucket
-  RESOURCE_PATH: ./src/main/resources/application-deploy.yaml
+  RESOURCE_PATH: ./src/main/resources/application.yaml
   CODE_DEPLOY_APPLICATION_NAME: auction-code-deploy
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: auction-server
 
