@@ -26,19 +26,18 @@ jobs:
           distribution: adopt
 
       # [1]
-      - name: Set yaml file
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ${{ env.RESOURCE_PATH }}
-        env:
-          server.servlet.session.cookie.secure: true
+#      - name: Set yaml file
+#        uses: microsoft/variable-substitution@v1
+#        with:
+#          files: ${{ env.RESOURCE_PATH }}
+#        env:
 #          spring.datasource.url: ${{ secrets.RDS_URL}}
 #          spring.datasource.username: ${{ secrets.RDS_USERNAME}}
 #          spring.datasource.password: ${{ secrets.RDS_PASSWORD}}
 #          spring.jpa.hibernate.ddl-auto: update
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-        shell: bash
+#      - name: Grant execute permission for gradlew
+#        run: chmod +x ./gradlew
+#        shell: bash
 
         # [2]
       - name: Build with Gradle
