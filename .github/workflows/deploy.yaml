@@ -31,7 +31,7 @@ jobs:
         with:
           files: ${{ env.RESOURCE_PATH }}
         env:
-#          server.servlet.session.cookie.same-site: Lax
+          servlet.multipart.max-file-size: 500MB
 
 #          spring.datasource.url: ${{ secrets.RDS_URL}}
 #          spring.datasource.username: ${{ secrets.RDS_USERNAME}}
