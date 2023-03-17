@@ -38,4 +38,3 @@ out/
 
 #SECRET FILES
 
-**/src/main/resources/application-secret.yml
