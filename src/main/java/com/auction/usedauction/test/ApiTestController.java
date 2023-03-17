@@ -30,7 +30,7 @@ public class ApiTestController {
                 .build();
         return ResponseEntity.ok()
 //                .header(HttpHeaders.SET_COOKIE,cookie.toString())
-                .body(new Hello("hello",25));
+                .body(new Hello("hello", 25,"female"));
 
     }
 
@@ -47,10 +47,12 @@ public class ApiTestController {
     static class Hello {
         private String name;
         private Integer age;
+        private String sex;
 
-        public Hello(String name, Integer age) {
+        public Hello(String name, Integer age, String sex) {
             this.name = name;
             this.age = age;
+            this.sex = sex;
         }
     }
 
