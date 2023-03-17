@@ -19,8 +19,8 @@ public class ApiTestController {
     public ResponseEntity a(HttpServletRequest request, HttpServletResponse response) {
         request.getSession().setAttribute("ss", "111");
 
-        log.info("session id={}",request.getSession().getId());
-        ResponseCookie cookie= ResponseCookie.from("JSESSIONID",request.getSession().getId())
+        log.info("session id={}", request.getSession().getId());
+        ResponseCookie cookie = ResponseCookie.from("JSESSIONID", request.getSession().getId())
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
@@ -30,7 +30,7 @@ public class ApiTestController {
                 .build();
         return ResponseEntity.ok()
 //                .header(HttpHeaders.SET_COOKIE,cookie.toString())
-                .body(new Hello("hello"));
+                .body(new Hello("hello",25));
 
     }
 
@@ -46,9 +46,11 @@ public class ApiTestController {
     @Data
     static class Hello {
         private String name;
+        private Integer age;
 
-        public Hello(String name) {
+        public Hello(String name, Integer age) {
             this.name = name;
+            this.age = age;
         }
     }
 
