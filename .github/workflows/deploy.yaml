@@ -31,7 +31,7 @@ jobs:
         with:
           files: ${{ env.RESOURCE_PATH }}
         env:
-          server.servlet.session.cookie.same-site: Lax
+#          server.servlet.session.cookie.same-site: Lax
 
 #          spring.datasource.url: ${{ secrets.RDS_URL}}
 #          spring.datasource.username: ${{ secrets.RDS_USERNAME}}
