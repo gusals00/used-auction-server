@@ -4,3 +4,24 @@ server:
       cookie:
         same-site: None
         secure: true
+
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
+#  profiles:
+#    include:
+#      - secret
+
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        use_sql_comments: true
+#        default_batch_fetch_size: 100
+#    open-in-view: false
+
+  messages:
+    basename: errors
