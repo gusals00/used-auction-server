@@ -11,7 +11,7 @@ JAR_NAME=$(basename $BUILD_JAR)
 echo "===== 배포 시작 : $(date +%c) =====" >> $DEPLOY_LOG_PATH
 echo "> build 실행" >> $DEPLOY_LOG_PATH
 cp $BUILD_JAR $DEPLOY_PATH
-echo "빌드된 파일"
+echo "빌드된 파일" >>$DEPLOY_LOG_PATH
 ls $JAR_PATH
 
 echo "> 현재 동작중인 어플리케이션 pid 체크" >> $DEPLOY_LOG_PATH
