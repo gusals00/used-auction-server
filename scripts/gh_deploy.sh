@@ -9,11 +9,8 @@ BUILD_JAR=$(ls $JAR_PATH)
 JAR_NAME=$(basename $BUILD_JAR)
 
 echo "===== 배포 시작 : $(date +%c) =====" >> $DEPLOY_LOG_PATH
-
-echo "> build 파일명: $JAR_NAME" >> $DEPLOY_LOG_PATH
-echo "> build 파일 복사" >> $DEPLOY_LOG_PATH
-cp $BUILD_JAR $DEPLOY_PATH
-
+echo "> build 실행" >> $DEPLOY_LOG_PATH
+./
 echo "> 현재 동작중인 어플리케이션 pid 체크" >> $DEPLOY_LOG_PATH
 CURRENT_PID=$(pgrep -f $JAR_NAME)
 
@@ -29,6 +26,7 @@ fi
 
 DEPLOY_JAR=$DEPLOY_PATH$JAR_NAME
 echo "> DEPLOY_JAR 배포" >> $DEPLOY_LOG_PATH
+echo "파일 이름 $DEPLOY_JAR" >> $DEPLOY_LOG_PATH
 nohup java -jar -Dspring.profiles.active=local $DEPLOY_JAR --server.port=8080 >> $APPLICATION_LOG_PATH 2> $DEPLOY_ERR_LOG_PATH &
 
 sleep 3
