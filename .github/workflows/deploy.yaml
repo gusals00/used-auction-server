@@ -7,7 +7,7 @@ on:
 
 env:
   S3_BUCKET_NAME: myauctionbucket
-  RESOURCE_PATH: ./src/main/resources/application.yaml
+  RESOURCE_PATH: ./src/main/resources/application-deploy.yaml
   CODE_DEPLOY_APPLICATION_NAME: auction-code-deploy
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: auction-server
 
@@ -25,13 +25,18 @@ jobs:
           java-version: 17
           distribution: adopt
 
-        # [1]
-#      - name: Set yaml file
-#        uses: microsoft/variable-substitution@v1
-#        with:
-#          files: ${{ env.RESOURCE_PATH }}
-#        env:
-#          override.value: 'from deploy.yaml'
+      # [1]
+      - name: Set yaml file
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          server.servlet.session.cookie.same-site: Lax
+
+#          spring.datasource.url: ${{ secrets.RDS_URL}}
+#          spring.datasource.username: ${{ secrets.RDS_USERNAME}}
+#          spring.datasource.password: ${{ secrets.RDS_PASSWORD}}
+#          spring.jpa.hibernate.ddl-auto: update
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
