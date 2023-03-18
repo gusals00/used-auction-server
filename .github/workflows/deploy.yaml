@@ -25,6 +25,14 @@ jobs:
           java-version: 17
           distribution: adopt
 
+      - name: Setup MySQL
+        uses: samin/mysql-action@v1
+        with:
+          character set server: 'utf8'
+          mysql database: 'test'
+          mysql user: 'admin'
+          mysql password: ${{ secrets.RDS_PASSWORD}}
+
       # [1]
       - name: Set yaml file
         uses: microsoft/variable-substitution@v1
