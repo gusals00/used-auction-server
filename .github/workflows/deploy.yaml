@@ -45,8 +45,8 @@ jobs:
         with:
           character set server: 'utf8'
           mysql database: used_auction_test
-          mysql user: ${{ secrets.RDS_USERNAME }}
-          mysql password: ${{ secrets.RDS_PASSWORD}}
+          mysql user: test
+          mysql password: ${{ DB_TEST }}
 
         # [2]
       - name: Build with Gradle
