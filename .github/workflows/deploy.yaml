@@ -31,9 +31,9 @@ jobs:
         with:
           files: ${{ env.RESOURCE_PATH }}
         env:
-          spring.datasource.url: ${{ secrets.RDS_URL}}
-          spring.datasource.username: ${{ secrets.RDS_USERNAME}}
-          spring.datasource.password: ${{ secrets.RDS_PASSWORD}}
+          spring.datasource.url: ${{ secrets.RDS_URL }}
+          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
+          spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
 #          spring.jpa.hibernate.ddl-auto: update
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
