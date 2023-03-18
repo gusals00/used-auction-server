@@ -6,8 +6,8 @@ server:
         secure: true
 
 spring:
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 #  profiles:
 #    include:
