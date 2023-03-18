@@ -44,8 +44,9 @@ jobs:
         uses: samin/mysql-action@v1
         with:
           character set server: 'utf8'
-          mysql database: used_auction_test
-          mysql user: test
+          mysql version: '8.0'
+          mysql database: 'used_auction_test'
+          mysql user: 'developer'
           mysql password: ${{ secrets.DB_TEST }}
 
         # [2]
