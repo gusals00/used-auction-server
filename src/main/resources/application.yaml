@@ -8,8 +8,10 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-#  profiles:
+    username: s
+    url: s
+    password: d
+  #  profiles:
 #    include:
 #      - secret
 
