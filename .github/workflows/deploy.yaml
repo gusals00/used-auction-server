@@ -29,8 +29,8 @@ jobs:
         uses: samin/mysql-action@v1
         with:
           character set server: 'utf8'
-          mysql database: 'test'
-          mysql user: 'admin'
+          mysql database: ${{ secrets.RDS_URL }}
+          mysql user: ${{ secrets.RDS_USERNAME }}
           mysql password: ${{ secrets.RDS_PASSWORD}}
 
       # [1]
