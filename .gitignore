@@ -38,3 +38,5 @@ out/
 
 #SECRET FILES
 **/src/main/resources/application-sec.yml
+**/src/test/resources/application-sec.yml
+
