@@ -12,9 +12,9 @@ spring:
     url: url
     password: pw
 
-  #  profiles:
-#    include:
-#      - secret
+  profiles:
+    include:
+      - secret
 
 #  jpa:
 #    hibernate:
