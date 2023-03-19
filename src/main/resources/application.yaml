@@ -9,7 +9,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: s
-    url: s
+    url: jdbc:mysql://localhost:3306/used_auction_test?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     password: d
   #  profiles:
 #    include:
