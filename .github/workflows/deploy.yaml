@@ -52,7 +52,7 @@ jobs:
 
         # [2]
       - name: Build with Gradle
-        run: ./gradle build -x test
+        run: ./gradlew build -x test
         shell: bash
 
         # [2]
