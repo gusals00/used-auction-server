@@ -42,7 +42,13 @@ jobs:
           spring.datasource.url: ${{ secrets.RDS_URL }}
           spring.datasource.username: ${{ secrets.RDS_USERNAME }}
           spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
-#          spring.jpa.hibernate.ddl-auto: update
+          spring.jpa.hibernate.ddl-auto: update
+          cloud.aws.credentials.access-key : ${{ secrets.AWS_ACCESS_KEY_ID }}
+          cloud.aws.credentials.secret-key : ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          cloud.aws.region.static: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          cloud.aws.stack.auto: false
+          cloud.aws.s3.bucket: ${{ env.S3_BUCKET_NAME }}
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash

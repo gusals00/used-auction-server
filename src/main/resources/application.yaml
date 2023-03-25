@@ -18,7 +18,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -29,3 +29,22 @@ spring:
   messages:
     basename: errors
 
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+# AWS S3
+cloud:
+  aws:
+    credentials:
+      access-key: "access-key"
+      secret-key: "secret-key"
+
+    region:
+      static: "region-name"
+    stack:
+      auto: false
+
+    s3:
+      bucket: "bucket-name"
