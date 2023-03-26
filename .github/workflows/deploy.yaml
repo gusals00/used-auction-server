@@ -25,13 +25,6 @@ jobs:
           java-version: 17
           distribution: adopt
 
-      - name: Setup MySQL
-        uses: mirromutth/mysql-action@v1
-        with:
-          mysql version: '8.0'
-          mysql database: 'used_auction_test'
-          mysql user: 'developer'
-          mysql password: ${{ secrets.DB_TEST }}
 
       # [1]
       - name: Set yaml file
@@ -49,6 +42,17 @@ jobs:
           cloud.aws.region.static: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           cloud.aws.stack.auto: false
           cloud.aws.s3.bucket: ${{ env.S3_BUCKET_NAME }}
+
+      # [Gradle Caching]
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -74,7 +78,7 @@ jobs:
 
         # [5]
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/deploy-file/deploy.zip
 
         # [6]
       - name: Code Deploy
@@ -83,4 +87,4 @@ jobs:
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
           --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
+          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=deploy-file/deploy.zip
