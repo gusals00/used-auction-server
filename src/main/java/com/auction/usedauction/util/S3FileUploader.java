@@ -33,16 +33,14 @@ public class S3FileUploader {
         }
         List<UploadFIleDTO> storeResult = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFileList) {
-            if (!multipartFile.isEmpty()) {
-                storeResult.add(uploadFile(multipartFile, subPath));
-            }
+            storeResult.add(uploadFile(multipartFile, subPath));
         }
 
         return storeResult;
     }
 
     public UploadFIleDTO uploadFile(MultipartFile multipartFile, String subPath) throws IOException {
-        if (multipartFile.isEmpty()) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
             throw new FileEmptyException("파일이 비어 있습니다.");
         }
 
@@ -73,7 +71,7 @@ public class S3FileUploader {
     }
 
     public String getOriginalFileName(MultipartFile multipartFile) throws IOException {
-        if (multipartFile.isEmpty()) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
             throw new FileEmptyException("파일이 비어 있습니다.");
         }
         return multipartFile.getOriginalFilename();
