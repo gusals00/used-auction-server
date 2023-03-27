@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.auction.usedauction.UploadFIleDTO;
 import com.auction.usedauction.exception.FileEmptyException;
+import com.auction.usedauction.exception.S3FileNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,10 +48,10 @@ public class S3FileUploader {
         String originalFileName = getOriginalFileName(multipartFile);
         String storeFileName = createStoreFileName(originalFileName);
 
-        String storeFileUrl = sendAwsS3(bucket, subPath + storeFileName, multipartFile);
-        log.info("S3에 파일 전송 완료 originalFileName = {},fileSubPath = {}, storeUrl={}", originalFileName, subPath, storeFileUrl);
+        String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, multipartFile);
+        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath+storeFileName, storeFileFullUrl);
 
-        return new UploadFIleDTO(originalFileName, storeFileName, storeFileUrl);
+        return new UploadFIleDTO(originalFileName, storeFileName,subPath + storeFileName, storeFileFullUrl);
     }
 
     private String sendAwsS3(String bucketName, String filePath, MultipartFile uploadFile) throws IOException {
@@ -65,6 +66,10 @@ public class S3FileUploader {
     }
 
     public String deleteFile(String filePath) {
+        boolean isExist = amazonS3Client.doesObjectExist(bucket, filePath);
+        if (!isExist) {
+            throw new S3FileNotFoundException("S3에서 해당 파일을 찾지 못했습니다.");
+        }
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filePath));
         log.info("S3 파일 삭제 완료 deletedFilePath = {}", filePath);
         return filePath;

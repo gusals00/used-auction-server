@@ -2,7 +2,7 @@ package com.auction.usedauction.exception;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 
-public class FileEmptyException extends FileUploadException {
+public class FileEmptyException extends RuntimeException {
     public FileEmptyException() {
         super();
     }

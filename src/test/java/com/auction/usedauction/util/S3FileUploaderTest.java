@@ -3,6 +3,7 @@ package com.auction.usedauction.util;
 
 import com.auction.usedauction.UploadFIleDTO;
 import com.auction.usedauction.exception.FileEmptyException;
+import com.auction.usedauction.exception.S3FileNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,12 +50,10 @@ class S3FileUploaderTest {
         List<UploadFIleDTO> uploadFIleDTOS = fileUploader.uploadFiles(fileList, STREAMING_VIDEO_PATH);
 
         //then
-        assertThat(uploadFIleDTO.getStoreUrl()).contains(PRODUCT_IMG_PATH);
+        assertThat(uploadFIleDTO.getStoreFullUrl()).contains(PRODUCT_IMG_PATH);
         assertThat(uploadFIleDTO.getUploadFileName()).isEqualTo(fileName1);
 
         assertThat(uploadFIleDTOS).extracting(UploadFIleDTO::getUploadFileName).containsExactly(fileName2, fileName3, fileName4);
-        uploadFIleDTOS.forEach(fIleDTO -> assertThat(fIleDTO.getStoreUrl()).contains(STREAMING_VIDEO_PATH));
-
     }
 
     @Test
@@ -91,4 +90,56 @@ class S3FileUploaderTest {
 
     }
 
+    @Test
+    @DisplayName("S3에서 파일 삭제 성공")
+    void s3FileDeleteSuccess() throws Exception {
+        //given
+        String fileName1 = "test1.png";
+        String contentType = "image/png";
+
+        MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        UploadFIleDTO uploadFIleDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+
+        //when
+        String deletedPath = fileUploader.deleteFile(uploadFIleDTO.getStoreUrl());
+
+        //then
+        assertThat(deletedPath).isEqualTo(uploadFIleDTO.getStoreUrl());
+    }
+
+    @Test
+    @DisplayName("S3에서 파일 삭제 실패, 이미 삭제된 파일 삭제하려는 경우")
+    void s3FileDeleteFail1() throws Exception {
+        //given
+        String fileName1 = "test1.png";
+        String contentType = "image/png";
+
+        MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        UploadFIleDTO uploadFIleDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+
+        //when
+        fileUploader.deleteFile(uploadFIleDTO.getStoreUrl());
+
+        //then
+        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(uploadFIleDTO.getStoreUrl()))
+                .isInstanceOf(S3FileNotFoundException.class)
+                .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
+    }
+
+    @Test
+    @DisplayName("S3에서 파일 삭제 실패, 다른 경로의 파일 삭제하려는 경우")
+    void s3FileDeleteFail2() throws Exception {
+        //given
+        String fileName1 = "test1.png";
+        String contentType = "image/png";
+
+        MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        UploadFIleDTO uploadFIleDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+
+        //then
+        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(STREAMING_VIDEO_PATH + uploadFIleDTO.getStoreFileName()))
+                .isInstanceOf(S3FileNotFoundException.class)
+                .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
+    }
+    
 }
