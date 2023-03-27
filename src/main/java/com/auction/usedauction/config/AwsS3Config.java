@@ -3,7 +3,6 @@ package com.auction.usedauction.config;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Slf4j
+@Profile({"production", "local"})
 public class AwsS3Config {
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
@@ -25,7 +25,6 @@ public class AwsS3Config {
     private String region;
 
     @Bean
-    @Profile({"production", "local"})
     public AmazonS3 amazonS3Client() {
         log.info("production or local s3 config");
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
