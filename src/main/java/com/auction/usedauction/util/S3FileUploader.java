@@ -48,10 +48,10 @@ public class S3FileUploader {
         String originalFileName = getOriginalFileName(multipartFile);
         String storeFileName = createStoreFileName(originalFileName);
 
-        String storeFileUrl = sendAwsS3(bucket, subPath + storeFileName, multipartFile);
-        log.info("S3에 파일 전송 완료 originalFileName = {},fileSubPath = {}, storeUrl={}", originalFileName, subPath, storeFileUrl);
+        String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, multipartFile);
+        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath+storeFileName, storeFileFullUrl);
 
-        return new UploadFIleDTO(originalFileName, storeFileName, storeFileUrl);
+        return new UploadFIleDTO(originalFileName, storeFileName,subPath + storeFileName, storeFileFullUrl);
     }
 
     private String sendAwsS3(String bucketName, String filePath, MultipartFile uploadFile) throws IOException {
