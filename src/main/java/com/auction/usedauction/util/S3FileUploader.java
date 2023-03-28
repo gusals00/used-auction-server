@@ -68,7 +68,7 @@ public class S3FileUploader {
 
     public UploadFIleDTO uploadFile(File file, String subPath) throws IOException {
         if (file == null || !file.exists()) {
-            throw new FileEmptyException("파일이 비어 있습니다.");
+            throw new FileEmptyException("해당 경로에 파일이 없습니다.");
         }
 
         String originalFileName = getOriginalFileName(file);

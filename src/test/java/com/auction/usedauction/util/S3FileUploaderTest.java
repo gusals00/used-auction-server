@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,14 +47,14 @@ class S3FileUploaderTest {
         fileList.add(file4);
 
         //when
-        UploadFIleDTO uploadFIleDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
-        List<UploadFIleDTO> uploadFIleDTOS = fileUploader.uploadFiles(fileList, STREAMING_VIDEO_PATH);
+        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+        List<UploadFIleDTO> uploadFileDTOS = fileUploader.uploadFiles(fileList, STREAMING_VIDEO_PATH);
 
         //then
-        assertThat(uploadFIleDTO.getStoreFullUrl()).contains(PRODUCT_IMG_PATH);
-        assertThat(uploadFIleDTO.getUploadFileName()).isEqualTo(fileName1);
+        assertThat(uploadFileDTO.getStoreFullUrl()).contains(PRODUCT_IMG_PATH);
+        assertThat(uploadFileDTO.getUploadFileName()).isEqualTo(fileName1);
 
-        assertThat(uploadFIleDTOS).extracting(UploadFIleDTO::getUploadFileName).containsExactly(fileName2, fileName3, fileName4);
+        assertThat(uploadFileDTOS).extracting(UploadFIleDTO::getUploadFileName).containsExactly(fileName2, fileName3, fileName4);
     }
 
     @Test
@@ -91,20 +92,59 @@ class S3FileUploaderTest {
     }
 
     @Test
+    @DisplayName("S3에 타입이 File인 파일 저장 성공")
+    void fileUpload2() throws Exception {
+        //given
+        String fileName = "test1.txt";
+        String path="src/test/resources/files/";
+        File file = new File(path+fileName);
+
+        //when
+        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
+
+        //then
+        assertThat(uploadFileDTO.getUploadFileName()).isEqualTo(fileName);
+    }
+
+    @Test
+    @DisplayName("S3에 타입이 File인 파일 저장 실패, 잘못된 경로, null인 파일 전송시")
+    void fileUploadFail2() throws Exception {
+        //given
+        String fileName = "test2.txt";
+        String path="src/test/resources/files/";
+        File file = new File(path+fileName);
+
+        //then
+        Assertions.assertThatThrownBy(() -> fileUploader.uploadFile(file, STREAMING_VIDEO_PATH))
+                .isInstanceOf(FileEmptyException.class)
+                .hasMessage("해당 경로에 파일이 없습니다.");
+    }
+
+    @Test
     @DisplayName("S3에서 파일 삭제 성공")
     void s3FileDeleteSuccess() throws Exception {
         //given
         String fileName1 = "test1.png";
         String contentType = "image/png";
 
+        String fileName = "test1.txt";
+        String path="src/test/resources/files/";
+
+        //multipart 파일
         MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
-        UploadFIleDTO uploadFIleDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+
+        //File
+        File file = new File(path+fileName);
+        UploadFIleDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
 
         //when
-        String deletedPath = fileUploader.deleteFile(uploadFIleDTO.getStoreUrl());
+        String deletedPath1 = fileUploader.deleteFile(uploadFileDTO.getStoreUrl());
+        String deletePath2 = fileUploader.deleteFile(uploadFileDTO2.getStoreUrl());
 
         //then
-        assertThat(deletedPath).isEqualTo(uploadFIleDTO.getStoreUrl());
+        assertThat(deletedPath1).isEqualTo(uploadFileDTO.getStoreUrl());
+        assertThat(deletePath2).isEqualTo(uploadFileDTO2.getStoreUrl());
     }
 
     @Test
@@ -114,14 +154,28 @@ class S3FileUploaderTest {
         String fileName1 = "test1.png";
         String contentType = "image/png";
 
+        String fileName = "test1.txt";
+        String path="src/test/resources/files/";
+
+        //multipart 파일
         MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
-        UploadFIleDTO uploadFIleDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+
+        //File
+        File file = new File(path+fileName);
+        UploadFIleDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
 
         //when
-        fileUploader.deleteFile(uploadFIleDTO.getStoreUrl());
+        fileUploader.deleteFile(uploadFileDTO.getStoreUrl());
+        fileUploader.deleteFile(uploadFileDTO2.getStoreUrl());
 
         //then
-        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(uploadFIleDTO.getStoreUrl()))
+        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(uploadFileDTO.getStoreUrl()))
+                .isInstanceOf(S3FileNotFoundException.class)
+                .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
+
+        //then
+        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(uploadFileDTO2.getStoreUrl()))
                 .isInstanceOf(S3FileNotFoundException.class)
                 .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
     }
@@ -133,11 +187,23 @@ class S3FileUploaderTest {
         String fileName1 = "test1.png";
         String contentType = "image/png";
 
+        String fileName = "test1.txt";
+        String path="src/test/resources/files/";
+
+        //multipart 파일
         MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
-        UploadFIleDTO uploadFIleDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+
+        //File
+        File file = new File(path+fileName);
+        UploadFIleDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
 
         //then
-        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(STREAMING_VIDEO_PATH + uploadFIleDTO.getStoreFileName()))
+        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(STREAMING_VIDEO_PATH + uploadFileDTO.getStoreFileName()))
+                .isInstanceOf(S3FileNotFoundException.class)
+                .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
+
+        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(PRODUCT_IMG_PATH + uploadFileDTO2.getStoreFileName()))
                 .isInstanceOf(S3FileNotFoundException.class)
                 .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
     }
