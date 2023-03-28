@@ -17,7 +17,7 @@ public class ProductVideo extends File{
     private Long id;
 
     @Builder
-    public ProductVideo(String path, String name, Product product) {
-        super(path, name, product);
+    public ProductVideo(String fullPath,String path, String name, Product product) {
+        super(fullPath,path, name, product);
     }
 }

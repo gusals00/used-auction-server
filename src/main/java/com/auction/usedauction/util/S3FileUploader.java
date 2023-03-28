@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,27 @@ public class S3FileUploader {
 
     }
 
+    public UploadFIleDTO uploadFile(File file, String subPath) throws IOException {
+        if (file == null || !file.exists()) {
+            throw new FileEmptyException("파일이 비어 있습니다.");
+        }
+
+        String originalFileName = getOriginalFileName(file);
+        String storeFileName = createStoreFileName(originalFileName);
+
+        String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, file);
+        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath+storeFileName, storeFileFullUrl);
+
+        return new UploadFIleDTO(originalFileName, storeFileName,subPath + storeFileName, storeFileFullUrl);
+    }
+
+    private String sendAwsS3(String bucketName, String filePath, File uploadFile) throws IOException {
+        amazonS3Client.putObject(new PutObjectRequest(bucketName, filePath, uploadFile)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+        return amazonS3Client.getUrl(bucketName, filePath).toString();
+
+    }
+
     public String deleteFile(String filePath) {
         boolean isExist = amazonS3Client.doesObjectExist(bucket, filePath);
         if (!isExist) {
@@ -75,11 +97,20 @@ public class S3FileUploader {
         return filePath;
     }
 
+    //multipart file
     public String getOriginalFileName(MultipartFile multipartFile) throws IOException {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new FileEmptyException("파일이 비어 있습니다.");
         }
         return multipartFile.getOriginalFilename();
+    }
+
+    //file
+    public String getOriginalFileName(File file) {
+        if (file == null || !file.exists() ) {
+            throw new FileEmptyException("파일이 비어 있습니다.");
+        }
+        return file.getName();
     }
 
     private String createStoreFileName(String originalFilename) {
