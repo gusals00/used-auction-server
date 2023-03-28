@@ -20,15 +20,16 @@ public abstract class File extends BaseTimeEntity{
     private Long id;
 
     private String path;
-
+    private String fullPath;
     private String name;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public File(String path, String name, Product product) {
+    public File(String fullPath,String path, String name, Product product) {
         this.path = path;
+        this.fullPath = fullPath;
         this.name = name;
         this.product = product;
     }

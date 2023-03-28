@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ProductImage extends File{
+public class ProductImage extends File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +20,8 @@ public class ProductImage extends File{
     private ProductImageType type;
 
     @Builder
-    public ProductImage(String path, String name, Product product, ProductImageType type) {
-        super(path, name, product);
+    public ProductImage(String fullPath, String path, String name, Product product, ProductImageType type) {
+        super(fullPath, path, name, product);
         this.type = type;
     }
 }
