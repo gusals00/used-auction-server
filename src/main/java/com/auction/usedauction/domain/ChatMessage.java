@@ -27,14 +27,14 @@ public class ChatMessage extends BaseTimeEntity{
     private ChatRoom chatRoom;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Builder
-    public ChatMessage(String message, boolean readOrNot, ChatRoom chatRoom, User user) {
+    public ChatMessage(String message, boolean readOrNot, ChatRoom chatRoom, Member member) {
         this.message = message;
         this.readOrNot = readOrNot;
         this.chatRoom = chatRoom;
-        this.user = user;
+        this.member = member;
     }
 }

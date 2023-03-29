@@ -1,6 +1,6 @@
 package com.auction.usedauction.domain;
 
-public enum UserStatus {
+public enum MemberStatus {
     EXIST, // 존재
     DELETED // 삭제
 }

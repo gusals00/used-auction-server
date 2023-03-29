@@ -19,16 +19,16 @@ public class ChatRoom extends BaseTimeEntity{
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @Builder
-    public ChatRoom(User user, Product product) {
-        this.user = user;
+    public ChatRoom(Member member, Product product) {
+        this.member = member;
         this.product = product;
     }
 }

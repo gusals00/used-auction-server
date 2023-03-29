@@ -49,11 +49,11 @@ public class Product extends BaseTimeEntity{
     private Category category;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Builder
-    public Product(String name, String info, ProductStatus status, int buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionStartDate, LocalDateTime auctionEndDate, Category category, User user) {
+    public Product(String name, String info, ProductStatus status, int buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionStartDate, LocalDateTime auctionEndDate, Category category, Member member) {
         this.name = name;
         this.info = info;
         this.status = status;
@@ -65,7 +65,7 @@ public class Product extends BaseTimeEntity{
         this.auctionStartDate = auctionStartDate;
         this.auctionEndDate = auctionEndDate;
         this.category = category;
-        this.user = user;
+        this.member = member;
         buyerTransCheck = false;
         sellerTransCheck = false;
     }
