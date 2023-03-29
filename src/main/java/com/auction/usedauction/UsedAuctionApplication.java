@@ -18,7 +18,7 @@ public class UsedAuctionApplication {
 	}
 
 	@Bean
-	public AuditorAware<String> auditorProvider() { //세션 정보에서 가져오는걸로 수정하기
+	public AuditorAware<String> auditorProvider() { // 수정 예정
 		return () -> Optional.of(UUID.randomUUID().toString());
 	}
 }
