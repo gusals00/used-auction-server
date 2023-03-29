@@ -24,18 +24,18 @@ public class AuctionHistory extends BaseTimeEntity {
     private AuctionHistoryStatus status;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @Builder
-    public AuctionHistory(int bidPrice, AuctionHistoryStatus status, User user, Product product) {
+    public AuctionHistory(int bidPrice, AuctionHistoryStatus status, Member member, Product product) {
         this.bidPrice = bidPrice;
         this.status = status;
-        this.user = user;
+        this.member = member;
         this.product = product;
     }
 }

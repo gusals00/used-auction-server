@@ -12,6 +12,22 @@ spring:
     url: url
     password: pw
 
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: username
+    password: password
+    properties:
+      debug: true
+      mail:
+        stmp:
+          auth : true
+          starttls :
+            enable: true
+          ssl :
+            enable : true
+            trust : smtp.naver.com
+
   profiles:
     include:
       - sec
@@ -49,3 +65,8 @@ cloud:
 
     s3:
       bucket: "bucket-name"
+
+jwt:
+  header: Authorization
+  secret: x
+  access-token-validity-in-seconds: 86400
