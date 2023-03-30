@@ -24,7 +24,7 @@ public class Product extends BaseTimeEntity{
     private String info;
 
     @Enumerated(EnumType.STRING)
-    private ProductStatus status;
+    private ProductStatus productStatus;
 
     private int buyNowPrice; // 즉시구매가 설정 안할 경우 -> -1
 
@@ -40,9 +40,11 @@ public class Product extends BaseTimeEntity{
 
     private LocalDateTime auctionEndDate;
 
-    private boolean sellerTransCheck;
+    @Enumerated(EnumType.STRING)
+    private TransStatus sellerTransStatus;
 
-    private boolean buyerTransCheck;
+    @Enumerated(EnumType.STRING)
+    private TransStatus buyerTransStatus;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category_id")
@@ -53,20 +55,38 @@ public class Product extends BaseTimeEntity{
     private Member member;
 
     @Builder
-    public Product(String name, String info, ProductStatus status, int buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionStartDate, LocalDateTime auctionEndDate, Category category, Member member) {
+    public Product(String name, String info, int buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionEndDate, Category category, Member member) {
         this.name = name;
         this.info = info;
-        this.status = status;
         this.buyNowPrice = buyNowPrice;
         this.nowPrice = nowPrice;
         this.startPrice = startPrice;
         this.priceUnit = priceUnit;
         this.viewCount = 0;
-        this.auctionStartDate = auctionStartDate;
         this.auctionEndDate = auctionEndDate;
         this.category = category;
         this.member = member;
-        buyerTransCheck = false;
-        sellerTransCheck = false;
+    }
+
+    @PrePersist
+    private void initProductAndTransStatus() {
+        initTransStatus();
+        initProductStatus();
+        initStartDate();
+    }
+
+    private void initTransStatus() {
+        //판매자, 구매자 거래 확인 상태 초기값을 거래 전(TRANS_BEFORE)으로
+        sellerTransStatus=TransStatus.TRANS_BEFORE;
+        buyerTransStatus=TransStatus.TRANS_BEFORE;
+    }
+
+    private void initProductStatus() {
+        // 상품 생성시 바로 입찰상태로
+        this.productStatus=ProductStatus.BID;
+    }
+
+    private void initStartDate() {
+        this.auctionStartDate = LocalDateTime.now();
     }
 }
