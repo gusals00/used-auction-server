@@ -1,4 +1,4 @@
-package com.auction.usedauction;
+package com.auction.usedauction.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

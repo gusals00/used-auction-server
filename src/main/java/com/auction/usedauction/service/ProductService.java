@@ -1,6 +1,6 @@
 package com.auction.usedauction.service;
 
-import com.auction.usedauction.UploadFIleDTO;
+import com.auction.usedauction.util.UploadFIleDTO;
 import com.auction.usedauction.repository.ProductRepository;
 import com.auction.usedauction.service.dto.ProductRegisterReq;
 import com.auction.usedauction.util.S3FileUploader;

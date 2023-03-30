@@ -5,9 +5,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.auction.usedauction.UploadFIleDTO;
-import com.auction.usedauction.exception.FileEmptyException;
-import com.auction.usedauction.exception.S3FileNotFoundException;
+import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +30,7 @@ public class S3FileUploader {
 
     public List<UploadFIleDTO> uploadFiles(List<MultipartFile> multipartFileList, String subPath) throws IOException {
         if (multipartFileList == null) {
-            throw new FileEmptyException("파일이 비어 있습니다.");
+            throw new CustomException(ErrorCode.FILE_EMPTY);
         }
         List<UploadFIleDTO> storeResult = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFileList) {
@@ -43,7 +42,7 @@ public class S3FileUploader {
 
     public UploadFIleDTO uploadFile(MultipartFile multipartFile, String subPath) throws IOException {
         if (multipartFile == null || multipartFile.isEmpty()) {
-            throw new FileEmptyException("파일이 비어 있습니다.");
+            throw new CustomException(ErrorCode.FILE_EMPTY);
         }
 
         String originalFileName = getOriginalFileName(multipartFile);
@@ -68,7 +67,7 @@ public class S3FileUploader {
 
     public UploadFIleDTO uploadFile(File file, String subPath) throws IOException {
         if (file == null || !file.exists()) {
-            throw new FileEmptyException("해당 경로에 파일이 없습니다.");
+            throw new CustomException(ErrorCode.FILE_NOT_FOUND);
         }
 
         String originalFileName = getOriginalFileName(file);
@@ -90,7 +89,7 @@ public class S3FileUploader {
     public String deleteFile(String filePath) {
         boolean isExist = amazonS3Client.doesObjectExist(bucket, filePath);
         if (!isExist) {
-            throw new S3FileNotFoundException("S3에서 해당 파일을 찾지 못했습니다.");
+            throw new CustomException(ErrorCode.S3_FILE_NOT_FOUND);
         }
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filePath));
         log.info("S3 파일 삭제 완료 deletedFilePath = {}", filePath);
@@ -100,7 +99,7 @@ public class S3FileUploader {
     //multipart file
     public String getOriginalFileName(MultipartFile multipartFile) throws IOException {
         if (multipartFile == null || multipartFile.isEmpty()) {
-            throw new FileEmptyException("파일이 비어 있습니다.");
+            throw new CustomException(ErrorCode.FILE_EMPTY);
         }
         return multipartFile.getOriginalFilename();
     }
@@ -108,7 +107,7 @@ public class S3FileUploader {
     //file
     public String getOriginalFileName(File file) {
         if (file == null || !file.exists() ) {
-            throw new FileEmptyException("파일이 비어 있습니다.");
+            throw new CustomException(ErrorCode.FILE_NOT_FOUND);
         }
         return file.getName();
     }

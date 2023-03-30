@@ -1,9 +1,8 @@
 package com.auction.usedauction.util;
 
 
-import com.auction.usedauction.UploadFIleDTO;
-import com.auction.usedauction.exception.FileEmptyException;
-import com.auction.usedauction.exception.S3FileNotFoundException;
+import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.ErrorCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.auction.usedauction.exception.ErrorCode.*;
 import static com.auction.usedauction.util.FileSubPath.PRODUCT_IMG_PATH;
 import static com.auction.usedauction.util.FileSubPath.STREAMING_VIDEO_PATH;
 import static org.assertj.core.api.Assertions.*;
@@ -77,17 +77,17 @@ class S3FileUploaderTest {
         fileList.add(file4);
 
         //then
-        Assertions.assertThatThrownBy(() -> fileUploader.uploadFile(file1, PRODUCT_IMG_PATH))
-                .isInstanceOf(FileEmptyException.class)
-                .hasMessage("파일이 비어 있습니다.");
+        assertThatThrownBy(() -> fileUploader.uploadFile(file1, PRODUCT_IMG_PATH))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(FILE_EMPTY.getMessage());
 
-        Assertions.assertThatThrownBy(() -> fileUploader.uploadFile(file2, PRODUCT_IMG_PATH))
-                .isInstanceOf(FileEmptyException.class)
-                .hasMessage("파일이 비어 있습니다.");
+        assertThatThrownBy(() -> fileUploader.uploadFile(file2, PRODUCT_IMG_PATH))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(FILE_EMPTY.getMessage());
 
-        Assertions.assertThatThrownBy(() -> fileUploader.uploadFiles(fileList, PRODUCT_IMG_PATH))
-                .isInstanceOf(FileEmptyException.class)
-                .hasMessage("파일이 비어 있습니다.");
+        assertThatThrownBy(() -> fileUploader.uploadFiles(fileList, PRODUCT_IMG_PATH))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(FILE_EMPTY.getMessage());
 
     }
 
@@ -115,9 +115,9 @@ class S3FileUploaderTest {
         File file = new File(path+fileName);
 
         //then
-        Assertions.assertThatThrownBy(() -> fileUploader.uploadFile(file, STREAMING_VIDEO_PATH))
-                .isInstanceOf(FileEmptyException.class)
-                .hasMessage("해당 경로에 파일이 없습니다.");
+        assertThatThrownBy(() -> fileUploader.uploadFile(file, STREAMING_VIDEO_PATH))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(FILE_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -170,14 +170,14 @@ class S3FileUploaderTest {
         fileUploader.deleteFile(uploadFileDTO2.getStoreUrl());
 
         //then
-        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(uploadFileDTO.getStoreUrl()))
-                .isInstanceOf(S3FileNotFoundException.class)
-                .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
+        assertThatThrownBy(() -> fileUploader.deleteFile(uploadFileDTO.getStoreUrl()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(S3_FILE_NOT_FOUND.getMessage());
 
         //then
         Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(uploadFileDTO2.getStoreUrl()))
-                .isInstanceOf(S3FileNotFoundException.class)
-                .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
+                .isInstanceOf(CustomException.class)
+                .hasMessage(S3_FILE_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -199,13 +199,14 @@ class S3FileUploaderTest {
         UploadFIleDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
 
         //then
-        Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(STREAMING_VIDEO_PATH + uploadFileDTO.getStoreFileName()))
-                .isInstanceOf(S3FileNotFoundException.class)
-                .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
+        assertThatThrownBy(() -> fileUploader.deleteFile(STREAMING_VIDEO_PATH + uploadFileDTO.getStoreFileName()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(S3_FILE_NOT_FOUND.getMessage());
 
         Assertions.assertThatThrownBy(() -> fileUploader.deleteFile(PRODUCT_IMG_PATH + uploadFileDTO2.getStoreFileName()))
-                .isInstanceOf(S3FileNotFoundException.class)
-                .hasMessage("S3에서 해당 파일을 찾지 못했습니다.");
+                .isInstanceOf(CustomException.class)
+                .hasMessage(S3_FILE_NOT_FOUND.getMessage());
+
     }
     
 }

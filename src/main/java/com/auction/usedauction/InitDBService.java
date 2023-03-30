@@ -21,7 +21,7 @@ import java.util.List;
 public class InitDBService {
 
     private final EntityManager em;
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public void initDb() {
