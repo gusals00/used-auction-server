@@ -1,9 +1,7 @@
 package com.auction.usedauction.web.controller;
 
-import com.auction.usedauction.domain.Member;
 import com.auction.usedauction.util.AuthConstants;
 import com.auction.usedauction.service.MemberService;
-import com.auction.usedauction.util.CurrentUser;
 import com.auction.usedauction.web.dto.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -11,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,5 +35,13 @@ public class MemberController {
         memberService.register(registerReq, session);
 
         return new ResultRes(new MessageRes("회원가입 성공"));
+    }
+
+    @GetMapping("/test")
+    public ResultRes test(@AuthenticationPrincipal User user) {
+        System.out.println(user.getAuthorities());
+        System.out.println(user.getUsername());
+
+        return new ResultRes("ok");
     }
 }

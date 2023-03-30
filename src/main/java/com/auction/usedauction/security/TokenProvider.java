@@ -1,7 +1,5 @@
 package com.auction.usedauction.security;
 
-import com.auction.usedauction.domain.Member;
-import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.util.AuthConstants;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -13,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -32,8 +32,6 @@ public class TokenProvider implements InitializingBean {
     private int tokenValidity;
 
     private Key key;
-
-    private final MemberRepository memberRepository;
 
     @Override
     public void afterPropertiesSet() {
@@ -60,12 +58,15 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Authentication getAuthentication(String token) {
-        String loginId = getClaim(token).getSubject();
+        Claims claims = getClaim(token);
 
-        Member member = memberRepository.findOneWithAuthoritiesByLoginId(loginId)
-                .orElseThrow(() -> new NoSuchElementException("사용자가 존재하지 않습니다."));
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get(AuthConstants.AUTH_HEADER).toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
 
-        return new UsernamePasswordAuthenticationToken(new MemberAdapter(member), token, new ArrayList<>());
+        User user = new User(claims.getSubject(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(user, token, authorities);
     }
 
     // 토큰 검증
