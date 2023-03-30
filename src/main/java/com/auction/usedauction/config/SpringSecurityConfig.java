@@ -44,7 +44,7 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/member/signup").permitAll()
                 .requestMatchers("/api/member/login").permitAll()
-                .requestMatchers("/api/email").permitAll()
+                .requestMatchers("/api/email/*").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
