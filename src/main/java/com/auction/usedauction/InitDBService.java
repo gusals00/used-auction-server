@@ -15,6 +15,7 @@ public class InitDBService {
 
     private final EntityManager em;
 
+    @Transactional
     public void initDb() {
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")
