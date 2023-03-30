@@ -40,3 +40,5 @@ out/
 **/src/main/resources/application-sec.yml
 **/src/test/resources/application-sec.yml
 
+**/src/main/generated/
+
