@@ -1,5 +1,8 @@
-package com.auction.usedauction.domain;
+package com.auction.usedauction.domain.file;
 
+import com.auction.usedauction.domain.Product;
+import com.auction.usedauction.domain.file.File;
+import com.auction.usedauction.domain.file.ProductImageType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,8 +23,8 @@ public class ProductImage extends File {
     private ProductImageType type;
 
     @Builder
-    public ProductImage(String fullPath, String path, String name, Product product, ProductImageType type) {
-        super(fullPath, path, name, product);
+    public ProductImage(String fullPath, String path, String originalName, ProductImageType type) {
+        super(fullPath, path, originalName);
         this.type = type;
     }
 }

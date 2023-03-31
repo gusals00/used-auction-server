@@ -28,7 +28,7 @@ public class S3FileUploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public List<UploadFIleDTO> uploadFiles(List<MultipartFile> multipartFileList, String subPath) throws IOException {
+    public List<UploadFIleDTO> uploadFiles(List<MultipartFile> multipartFileList, String subPath) {
         if (multipartFileList == null) {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
         }
@@ -40,7 +40,7 @@ public class S3FileUploader {
         return storeResult;
     }
 
-    public UploadFIleDTO uploadFile(MultipartFile multipartFile, String subPath) throws IOException {
+    public UploadFIleDTO uploadFile(MultipartFile multipartFile, String subPath) {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
         }
@@ -49,23 +49,28 @@ public class S3FileUploader {
         String storeFileName = createStoreFileName(originalFileName);
 
         String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, multipartFile);
-        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath+storeFileName, storeFileFullUrl);
+        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, storeFileFullUrl);
 
-        return new UploadFIleDTO(originalFileName, storeFileName,subPath + storeFileName, storeFileFullUrl);
+        return new UploadFIleDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
     }
 
-    private String sendAwsS3(String bucketName, String filePath, MultipartFile uploadFile) throws IOException {
+    private String sendAwsS3(String bucketName, String filePath, MultipartFile uploadFile) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(uploadFile.getContentType());
         objectMetadata.setContentLength(uploadFile.getSize());
+        try {
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, filePath, uploadFile.getInputStream(), objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (IOException e) {
+            log.error("exception = {}", "IOException", e);
+            throw new CustomException(FileErrorCode.S3_FILE_NOT_TRANSFER);
+        }
 
-        amazonS3Client.putObject(new PutObjectRequest(bucketName, filePath, uploadFile.getInputStream(), objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucketName, filePath).toString();
 
     }
 
-    public UploadFIleDTO uploadFile(File file, String subPath) throws IOException {
+    public UploadFIleDTO uploadFile(File file, String subPath) {
         if (file == null || !file.exists()) {
             throw new CustomException(FileErrorCode.FILE_NOT_FOUND);
         }
@@ -74,12 +79,12 @@ public class S3FileUploader {
         String storeFileName = createStoreFileName(originalFileName);
 
         String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, file);
-        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath+storeFileName, storeFileFullUrl);
+        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, storeFileFullUrl);
 
-        return new UploadFIleDTO(originalFileName, storeFileName,subPath + storeFileName, storeFileFullUrl);
+        return new UploadFIleDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
     }
 
-    private String sendAwsS3(String bucketName, String filePath, File uploadFile) throws IOException {
+    private String sendAwsS3(String bucketName, String filePath, File uploadFile) {
         amazonS3Client.putObject(new PutObjectRequest(bucketName, filePath, uploadFile)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucketName, filePath).toString();
@@ -97,7 +102,7 @@ public class S3FileUploader {
     }
 
     //multipart file
-    public String getOriginalFileName(MultipartFile multipartFile) throws IOException {
+    public String getOriginalFileName(MultipartFile multipartFile) {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
         }
@@ -106,7 +111,7 @@ public class S3FileUploader {
 
     //file
     public String getOriginalFileName(File file) {
-        if (file == null || !file.exists() ) {
+        if (file == null || !file.exists()) {
             throw new CustomException(FileErrorCode.FILE_NOT_FOUND);
         }
         return file.getName();

@@ -1,5 +1,7 @@
 package com.auction.usedauction.domain;
 
+import com.auction.usedauction.domain.file.File;
+import com.auction.usedauction.domain.file.ProductImage;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -7,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -54,18 +58,34 @@ public class Product extends BaseTimeEntity{
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<File> fileList = new ArrayList<>();
+
     @Builder
-    public Product(String name, String info, int buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionEndDate, Category category, Member member) {
+    public Product(String name, String info, Long buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionEndDate,
+                   Category category, Member member, List<ProductImage> ordinalImageList,ProductImage sigImage) {
+
+        if (buyNowPrice != null) {
+            this.buyNowPrice = buyNowPrice.intValue();
+        }
+        if (member != null) {
+            member.getProducts().add(this);
+        }
+        if (sigImage!=null) {
+            sigImage.changeProduct(this);
+        }
+        if (ordinalImageList != null) {
+            ordinalImageList.forEach(ordinalImage->ordinalImage.changeProduct(this));
+        }
+
         this.name = name;
         this.info = info;
-        this.buyNowPrice = buyNowPrice;
         this.nowPrice = nowPrice;
         this.startPrice = startPrice;
         this.priceUnit = priceUnit;
         this.viewCount = 0;
         this.auctionEndDate = auctionEndDate;
         this.category = category;
-        this.member = member;
     }
 
     @PrePersist
