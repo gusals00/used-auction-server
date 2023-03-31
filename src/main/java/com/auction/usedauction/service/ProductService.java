@@ -1,18 +1,29 @@
 package com.auction.usedauction.service;
 
-import com.auction.usedauction.util.UploadFIleDTO;
+import com.auction.usedauction.domain.Category;
+import com.auction.usedauction.domain.Member;
+import com.auction.usedauction.domain.MemberStatus;
+import com.auction.usedauction.domain.Product;
+import com.auction.usedauction.domain.file.ProductImage;
+import com.auction.usedauction.domain.file.ProductImageType;
+import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.CategoryErrorCode;
+import com.auction.usedauction.exception.error_code.UserErrorCode;
+import com.auction.usedauction.repository.CategoryRepository;
+import com.auction.usedauction.repository.FileRepository;
+import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.ProductRepository;
-import com.auction.usedauction.service.dto.ProductRegisterReq;
-import com.auction.usedauction.util.S3FileUploader;
+import com.auction.usedauction.service.dto.ProductRegisterDTO;
+import com.auction.usedauction.util.UploadFIleDTO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-
-import static com.auction.usedauction.util.FileSubPath.PRODUCT_IMG_PATH;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -21,20 +32,63 @@ import static com.auction.usedauction.util.FileSubPath.PRODUCT_IMG_PATH;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final S3FileUploader fileUploader;
+    private final CategoryRepository categoryRepository;
+    private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
 
-    public Long register(ProductRegisterReq productRegisterReq) throws IOException {
+
+    public Long register(ProductRegisterDTO productRegisterDTO) {
+
         // 판매자 존재 체크
+        Member member = memberRepository.findOneWithAuthoritiesByLoginIdAndStatus(productRegisterDTO.getLoginId(), MemberStatus.EXIST)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         // 카테고리 존재 체크
+        Category category = categoryRepository.findById(productRegisterDTO.getCategoryId())
+                .orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
 
         //대표 사진 생성
-        MultipartFile sigImg = productRegisterReq.getSigImg();
-        UploadFIleDTO sigImgUploadFileDTO = fileUploader.uploadFile(sigImg, PRODUCT_IMG_PATH);
+        ProductImage productSigImage = createProductImage(productRegisterDTO.getSigProductImg(), ProductImageType.SIGNATURE);
 
-        //일반 사진 생성(없으면 대표 사진 넣기)
+        //일반 사진 생성
+        List<ProductImage> productOrdinalImageList = createProductImageList(productRegisterDTO.getOrdinalProductImg(), ProductImageType.ORDINAL);
 
         //상품 저장
-        return 1L;
+        Product product = createProduct(productRegisterDTO, productSigImage, productOrdinalImageList, member, category);
+
+        return product.getId();
+    }
+
+    private Product createProduct(ProductRegisterDTO productRegisterDTO, ProductImage productSigImage, List<ProductImage> productOrdinalImageList,
+                                  Member member, Category category) {
+        return Product.builder()
+                .auctionEndDate(productRegisterDTO.getAuctionEndDate())
+                .buyNowPrice(productRegisterDTO.getBuyNowPrice())
+                .nowPrice(productRegisterDTO.getStartPrice())
+                .priceUnit(productRegisterDTO.getPriceUnit())
+                .startPrice(productRegisterDTO.getStartPrice())
+                .info(productRegisterDTO.getInfo())
+                .sigImage(productSigImage)
+                .ordinalImageList(productOrdinalImageList)
+                .category(category)
+                .member(member)
+                .name(productRegisterDTO.getName())
+                .build();
+    }
+
+    private List<ProductImage> createProductImageList(List<UploadFIleDTO> uploadImageList, ProductImageType imageType) {
+        return uploadImageList.stream()
+                .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType))
+                .collect(Collectors.toList());
+    }
+
+    private ProductImage createProductImage(UploadFIleDTO uploadImage, ProductImageType imageType) {
+        return ProductImage.builder()
+                .originalName(uploadImage.getStoreFileName())
+                .path(uploadImage.getStoreUrl())
+                .fullPath(uploadImage.getStoreFullUrl())
+                .type(imageType)
+                .build();
+
     }
 }

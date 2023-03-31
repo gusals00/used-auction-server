@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,6 +41,8 @@ public class Member extends BaseTimeEntity{
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
 
+    @OneToMany(mappedBy = "member")
+    private List<Product> products = new ArrayList<>();
     @Builder
     public Member(String name, String loginId, String password, String birth, String email, String phoneNumber, Set<Authority> authorities) {
         this.name = name;
