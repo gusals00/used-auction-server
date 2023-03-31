@@ -1,6 +1,6 @@
 package com.auction.usedauction.exception;
 
-import lombok.AllArgsConstructor;
+import com.auction.usedauction.exception.error_code.ErrorCode;
 import lombok.Getter;
 
 @Getter

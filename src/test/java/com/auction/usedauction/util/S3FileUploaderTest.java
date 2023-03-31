@@ -2,7 +2,6 @@ package com.auction.usedauction.util;
 
 
 import com.auction.usedauction.exception.CustomException;
-import com.auction.usedauction.exception.ErrorCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.auction.usedauction.exception.ErrorCode.*;
+import static com.auction.usedauction.exception.error_code.FileErrorCode.*;
 import static com.auction.usedauction.util.FileSubPath.PRODUCT_IMG_PATH;
 import static com.auction.usedauction.util.FileSubPath.STREAMING_VIDEO_PATH;
 import static org.assertj.core.api.Assertions.*;
@@ -62,7 +61,6 @@ class S3FileUploaderTest {
     void fileUploadFail() throws Exception {
         //given
         String fileName1 = "test1.png";
-        String fileName2 = "test2.png";
         String fileName3 = "test3.png";
         String fileName4 = "test4.png";
         String contentType = "image/png";

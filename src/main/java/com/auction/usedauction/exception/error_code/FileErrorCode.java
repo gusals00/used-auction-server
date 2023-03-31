@@ -1,4 +1,4 @@
-package com.auction.usedauction.exception;
+package com.auction.usedauction.exception.error_code;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,9 +6,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorCode {
+public enum FileErrorCode implements ErrorCode {
 
-    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 사용자를 찾을 수 없습니다."),
     S3_FILE_NOT_FOUND(HttpStatus.BAD_REQUEST,"S3에서 해당 파일을 찾지 못했습니다."),
     FILE_EMPTY(HttpStatus.BAD_REQUEST,"파일이 비어 있습니다."),
     FILE_NOT_FOUND(HttpStatus.BAD_REQUEST,"해당 경로에 파일이 없습니다.");
