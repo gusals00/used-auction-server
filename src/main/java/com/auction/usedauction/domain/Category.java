@@ -2,6 +2,7 @@ package com.auction.usedauction.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,4 +17,9 @@ public class Category {
     private Long id;
 
     private String name;
+
+    @Builder
+    public Category(String name) {
+        this.name = name;
+    }
 }
