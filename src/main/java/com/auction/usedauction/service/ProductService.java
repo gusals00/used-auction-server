@@ -21,9 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Service
 @Slf4j
@@ -34,8 +34,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-    private final FileRepository fileRepository;
 
+    @Transactional
 
     public Long register(ProductRegisterDTO productRegisterDTO) {
 
@@ -49,14 +49,24 @@ public class ProductService {
 
         //대표 사진 생성
         ProductImage productSigImage = createProductImage(productRegisterDTO.getSigProductImg(), ProductImageType.SIGNATURE);
-
         //일반 사진 생성
         List<ProductImage> productOrdinalImageList = createProductImageList(productRegisterDTO.getOrdinalProductImg(), ProductImageType.ORDINAL);
 
         //상품 저장
         Product product = createProduct(productRegisterDTO, productSigImage, productOrdinalImageList, member, category);
+        productRepository.save(product);
 
+        log.info("상품 등록 성공 productId={},sellerId={}, sigImgId={}, ordinalImgIds={}",
+                product.getId(), member.getId(), productSigImage.getId(), getOrdinalImagesIdsToString(productOrdinalImageList));
         return product.getId();
+    }
+
+    public String getOrdinalImagesIdsToString(List<ProductImage> images) {
+        return images.stream()
+                .map(image -> String.valueOf(image.getId()))
+                .toList()
+                .toString();
+
     }
 
     private Product createProduct(ProductRegisterDTO productRegisterDTO, ProductImage productSigImage, List<ProductImage> productOrdinalImageList,
@@ -79,12 +89,12 @@ public class ProductService {
     private List<ProductImage> createProductImageList(List<UploadFIleDTO> uploadImageList, ProductImageType imageType) {
         return uploadImageList.stream()
                 .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private ProductImage createProductImage(UploadFIleDTO uploadImage, ProductImageType imageType) {
         return ProductImage.builder()
-                .originalName(uploadImage.getStoreFileName())
+                .originalName(uploadImage.getUploadFileName())
                 .path(uploadImage.getStoreUrl())
                 .fullPath(uploadImage.getStoreFullUrl())
                 .type(imageType)

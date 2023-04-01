@@ -41,7 +41,7 @@ public class S3FileUploader {
     }
 
     public UploadFIleDTO uploadFile(MultipartFile multipartFile, String subPath) {
-        if (multipartFile == null || multipartFile.isEmpty()) {
+        if (isEmptyFile(multipartFile)) {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
         }
 
@@ -71,7 +71,7 @@ public class S3FileUploader {
     }
 
     public UploadFIleDTO uploadFile(File file, String subPath) {
-        if (file == null || !file.exists()) {
+        if (isEmptyFile(file)) {
             throw new CustomException(FileErrorCode.FILE_NOT_FOUND);
         }
 
@@ -125,5 +125,13 @@ public class S3FileUploader {
     private static String extractExt(String originalFilename) { // 확장자 추출
         int position = originalFilename.lastIndexOf(".");
         return originalFilename.substring(position + 1);
+    }
+
+    public boolean isEmptyFile(MultipartFile multipartFile) {
+        return multipartFile == null || multipartFile.isEmpty();
+    }
+
+    public boolean isEmptyFile(File file) {
+        return file == null || !file.exists();
     }
 }
