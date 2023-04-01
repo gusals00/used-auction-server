@@ -1,7 +1,7 @@
 package com.auction.usedauction.service;
 
 import com.auction.usedauction.domain.file.File;
-import com.auction.usedauction.repository.FileRepository;
+import com.auction.usedauction.repository.file.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

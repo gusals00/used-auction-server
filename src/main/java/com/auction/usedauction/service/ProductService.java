@@ -10,9 +10,8 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.repository.CategoryRepository;
-import com.auction.usedauction.repository.FileRepository;
 import com.auction.usedauction.repository.MemberRepository;
-import com.auction.usedauction.repository.ProductRepository;
+import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.util.UploadFIleDTO;
 
