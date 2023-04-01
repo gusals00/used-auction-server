@@ -71,3 +71,10 @@ jwt:
   header: Authorization
   secret: x
   access-token-validity-in-seconds: 86400
+
+springdoc:
+  packages-to-scan: com.auction.usedauction.web.controller
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    doc-expansion: none
