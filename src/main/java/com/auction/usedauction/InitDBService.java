@@ -2,16 +2,19 @@ package com.auction.usedauction;
 
 import com.auction.usedauction.domain.Authority;
 import com.auction.usedauction.domain.Category;
+import com.auction.usedauction.domain.Member;
 import com.auction.usedauction.repository.CategoryRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -22,23 +25,36 @@ public class InitDBService {
 
     private final EntityManager em;
     private final CategoryRepository categoryRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void initDb() {
-        // Authority Role_user 추가
-        insertAuthority();
 
         //Category 추가
         insertCategory();
+
+        // member +   Authority Role_user 추가
+        insertMember();
     }
 
-    @Transactional
-    public String insertAuthority() {
+    private Long insertMember() {
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")
                 .build();
+
+        Member member = Member.builder()
+                .name("name")
+                .birth("990828")
+                .email("a@naver.com")
+                .loginId("hyeonmin")
+                .password(passwordEncoder.encode("password"))
+                .phoneNumber("010-1233-1233")
+                .authorities(Collections.singleton(authority))
+                .build();
         em.persist(authority);
-        return authority.getAuthorityName();
+        em.persist(member);
+
+        return member.getId();
     }
 
     @Transactional
