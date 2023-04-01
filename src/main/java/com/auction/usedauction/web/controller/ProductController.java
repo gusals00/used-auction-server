@@ -10,7 +10,6 @@ import com.auction.usedauction.util.UploadFIleDTO;
 import com.auction.usedauction.web.dto.MessageRes;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
 import com.auction.usedauction.web.dto.ResultRes;
-import jakarta.mail.Multipart;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
