@@ -1,7 +1,6 @@
 package com.auction.usedauction.web.controller;
 
 
-import com.auction.usedauction.repository.ProductImageRepository;
 import com.auction.usedauction.service.ProductService;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.util.FileSubPath;
@@ -9,20 +8,22 @@ import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFIleDTO;
 import com.auction.usedauction.web.dto.MessageRes;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
+import com.auction.usedauction.web.dto.ProductSearchCondReq;
 import com.auction.usedauction.web.dto.ResultRes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,16 @@ public class ProductController {
 
     private final ProductService productService;
     private final S3FileUploader fileUploader;
+
+    @Operation(summary = "상품 리스트 조회 메서드")
+    @GetMapping
+    public ResultRes getProductList(@Valid ProductSearchCondReq productSearchCondReq, Pageable pageable) {
+        log.info("{},{},{}",productSearchCondReq.getOrderBy(),pageable.getOffset(),pageable.getPageSize());
+
+        // 추가 예정
+
+        return new ResultRes<>(new MessageRes("상품 조회 성공"));
+    }
 
     @Operation(summary = "상품 등록 메서드")
     @PostMapping
