@@ -10,6 +10,9 @@ import com.auction.usedauction.util.UploadFIleDTO;
 import com.auction.usedauction.web.dto.MessageRes;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
 import com.auction.usedauction.web.dto.ResultRes;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,13 +32,15 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
+@Tag(name = "상품 컨트롤러",description = "상품 관련 api")
 public class ProductController {
 
     private final ProductService productService;
     private final S3FileUploader fileUploader;
 
+    @Operation(summary = "상품 등록 메서드")
     @PostMapping
-    public ResultRes registerProduct(@Valid ProductRegisterReq registerReq, @AuthenticationPrincipal User user) {
+    public ResultRes<MessageRes> registerProduct(@Valid ProductRegisterReq registerReq, @AuthenticationPrincipal User user) {
 
         log.info("상품 등록 컨트롤러 호출");
 
