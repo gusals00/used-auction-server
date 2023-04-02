@@ -1,13 +1,11 @@
 package com.auction.usedauction.service;
 
-import com.auction.usedauction.domain.Category;
-import com.auction.usedauction.domain.Member;
-import com.auction.usedauction.domain.MemberStatus;
-import com.auction.usedauction.domain.Product;
+import com.auction.usedauction.domain.*;
 import com.auction.usedauction.domain.file.ProductImage;
 import com.auction.usedauction.domain.file.ProductImageType;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
+import com.auction.usedauction.exception.error_code.ProductErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
@@ -58,6 +56,30 @@ public class ProductService {
         log.info("상품 등록 성공 productId={},sellerId={}, sigImgId={}, ordinalImgIds={}",
                 product.getId(), member.getId(), productSigImage.getId(), getOrdinalImagesIdsToString(productOrdinalImageList));
         return product.getId();
+    }
+
+    @Transactional
+    public Long deleteProduct(Long productId,String loginId) {
+        // 상품이 존재하는지 확인
+        Product findProduct = productRepository.findByIdAndProductStatusNot(productId, ProductStatus.DELETED)
+                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        // 상품 제거 권한 있는 판매자인지 + 탈퇴하지 않은 존재하는 판매자인지
+        validRightSeller(findProduct.getMember(),loginId);
+
+        //상품 상태 DELETED(삭제)로 변경
+        findProduct.changeProductStatus(ProductStatus.DELETED);
+
+        return findProduct.getId();
+    }
+
+    private void validRightSeller(Member member,String loginId) {
+        if (!isRightSeller(member, loginId)) {
+            throw new CustomException(UserErrorCode.INVALID_USER);
+        }
+    }
+    private boolean isRightSeller(Member member,String loginId) {
+        return member.getLoginId().equals(loginId) && member.getStatus()==MemberStatus.EXIST;
     }
 
     public String getOrdinalImagesIdsToString(List<ProductImage> images) {

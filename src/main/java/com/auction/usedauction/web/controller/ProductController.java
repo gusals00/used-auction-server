@@ -77,13 +77,13 @@ public class ProductController {
     @Getter
     @Setter
     static class OrderByRes {
-        @Schema(description = "정렬 기준(orderBy)",example = "VIEW_ORDER")
+        @Schema(description = "정렬 기준(orderBy)", example = "VIEW_ORDER")
         private String name;
-        @Schema(description = "설명",example = "조회순")
+        @Schema(description = "설명", example = "조회순")
         private String description;
 
         public OrderByRes(ProductOrderCond orderCond) {
-            this.name= orderCond.name();
+            this.name = orderCond.name();
             this.description = orderCond.getDescrpition();
         }
     }
@@ -142,9 +142,18 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ResultRes<ProductDetailInfoRes> getProduct(@PathVariable Long productId) {
         log.info("상품 상세 조회 컨트롤러 호출");
-        log.info("찾는 productId = {}",productId);
+        log.info("찾는 productId = {}", productId);
 
 
-        return new ResultRes<>( productQueryService.getProductDetail(productId));
+        return new ResultRes<>(productQueryService.getProductDetail(productId));
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResultRes<MessageRes> deleteProduct(@PathVariable Long productId, @AuthenticationPrincipal User user) {
+        log.info("상품 삭제 컨트롤러 호출");
+        log.info("삭제하려는 productId = {}", productId);
+
+        productService.deleteProduct(productId,user.getUsername());
+        return new ResultRes<>(new MessageRes("상품 삭제를 성공했습니다."));
     }
 }
