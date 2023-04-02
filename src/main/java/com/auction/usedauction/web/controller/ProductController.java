@@ -148,6 +148,7 @@ public class ProductController {
         return new ResultRes<>(productQueryService.getProductDetail(productId));
     }
 
+    @Operation(summary = "상품 삭제 메서드")
     @DeleteMapping("/{productId}")
     public ResultRes<MessageRes> deleteProduct(@PathVariable Long productId, @AuthenticationPrincipal User user) {
         log.info("상품 삭제 컨트롤러 호출");
