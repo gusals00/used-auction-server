@@ -39,7 +39,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         categoryIdEq(searchCond.getCategoryId()),
                         productStatusEq(ProductStatus.BID),
                         memberStatusEq(MemberStatus.EXIST)
-
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

@@ -4,6 +4,7 @@ package com.auction.usedauction.web.controller;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.service.ProductService;
+import com.auction.usedauction.service.dto.ProductDetailInfoRes;
 import com.auction.usedauction.service.dto.ProductPageRes;
 import com.auction.usedauction.service.dto.ProductPageContentRes;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
@@ -138,13 +139,12 @@ public class ProductController {
     }
 
     @Operation(summary = "상품 상세 조회 메서드")
-    @GetMapping("/productId")
-    public ResultRes getProduct(@PathVariable Long productId) {
+    @GetMapping("/{productId}")
+    public ResultRes<ProductDetailInfoRes> getProduct(@PathVariable Long productId) {
         log.info("상품 상세 조회 컨트롤러 호출");
+        log.info("찾는 productId = {}",productId);
 
 
-
-
-        return new ResultRes("");
+        return new ResultRes( productQueryService.getProductDetail(productId));
     }
 }

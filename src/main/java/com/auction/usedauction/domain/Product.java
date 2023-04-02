@@ -93,13 +93,32 @@ public class Product extends BaseTimeEntity {
 
 
     public File getSigImage() {
-        for (File file : fileList) {
-            ProductImage productImage = (ProductImage) file;
-            if (productImage.getType() == ProductImageType.SIGNATURE) {
-                return productImage;
+        for (File file :fileList) {
+            if (file instanceof ProductImage imageFile) {
+                if (imageFile.getType() == ProductImageType.SIGNATURE) {
+                    return imageFile;
+                }
             }
         }
         return null;
+    }
+
+    public List<File> getOrdinalImageList() {
+        List<File> ordinalImages = new ArrayList<>();
+
+        for (File file :fileList) {
+            if (file instanceof ProductImage imageFile) {
+                if (imageFile.getType() == ProductImageType.ORDINAL) {
+                   ordinalImages.add(imageFile);
+                }
+            }
+        }
+        return ordinalImages;
+    }
+
+    public int increaseViewCount() {
+        viewCount+=1;
+        return viewCount;
     }
 
     @PrePersist
