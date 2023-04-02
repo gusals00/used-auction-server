@@ -3,8 +3,8 @@ package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.service.ProductService;
-import com.auction.usedauction.service.dto.ProductPageDTO;
-import com.auction.usedauction.service.dto.ProductPageContentDTO;
+import com.auction.usedauction.service.dto.ProductPageRes;
+import com.auction.usedauction.service.dto.ProductPageContentRes;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.service.query.ProductQueryService;
 import com.auction.usedauction.util.FileSubPath;
@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -41,9 +42,9 @@ public class ProductController {
     private final ProductQueryService productQueryService;
     private final S3FileUploader fileUploader;
 
-    @Operation(summary = "상품 리스트 조회 메서드")
+    @Operation(summary = "상품 리스트 조회 메서드",parameters = {})
     @GetMapping
-    public PageListRes<ProductPageContentDTO> getProductList(@Valid ProductSearchCondReq searchCondReq) {
+    public PageListRes<ProductPageContentRes> getProductList(@ParameterObject @Valid ProductSearchCondReq searchCondReq) {
         log.info("상품 리스트 조히 컨트롤러 호출");
 
         log.info("검색 조건 - 카테고리={}, 상품이름 = {}, 정렬 = {}, 현재 페이지 번호 = {}, 페이지 사이즈 = {}",
@@ -52,9 +53,9 @@ public class ProductController {
         PageRequest pageRequest = PageRequest.of(searchCondReq.getPage(), searchCondReq.getSize());
         ProductSearchCondDTO searchCond = createProductSearchCond(searchCondReq);
 
-        ProductPageDTO productPage = productQueryService.getProductPage(searchCond, pageRequest);
+        ProductPageRes productPage = productQueryService.getProductPage(searchCond, pageRequest);
 
-        return new PageListRes<>(productPage.getProductPageContents(),productPage.getPage());
+        return new PageListRes(productPage.getProductPageContents(),productPage.getPage());
     }
 
     @Operation(summary = "상품 등록 메서드")

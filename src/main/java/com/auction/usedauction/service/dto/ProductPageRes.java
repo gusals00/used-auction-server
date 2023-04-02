@@ -11,9 +11,9 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ProductPageDTO {
+public class ProductPageRes {
 
-    private List<ProductPageContentDTO> productPageContents;
+    private List<ProductPageContentRes> productPageContents;
     private Page<Product> page;
 
 }
