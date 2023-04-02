@@ -4,6 +4,9 @@ import com.auction.usedauction.domain.Authority;
 import com.auction.usedauction.domain.Category;
 import com.auction.usedauction.domain.Member;
 import com.auction.usedauction.repository.CategoryRepository;
+import com.auction.usedauction.repository.file.FileRepository;
+import com.auction.usedauction.util.S3FileUploader;
+import jakarta.annotation.PreDestroy;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +28,8 @@ public class InitDBService {
     private final EntityManager em;
     private final CategoryRepository categoryRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3FileUploader fileUploader;
+    private final FileRepository fileRepository;
 
     @Transactional
     public void initDb() {
@@ -74,6 +78,13 @@ public class InitDBService {
         return Category.builder()
                 .name(name)
                 .build();
+    }
+
+    @PreDestroy
+    public void deleteS3File() {
+        // S3에 저장된 파일 삭제
+        fileRepository.findAll()
+                .forEach(file -> fileUploader.deleteFile(file.getPath()));
     }
 
 }
