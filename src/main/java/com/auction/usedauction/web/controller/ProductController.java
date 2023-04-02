@@ -1,6 +1,7 @@
 package com.auction.usedauction.web.controller;
 
 
+import com.auction.usedauction.repository.dto.ProductOrderCond;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.service.ProductService;
 import com.auction.usedauction.service.dto.ProductPageRes;
@@ -14,7 +15,9 @@ import com.auction.usedauction.web.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springdoc.core.annotations.ParameterObject;
@@ -28,7 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 
 @RestController
@@ -42,20 +48,43 @@ public class ProductController {
     private final ProductQueryService productQueryService;
     private final S3FileUploader fileUploader;
 
-    @Operation(summary = "상품 리스트 조회 메서드",parameters = {})
+    @Operation(summary = "상품 리스트 조회 메서드")
     @GetMapping
     public PageListRes<ProductPageContentRes> getProductList(@ParameterObject @Valid ProductSearchCondReq searchCondReq) {
-        log.info("상품 리스트 조히 컨트롤러 호출");
+        log.info("상품 리스트 조회 컨트롤러 호출");
 
         log.info("검색 조건 - 카테고리={}, 상품이름 = {}, 정렬 = {}, 현재 페이지 번호 = {}, 페이지 사이즈 = {}",
-                searchCondReq.getCategoryId(),searchCondReq.getProductName(),searchCondReq.getOrderBy(),searchCondReq.getPage(),searchCondReq.getSize());
+                searchCondReq.getCategoryId(), searchCondReq.getProductName(), searchCondReq.getOrderBy(), searchCondReq.getPage(), searchCondReq.getSize());
 
         PageRequest pageRequest = PageRequest.of(searchCondReq.getPage(), searchCondReq.getSize());
         ProductSearchCondDTO searchCond = createProductSearchCond(searchCondReq);
 
         ProductPageRes productPage = productQueryService.getProductPage(searchCond, pageRequest);
 
-        return new PageListRes(productPage.getProductPageContents(),productPage.getPage());
+        return new PageListRes(productPage.getProductPageContents(), productPage.getPage());
+    }
+
+    @Operation(summary = "상품 리스트 조회 시 정렬 기준")
+    @GetMapping("/order-by")
+    public ResultRes<List<OrderByRes>> getProductOderByList() {
+        log.info("상품 리스트 조회시 정렬 기준");
+
+        return new ResultRes<>(Arrays
+                .stream(ProductOrderCond.values())
+                .map(OrderByRes::new)
+                .collect(toList()));
+    }
+
+    @Getter
+    @Setter
+    static class OrderByRes {
+        private String name;
+        private String description;
+
+        public OrderByRes(ProductOrderCond orderCond) {
+            this.name= orderCond.name();
+            this.description = orderCond.getDescrpition();
+        }
     }
 
     @Operation(summary = "상품 등록 메서드")
