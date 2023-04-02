@@ -25,10 +25,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -138,5 +135,16 @@ public class ProductController {
     private ProductSearchCondDTO createProductSearchCond(ProductSearchCondReq searchCondReq) {
         Long categoryId = searchCondReq.getCategoryId() == 0 ? null : searchCondReq.getCategoryId();
         return new ProductSearchCondDTO(categoryId, searchCondReq.getProductName(), searchCondReq.getOrderBy());
+    }
+
+    @Operation(summary = "상품 상세 조회 메서드")
+    @GetMapping("/productId")
+    public ResultRes getProduct(@PathVariable Long productId) {
+        log.info("상품 상세 조회 컨트롤러 호출");
+
+
+
+
+        return new ResultRes("");
     }
 }

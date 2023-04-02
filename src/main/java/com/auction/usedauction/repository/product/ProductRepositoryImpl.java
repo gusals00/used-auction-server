@@ -1,5 +1,6 @@
 package com.auction.usedauction.repository.product;
 
+import com.auction.usedauction.domain.MemberStatus;
 import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.ProductStatus;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.auction.usedauction.domain.QCategory.*;
 import static com.auction.usedauction.domain.QMember.*;
@@ -50,9 +52,24 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         categoryIdEq(searchCond.getCategoryId()),
                         productStatusEq(ProductStatus.BID));
 
-        return PageableExecutionUtils.getPage(content,pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
     }
+
+    //상품 상세 조회
+    @Override
+    public Optional<Product> findProductInfoById(Long productId) {
+        return Optional.ofNullable(queryFactory
+                .selectFrom(product)
+                .join(product.category, category).fetchJoin()
+                .join(product.member, member).fetchJoin()
+                .where(memberStatusEq(MemberStatus.EXIST),
+                        productIdEq(productId),
+                        productStatusNotEq(ProductStatus.DELETED)
+                )
+                .fetchOne());
+    }
+
 
     private OrderSpecifier orderCond(ProductOrderCond orderCond) {
         if (orderCond == ProductOrderCond.VIEW_ORDER) {
@@ -67,8 +84,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             return product.nowPrice.asc();
         }
     }
+
     private BooleanExpression productStatusEq(ProductStatus status) {
-        return status!=null ? product.productStatus.eq(status) : null;
+        return status != null ? product.productStatus.eq(status) : null;
     }
 
     private BooleanExpression categoryIdEq(Long categoryId) {
@@ -77,5 +95,18 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private BooleanExpression productNameContains(String productName) {
         return hasText(productName) ? product.name.contains(productName) : null;
+    }
+
+
+    private BooleanExpression productStatusNotEq(ProductStatus status) {
+        return status != null ? product.productStatus.ne(status) : null;
+    }
+
+    private BooleanExpression productIdEq(Long productId) {
+        return productId != null ? product.id.eq(productId) : null;
+    }
+
+    private BooleanExpression memberStatusEq(MemberStatus memberStatus) {
+        return memberStatus != null ? product.member.status.eq(memberStatus) : null;
     }
 }
