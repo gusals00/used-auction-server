@@ -37,7 +37,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .orderBy(orderCond(searchCond.getOrderBy()))
                 .where(productNameContains(searchCond.getProductName()),
                         categoryIdEq(searchCond.getCategoryId()),
-                        productStatusEq(ProductStatus.BID)
+                        productStatusEq(ProductStatus.BID),
+                        memberStatusEq(MemberStatus.EXIST)
+
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -50,7 +52,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .join(product.member, member)
                 .where(productNameContains(searchCond.getProductName()),
                         categoryIdEq(searchCond.getCategoryId()),
-                        productStatusEq(ProductStatus.BID));
+                        productStatusEq(ProductStatus.BID),
+                        memberStatusEq(MemberStatus.EXIST)
+                );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 
