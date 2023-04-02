@@ -2,7 +2,6 @@ package com.auction.usedauction.web.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Range;
 
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -35,7 +34,7 @@ public class ProductRegisterReq {
     @Schema(description = "경매 종료 날짜",defaultValue = "2023-10-03 12:10:00")
     private LocalDateTime auctionEndDate;
     @Min(1000)
-    @Schema(description = "즉시 구매가",example = "3000",minimum = "1000",nullable = true)
+    @Schema(description = "즉시 구매가, nullable",example = "3000",minimum = "1000",nullable = true)
     private Long buyNowPrice;
     @Min(100)
     @Schema(description = "경매 시작가",example = "1000",minimum = "100")

@@ -2,6 +2,7 @@ package com.auction.usedauction.domain;
 
 import com.auction.usedauction.domain.file.File;
 import com.auction.usedauction.domain.file.ProductImage;
+import com.auction.usedauction.domain.file.ProductImageType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -88,6 +89,36 @@ public class Product extends BaseTimeEntity {
         this.viewCount = 0;
         this.auctionEndDate = auctionEndDate;
         this.category = category;
+    }
+
+
+    public File getSigImage() {
+        for (File file :fileList) {
+            if (file instanceof ProductImage imageFile) {
+                if (imageFile.getType() == ProductImageType.SIGNATURE) {
+                    return imageFile;
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<File> getOrdinalImageList() {
+        List<File> ordinalImages = new ArrayList<>();
+
+        for (File file :fileList) {
+            if (file instanceof ProductImage imageFile) {
+                if (imageFile.getType() == ProductImageType.ORDINAL) {
+                   ordinalImages.add(imageFile);
+                }
+            }
+        }
+        return ordinalImages;
+    }
+
+    public int increaseViewCount() {
+        viewCount+=1;
+        return viewCount;
     }
 
     @PrePersist
