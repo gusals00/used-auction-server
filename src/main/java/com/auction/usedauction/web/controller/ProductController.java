@@ -13,6 +13,7 @@ import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFIleDTO;
 import com.auction.usedauction.web.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.Getter;
@@ -78,7 +79,9 @@ public class ProductController {
     @Getter
     @Setter
     static class OrderByRes {
+        @Schema(description = "정렬 기준(orderBy)",example = "VIEW_ORDER")
         private String name;
+        @Schema(description = "설명",example = "조회순")
         private String description;
 
         public OrderByRes(ProductOrderCond orderCond) {
