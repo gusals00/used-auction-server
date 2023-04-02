@@ -21,7 +21,7 @@ import static com.auction.usedauction.domain.QProduct.*;
 import static org.springframework.util.StringUtils.*;
 
 @RequiredArgsConstructor
-public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
+public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
@@ -41,6 +41,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        // count query
         JPAQuery<Long> countQuery = queryFactory.select(product.count())
                 .from(product)
                 .join(product.category, category)
