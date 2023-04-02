@@ -60,7 +60,7 @@ public class ProductController {
 
         ProductPageRes productPage = productQueryService.getProductPage(searchCond, pageRequest);
 
-        return new PageListRes(productPage.getProductPageContents(), productPage.getPage());
+        return new PageListRes<>(productPage.getProductPageContents(), productPage.getPage());
     }
 
     @Operation(summary = "상품 리스트 조회 시 정렬 기준")
@@ -107,7 +107,7 @@ public class ProductController {
 
     private List<UploadFIleDTO> uploadOrdinalImages(ProductRegisterReq registerReq) {
 
-        List<UploadFIleDTO> uploadOrdinalFileDTOS = null;
+        List<UploadFIleDTO> uploadOrdinalFileDTOS;
 
         if (isEmptyImgList(registerReq.getImgList())) {// 일반 사진들이 없으면 대표사진을 일반 사진에 저장
             List<MultipartFile> imgList = new ArrayList<>();
@@ -145,6 +145,6 @@ public class ProductController {
         log.info("찾는 productId = {}",productId);
 
 
-        return new ResultRes( productQueryService.getProductDetail(productId));
+        return new ResultRes<>( productQueryService.getProductDetail(productId));
     }
 }
