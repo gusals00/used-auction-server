@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductSearchCond {
+public class ProductSearchCondDTO {
     private Long categoryId;
     private String productName;
     private ProductOrderCond orderBy;

@@ -1,21 +1,23 @@
 package com.auction.usedauction.web.controller;
 
 
+import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.service.ProductService;
+import com.auction.usedauction.service.dto.ProductPageDTO;
+import com.auction.usedauction.service.dto.ProductPageContentDTO;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
+import com.auction.usedauction.service.query.ProductQueryService;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFIleDTO;
-import com.auction.usedauction.web.dto.MessageRes;
-import com.auction.usedauction.web.dto.ProductRegisterReq;
-import com.auction.usedauction.web.dto.ProductSearchCondReq;
-import com.auction.usedauction.web.dto.ResultRes;
+import com.auction.usedauction.web.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,20 +34,27 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-@Tag(name = "상품 컨트롤러",description = "상품 관련 api")
+@Tag(name = "상품 컨트롤러", description = "상품 관련 api")
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductQueryService productQueryService;
     private final S3FileUploader fileUploader;
 
     @Operation(summary = "상품 리스트 조회 메서드")
     @GetMapping
-    public ResultRes getProductList(@Valid ProductSearchCondReq productSearchCondReq, Pageable pageable) {
-        log.info("{},{},{}",productSearchCondReq.getOrderBy(),pageable.getOffset(),pageable.getPageSize());
+    public PageListRes<ProductPageContentDTO> getProductList(@Valid ProductSearchCondReq searchCondReq) {
+        log.info("상품 리스트 조히 컨트롤러 호출");
 
-        // 추가 예정
+        log.info("검색 조건 - 카테고리={}, 상품이름 = {}, 정렬 = {}, 현재 페이지 번호 = {}, 페이지 사이즈 = {}",
+                searchCondReq.getCategoryId(),searchCondReq.getProductName(),searchCondReq.getOrderBy(),searchCondReq.getPage(),searchCondReq.getSize());
 
-        return new ResultRes<>(new MessageRes("상품 조회 성공"));
+        PageRequest pageRequest = PageRequest.of(searchCondReq.getPage(), searchCondReq.getSize());
+        ProductSearchCondDTO searchCond = createProductSearchCond(searchCondReq);
+
+        ProductPageDTO productPage = productQueryService.getProductPage(searchCond, pageRequest);
+
+        return new PageListRes<>(productPage.getProductPageContents(),productPage.getPage());
     }
 
     @Operation(summary = "상품 등록 메서드")
@@ -92,5 +100,10 @@ public class ProductController {
         }
 
         return false;
+    }
+
+    private ProductSearchCondDTO createProductSearchCond(ProductSearchCondReq searchCondReq) {
+        Long categoryId = searchCondReq.getCategoryId() == 0 ? null : searchCondReq.getCategoryId();
+        return new ProductSearchCondDTO(categoryId, searchCondReq.getProductName(), searchCondReq.getOrderBy());
     }
 }

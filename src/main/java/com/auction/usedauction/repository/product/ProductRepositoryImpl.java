@@ -2,7 +2,7 @@ package com.auction.usedauction.repository.product;
 
 import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.ProductStatus;
-import com.auction.usedauction.repository.dto.ProductSearchCond;
+import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -27,7 +27,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     //상품 리스트 조회
     @Override
-    public Page<Product> findBySearchCond(ProductSearchCond searchCond, Pageable pageable) {
+    public Page<Product> findBySearchCond(ProductSearchCondDTO searchCond, Pageable pageable) {
         List<Product> content = queryFactory
                 .selectFrom(product)
                 .join(product.category, category).fetchJoin()
