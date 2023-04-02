@@ -121,6 +121,10 @@ public class Product extends BaseTimeEntity {
         return viewCount;
     }
 
+    public void changeProductStatus(ProductStatus status) {
+        this.productStatus = status;
+    }
+
     @PrePersist
     private void initProductAndTransStatus() {
         initTransStatus();
