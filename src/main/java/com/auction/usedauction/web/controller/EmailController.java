@@ -4,6 +4,8 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.service.EmailService;
 import com.auction.usedauction.web.dto.ResultRes;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +16,14 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/email")
+@Tag(name = "이메일 컨트롤러", description = "이메일 관련 api")
 public class EmailController {
 
     private final EmailService emailService;
 
+    @Operation(summary = "인증 이메일 발송")
     @PostMapping("/{email}")
-    public ResultRes sendJoinMail(@PathVariable String email, HttpSession session) throws MessagingException, UnsupportedEncodingException {
+    public ResultRes<String> sendJoinMail(@PathVariable String email, HttpSession session) throws MessagingException, UnsupportedEncodingException {
         return new ResultRes(emailService.sendMail(email, session));
     }
 }
