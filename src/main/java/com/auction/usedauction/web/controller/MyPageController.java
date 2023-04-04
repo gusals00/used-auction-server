@@ -1,6 +1,7 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.service.MemberService;
+import com.auction.usedauction.service.dto.MemberDetailInfoRes;
 import com.auction.usedauction.web.dto.MessageRes;
 import com.auction.usedauction.web.dto.ResultRes;
 import com.auction.usedauction.web.dto.UserUpdateReq;
@@ -26,13 +27,13 @@ public class MyPageController {
 
     @Operation(summary = "회원정보 조회")
      @GetMapping
-    public ResultRes getInfo(@AuthenticationPrincipal User user) {
+    public ResultRes<MemberDetailInfoRes> getInfo(@AuthenticationPrincipal User user) {
          return new ResultRes(memberService.getInfo(user.getUsername()));
      }
 
     @Operation(summary = "회원정보 수정")
      @PatchMapping
-    public ResultRes updateInfo(@AuthenticationPrincipal User user, @RequestBody @Valid UserUpdateReq userUpdateReq) {
+    public ResultRes<MessageRes> updateInfo(@AuthenticationPrincipal User user, @RequestBody @Valid UserUpdateReq userUpdateReq) {
          memberService.updateInfo(user.getUsername(), userUpdateReq);
 
          return new ResultRes(new MessageRes("회원정보 수정 성공"));
