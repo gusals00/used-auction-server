@@ -2,9 +2,14 @@ package com.auction.usedauction.service;
 
 import com.auction.usedauction.domain.Authority;
 import com.auction.usedauction.domain.Member;
+import com.auction.usedauction.domain.MemberStatus;
+import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.security.TokenProvider;
 import com.auction.usedauction.repository.MemberRepository;
+import com.auction.usedauction.service.dto.MemberDetailInfoRes;
 import com.auction.usedauction.web.dto.RegisterReq;
+import com.auction.usedauction.web.dto.UserUpdateReq;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,11 +54,10 @@ public class MemberService {
 
     @Transactional
     public Long register(RegisterReq registerReq, HttpSession session) {
-        // 중복체크 추가하기
 
         // 이메일 인증 확인
 //        if(!emailService.isAuthenticated(session, registerReq.getEmail(), registerReq.getCode())) {
-//            // 예외처리하기
+//            throw new CustomException(UserErrorCode.EMAIL_AUTH_FAIL);
 //        }
 
         session.removeAttribute(EMAIL_AUTH);
@@ -74,4 +78,47 @@ public class MemberService {
 
         return memberRepository.save(member).getId();
     }
+
+    @Transactional
+    public Long delete(String loginId, String password) {
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        if(!passwordCheck(password, member.getPassword())) {
+            throw new CustomException(UserErrorCode.WRONG_PASSWORD);
+        }
+
+        member.changeStatus(MemberStatus.DELETED);
+
+        return member.getId();
+    }
+
+    public MemberDetailInfoRes getInfo(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        return new MemberDetailInfoRes(member);
+    }
+
+    public Long updateInfo(String loginId, UserUpdateReq userUpdateReq) {
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        member.changeMember(userUpdateReq.getName(), userUpdateReq.getBirth(), userUpdateReq.getPhoneNumber());
+
+        return member.getId();
+    }
+
+    public boolean checkEmailDuplicate(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    public boolean checkLoginIdDuplicate(String loginId) {
+        return memberRepository.existsByLoginId(loginId);
+    }
+
+    private boolean passwordCheck(String password, String encodedPassword) {
+        return passwordEncoder.matches(password, encodedPassword);
+    }
+
 }

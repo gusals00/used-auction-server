@@ -1,5 +1,7 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.service.EmailService;
 import com.auction.usedauction.web.dto.ResultRes;
 import jakarta.mail.MessagingException;
