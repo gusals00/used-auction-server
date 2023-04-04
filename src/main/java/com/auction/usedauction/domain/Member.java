@@ -58,4 +58,10 @@ public class Member extends BaseTimeEntity{
     public void changeStatus(MemberStatus status) {
         this.status = status;
     }
+
+    public void changeMember(String name, String birth, String phoneNumber) {
+        this.name = name;
+        this.birth = birth;
+        this.phoneNumber = phoneNumber;
+    }
 }
