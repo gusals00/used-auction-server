@@ -5,6 +5,7 @@ import com.auction.usedauction.service.dto.QuestionRegisterDTO;
 import com.auction.usedauction.web.dto.QuestionRegisterReq;
 import com.auction.usedauction.web.dto.MessageRes;
 import com.auction.usedauction.web.dto.ResultRes;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+    @Operation(summary = "질문 등록 메서드")
     @PostMapping
     public ResultRes<MessageRes> registerComment(@RequestBody @Valid QuestionRegisterReq registerReq, @AuthenticationPrincipal User user) {
         log.info("댓글 작성 컨트롤러");
