@@ -27,7 +27,7 @@ public class Question extends BaseEntity{
     @JoinColumn(name = "parent_id")
     private Question parent;
 
-    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @OneToMany(mappedBy = "parent")
     private List<Question> children = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
@@ -37,4 +37,24 @@ public class Question extends BaseEntity{
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @Builder
+    public Question(String content, Member member, Product product, Question parent) {
+        this.content=content;
+        this.product=product;
+        this.member = member;
+        changeParent(parent);
+    }
+
+    public void addChild(Question question) {
+        question.changeParent(this);
+    }
+
+    public void changeParent(Question question) {
+        if (question != null) {
+            this.parent=question;
+            question.getChildren().add(this);
+        }
+
+    }
 }

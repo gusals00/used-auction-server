@@ -61,7 +61,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     //상품 상세 조회
     @Override
-    public Optional<Product> findProductInfoById(Long productId) {
+    public Optional<Product> findProductByIdWithFetchJoin(Long productId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(product)
                 .join(product.category, category).fetchJoin()
