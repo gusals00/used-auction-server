@@ -70,7 +70,7 @@ cloud:
 jwt:
   header: Authorization
   secret: x
-  access-token-validity-in-seconds: 86400
+  access-token-validity-in-seconds: 1800 # 30 min
 
 springdoc:
   packages-to-scan: com.auction.usedauction.web.controller
