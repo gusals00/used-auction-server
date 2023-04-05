@@ -78,3 +78,6 @@ springdoc:
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
     doc-expansion: none
+
+OPENVIDU_URL: url
+OPENVIDU_SECRET: url
