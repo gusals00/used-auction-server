@@ -51,10 +51,19 @@ public class SpringSecurityConfig {
                 .requestMatchers("/api/member/email/*").permitAll()
                 .requestMatchers("/api/member/loginid/*").permitAll()
 
+                //question
+                .requestMatchers("/api/questions/*").permitAll()
+
                 //swagger
                 .requestMatchers("/swagger-ui/*").permitAll()
                 .requestMatchers("/v3/api-docs/*").permitAll()
                 .requestMatchers("/v3/api-docs").permitAll()
+
+                //openvidu
+                .requestMatchers(HttpMethod.POST,"/api/sessions").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/sessions/*").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
+
                 .anyRequest().authenticated()
 
                 .and()

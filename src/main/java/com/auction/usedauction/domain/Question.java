@@ -22,7 +22,7 @@ public class Question extends BaseEntity{
     private Long id;
 
     private String content;
-
+    private int layer;
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "parent_id")
     private Question parent;
@@ -39,10 +39,11 @@ public class Question extends BaseEntity{
     private Product product;
 
     @Builder
-    public Question(String content, Member member, Product product, Question parent) {
+    public Question(String content,int layer, Member member, Product product, Question parent) {
         this.content=content;
         this.product=product;
         this.member = member;
+        this.layer = layer;
         changeParent(parent);
     }
 
