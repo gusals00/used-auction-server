@@ -45,6 +45,8 @@ jobs:
           cloud.aws.region.static: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           cloud.aws.stack.auto: false
           cloud.aws.s3.bucket: ${{ env.S3_BUCKET_NAME }}
+          OPENVIDU_URL: ${{ secrets.OPENVIDU_URL }}
+          OPENVIDU_SECRET: ${{ secrets.OPENVIDU_SECRET }}
 
       # [Gradle Caching]
       - name: Gradle Caching
