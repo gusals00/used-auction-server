@@ -36,25 +36,42 @@ public class QuestionService {
                 .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         // 질문 등록
+        return registerQuestion(registerDTO, findMember, findProduct);
+    }
+
+    private Long registerQuestion(QuestionRegisterDTO registerDTO, Member findMember, Product findProduct) {
         Question question;
+
         if (registerDTO.getParentId() == null) {
-            question = createQuestion(registerDTO.getContent(), findMember, findProduct, null);
+            question = createQuestion(registerDTO.getContent(), findMember, findProduct, null,0);
         } else {
             // 부모 조회
             Question findParent = questionRepository.findByIdAndProduct(registerDTO.getParentId(),findProduct)
                     .orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
 
-            question = createQuestion(registerDTO.getContent(), findMember, findProduct, findParent);
+            //작성 댓글이 대댓글인지 확인 (대댓글까지만 작성 가능)
+            if (findParent.getLayer() > 0) {
+                throw new CustomException(QuestionErrorCode.INVALID_LAYER_QUESTION);
+            }
+
+            //대댓글 작성자가 판매자인지 확인
+            if (!findProduct.getMember().getId().equals(findProduct.getId())) {
+                throw new CustomException(QuestionErrorCode.QUESTION_WRITE_SELLER_ONLY);
+            }
+            question = createQuestion(registerDTO.getContent(), findMember, findProduct, findParent,1);
         }
         questionRepository.save(question);
         return question.getId();
+
     }
 
-    private Question createQuestion(String content, Member member, Product product, Question parent) {
+
+    private Question createQuestion(String content, Member member, Product product, Question parent,int layer) {
         return Question.builder().content(content)
                 .member(member)
                 .product(product)
                 .parent(parent)
+                .layer(layer)
                 .build();
     }
 }

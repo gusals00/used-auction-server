@@ -14,7 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class QuestionRegisterReq {
     @Schema(description = "부모 댓글 ID, 없으면 NULL",example = "1")
-
     private Long parentId; // 부모 댓글 ID
 
     @NotEmpty
