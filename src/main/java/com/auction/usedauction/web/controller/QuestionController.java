@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,8 +38,9 @@ public class QuestionController {
         return new ResultRes<>(new MessageRes("댓글 등록 성공"));
     }
 
+    @Operation(summary = "질문 리스트 조회 메서드")
     @GetMapping("/{productId}")
-    public PageListRes<QuestionPageContentRes> getQuestions(@PathVariable Long productId, QuestionSearchReq searchReq) {
+    public PageListRes<QuestionPageContentRes> getQuestions(@PathVariable Long productId, @ParameterObject @Valid QuestionSearchReq searchReq) {
         log.info("댓글 조회 컨트롤러");
         PageRequest pageRequest = PageRequest.of(searchReq.getPage(), searchReq.getSize(), Sort.Direction.ASC, "createdDate");
         QuestionPageRes questionPage = questionQueryService.getQuestionPage(pageRequest, productId);
