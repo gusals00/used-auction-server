@@ -46,7 +46,7 @@ public class TokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-        Date validity = new Date(now + tokenValidity);
+        Date validity = new Date(now + tokenValidity * 1000);
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, "JWT")
