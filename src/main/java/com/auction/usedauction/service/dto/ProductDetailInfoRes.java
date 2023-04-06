@@ -27,7 +27,7 @@ public class ProductDetailInfoRes {
     @Schema(description = "판매자 아이디(pk)",example = "100")
     private Long memberId;
     @Schema(description = "판매자 로그인 아이디",example = "lovesoe1234")
-    private String memberLoginId;
+    private String nickname;
     @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01")
     private String auction_end_date;
     @Schema(description = "즉시 구매가",example = "10000")
@@ -48,7 +48,7 @@ public class ProductDetailInfoRes {
         this.info = product.getInfo();
         this.categoryName = product.getCategory().getName();
         this.memberId = product.getMember().getId();
-        this.memberLoginId = product.getMember().getLoginId();
+        this.nickname = product.getMember().getName();
         this.auction_end_date = product.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.buyNowPrice = product.getBuyNowPrice();
         this.nowPrice = product.getNowPrice();
