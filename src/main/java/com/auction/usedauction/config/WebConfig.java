@@ -14,8 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
 //                        "https://112.217.167.202",
 //                        "http://112.217.167.202")
                 .allowedOrigins("*")
-                .allowedHeaders("*")
-                .allowedMethods("*")
+//                .allowedHeaders("*")
+//                .allowedMethods("*")
                 .allowCredentials(true);
     }
 }
