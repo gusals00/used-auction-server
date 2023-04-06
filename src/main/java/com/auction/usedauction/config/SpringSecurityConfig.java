@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,7 +26,7 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
 
-    private final CorsFilter corsFilter;
+//    private final CorsFilter corsFilter;
     private final TokenProvider tokenProvider;
 
     @Bean
@@ -38,8 +39,8 @@ public class SpringSecurityConfig {
         return http
                 .csrf().disable()
 
-                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-
+//                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .cors(Customizer.withDefaults())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // session 기반 인증방식 사용하지 않기 때문에 STATELESS로 설정
 
                 .and()
