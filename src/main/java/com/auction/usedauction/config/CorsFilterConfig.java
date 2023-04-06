@@ -17,16 +17,12 @@ public class CorsFilterConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-//        configuration.setAllowedOrigins(
-//                Arrays.asList(
-//                "https://bkkang1.github.io",
-//                "https://usedauction.shop"
-//                ,"https://112.217.167.202",
-//                "http://112.217.167.202"));
-        configuration.addAllowedOriginPattern("*");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(
+                Arrays.asList(
+                "https://bkkang1.github.io",
+                "https://usedauction.shop"
+                ,"https://112.217.167.202",
+                "http://112.217.167.202"));
 
         source.registerCorsConfiguration("/**", configuration);
         return new CorsFilter(source);
