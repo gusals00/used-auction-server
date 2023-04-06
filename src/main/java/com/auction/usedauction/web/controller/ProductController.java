@@ -37,7 +37,6 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"https://112.217.167.202","https://112.217.167.202"})
 @Tag(name = "상품 컨트롤러", description = "상품 관련 api")
 public class ProductController {
 
