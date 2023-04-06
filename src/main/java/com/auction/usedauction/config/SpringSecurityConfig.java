@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -45,7 +44,6 @@ public class SpringSecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/**").permitAll()
                 .requestMatchers("/api/member/signup").permitAll()
                 .requestMatchers("/api/member/login").permitAll()
                 .requestMatchers("/api/email/*").permitAll()
