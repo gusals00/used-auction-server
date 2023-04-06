@@ -1,6 +1,7 @@
 package com.auction.usedauction.service;
 
 import com.auction.usedauction.domain.*;
+import com.auction.usedauction.domain.file.QuestionStatus;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.ProductErrorCode;
 import com.auction.usedauction.exception.error_code.QuestionErrorCode;
@@ -26,7 +27,7 @@ public class QuestionService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public Long register(QuestionRegisterDTO registerDTO) {
+    public Long registerQuestion(QuestionRegisterDTO registerDTO) {
         // 작성자 존재 여부 확인
         Member findMember = memberRepository.findOneWithAuthoritiesByLoginIdAndStatus(registerDTO.getMemberLoginId(), MemberStatus.EXIST)
                 .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_USER));
@@ -36,10 +37,24 @@ public class QuestionService {
                 .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         // 질문 등록
-        return registerQuestion(registerDTO, findMember, findProduct);
+        return insertQuestion(registerDTO, findMember, findProduct);
     }
 
-    private Long registerQuestion(QuestionRegisterDTO registerDTO, Member findMember, Product findProduct) {
+    @Transactional
+    public Long deleteQuestion(Long questionId,String loginId) {
+        Question findQuestion = questionRepository.findByIdAndStatus(questionId, QuestionStatus.EXIST)
+                .orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
+
+        // 질문 작성자인지 확인
+        if (!findQuestion.getMember().getLoginId().equals(loginId)) {
+            throw new CustomException(UserErrorCode.INVALID_USER);
+        }
+
+        findQuestion.changeStatus(QuestionStatus.DELETED);
+        return findQuestion.getId();
+    }
+
+    private Long insertQuestion(QuestionRegisterDTO registerDTO, Member findMember, Product findProduct) {
         Question question;
 
         if (registerDTO.getParentId() == null) {

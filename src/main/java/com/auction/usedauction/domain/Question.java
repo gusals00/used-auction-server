@@ -1,5 +1,6 @@
 package com.auction.usedauction.domain;
 
+import com.auction.usedauction.domain.file.QuestionStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,6 +39,8 @@ public class Question extends BaseEntity{
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Enumerated(EnumType.STRING)
+    private QuestionStatus status;
     @Builder
     public Question(String content,int layer, Member member, Product product, Question parent) {
         this.content=content;
@@ -58,4 +61,14 @@ public class Question extends BaseEntity{
         }
 
     }
+
+    public void changeStatus(QuestionStatus status) {
+        this.status=status;
+    }
+
+    @PrePersist
+    private void initQuestionStatus() {
+        this.status=QuestionStatus.EXIST;
+    }
+
 }
