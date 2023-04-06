@@ -16,7 +16,12 @@ public class CorsFilterConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Arrays.asList("https://bkkang1.github.io", "https://usedauction.shop"));
+        configuration.setAllowedOrigins(
+                Arrays.asList(
+                        "https://bkkang1.github.io",
+                        "https://usedauction.shop"
+                        ,"https://192.168.214.7",
+                        "http://192.168.214.7"));
 
         source.registerCorsConfiguration("/**", configuration);
         return new CorsFilter(source);
