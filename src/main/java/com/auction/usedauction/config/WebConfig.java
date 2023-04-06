@@ -13,16 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedMethods(
-                        HttpMethod.GET.name(),
-                        HttpMethod.HEAD.name(),
-                        HttpMethod.POST.name(),
-                        HttpMethod.PUT.name(),
-                        HttpMethod.DELETE.name(),
-                        HttpMethod.PATCH.name(),
-                        HttpMethod.TRACE.name(),
-                        HttpMethod.OPTIONS.name()
-                )
+                .allowedMethods(ALLOWED_METHOD_NAMES.split(","))
                 .allowedOrigins("https://bkkang1.github.io")
                 .allowCredentials(true);
 
