@@ -50,7 +50,8 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products/*").permitAll()
                 .requestMatchers("/api/member/email/**").permitAll()
-                .requestMatchers("/api/member/loginid/*").permitAll()
+                .requestMatchers("/api/member/loginid/**").permitAll()
+                .requestMatchers("/api/member/name/**").permitAll()
 
                 //question
                 .requestMatchers("/api/questions/*").permitAll()
