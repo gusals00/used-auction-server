@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -63,7 +64,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/sessions").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
-
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .anyRequest().authenticated()
 
                 .and()
