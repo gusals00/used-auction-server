@@ -20,8 +20,8 @@ public class CorsFilterConfig {
                 Arrays.asList(
                         "https://bkkang1.github.io",
                         "https://usedauction.shop"
-                        ,"https://192.168.214.7",
-                        "http://192.168.214.7"));
+                        ,"https://112.217.167.202",
+                        "http://112.217.167.202"));
 
         source.registerCorsConfiguration("/**", configuration);
         return new CorsFilter(source);
