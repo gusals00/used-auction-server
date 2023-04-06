@@ -30,11 +30,11 @@ public class QuestionController {
 
     @Operation(summary = "질문 등록 메서드")
     @PostMapping
-    public ResultRes<MessageRes> registerComment(@RequestBody @Valid QuestionRegisterReq registerReq, @AuthenticationPrincipal User user) {
+    public ResultRes<MessageRes> registerQuestion(@RequestBody @Valid QuestionRegisterReq registerReq, @AuthenticationPrincipal User user) {
         log.info("댓글 작성 컨트롤러");
         System.out.println(registerReq.getProductId() + " " + registerReq.getContent() + " " + registerReq.getParentId());
         QuestionRegisterDTO commentRegister = new QuestionRegisterDTO(registerReq, user.getUsername());
-        questionService.register(commentRegister);
+        questionService.registerQuestion(commentRegister);
         return new ResultRes<>(new MessageRes("댓글 등록 성공"));
     }
 
@@ -45,5 +45,13 @@ public class QuestionController {
         PageRequest pageRequest = PageRequest.of(searchReq.getPage(), searchReq.getSize(), Sort.Direction.ASC, "createdDate");
         QuestionPageRes questionPage = questionQueryService.getQuestionPage(pageRequest, productId);
         return new PageListRes<>(questionPage.getQuestionPageContents(),questionPage.getPage());
+    }
+
+    @DeleteMapping("/{questionId}")
+    public ResultRes<MessageRes> deleteQuestion(@PathVariable Long questionId, @AuthenticationPrincipal User user) {
+        log.info("댓글 삭제 컨트롤러");
+        questionService.deleteQuestion(questionId, user.getUsername());
+        return new ResultRes<>(new MessageRes("댓글 삭제 성공"));
+
     }
 }

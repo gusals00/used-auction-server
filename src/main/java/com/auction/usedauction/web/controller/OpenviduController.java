@@ -3,6 +3,7 @@ package com.auction.usedauction.web.controller;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 @CrossOrigin(originPatterns = "*")
 @RestController
+@Profile(value = {"local", "production"})
 public class OpenviduController {
 
     @Value("${OPENVIDU_URL}")

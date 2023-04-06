@@ -13,8 +13,8 @@ import java.time.format.DateTimeFormatter;
 @Setter
 @NoArgsConstructor
 public class ProductPageContentRes {
-    @Schema(description = "판매자로그인아이디",example = "hochang")
-    private String sellerLoginId;
+    @Schema(description = "판매자 별명",example = "hochang123")
+    private String nickname;
     @Schema(description = "카테고리 이름",example = "디지털 기기")
     private String categoryName;
     @Schema(description = "상품 이름",example = "공학수학 책 팔아요")
@@ -32,7 +32,7 @@ public class ProductPageContentRes {
 
 
     public ProductPageContentRes(Product product) {
-        this.sellerLoginId = product.getMember().getLoginId();
+        this.nickname = product.getMember().getName();
         this.categoryName = product.getCategory().getName();
         this.productName = product.getName();
         this.productId = product.getId();
