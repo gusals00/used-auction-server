@@ -29,7 +29,13 @@ public class WebConfig implements WebMvcConfigurer {
 
                         "http://172.24.64.1:3001",
                         "https://172.24.64.1:3001",
-                        "https://172.24.64.1"
+                        "https://172.24.64.1",
+
+                        "http://192.168.186.159",
+                        "http://192.168.186.159:3001",
+                        "https://192.168.186.159:3001",
+                        "https://192.168.186.159"
+
                         )
                 .allowCredentials(true);
     }
