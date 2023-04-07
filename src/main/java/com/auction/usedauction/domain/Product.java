@@ -125,7 +125,7 @@ public class Product extends BaseTimeEntity {
         this.productStatus = status;
     }
 
-    public void changeProduct()
+//    public void changeProduct()
 
     @PrePersist
     private void initProductAndTransStatus() {
