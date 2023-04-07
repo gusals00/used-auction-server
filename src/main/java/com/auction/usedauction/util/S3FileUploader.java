@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -92,6 +93,10 @@ public class S3FileUploader {
     }
 
     public String deleteFile(String filePath) {
+        if (!StringUtils.hasText(filePath)) {
+            throw new CustomException(FileErrorCode.NO_FILE_NAME);
+        }
+
         boolean isExist = amazonS3Client.doesObjectExist(bucket, filePath);
         if (!isExist) {
             throw new CustomException(FileErrorCode.S3_FILE_NOT_FOUND);
@@ -99,6 +104,16 @@ public class S3FileUploader {
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filePath));
         log.info("S3 파일 삭제 완료 deletedFilePath = {}", filePath);
         return filePath;
+    }
+
+    public List<String> deleteFiles(List<String> filePaths) {
+        if (filePaths == null) {
+            throw new CustomException(FileErrorCode.NO_FILE_NAME);
+        }
+        for (String filePath : filePaths) {
+            deleteFile(filePath);
+        }
+        return filePaths;
     }
 
     //multipart file

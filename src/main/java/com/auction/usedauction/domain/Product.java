@@ -92,7 +92,7 @@ public class Product extends BaseTimeEntity {
     }
 
 
-    public File getSigImage() {
+    public ProductImage getSigImage() {
         for (File file :fileList) {
             if (file instanceof ProductImage imageFile) {
                 if (imageFile.getType() == ProductImageType.SIGNATURE) {
@@ -103,8 +103,8 @@ public class Product extends BaseTimeEntity {
         return null;
     }
 
-    public List<File> getOrdinalImageList() {
-        List<File> ordinalImages = new ArrayList<>();
+    public List<ProductImage> getOrdinalImageList() {
+        List<ProductImage> ordinalImages = new ArrayList<>();
 
         for (File file :fileList) {
             if (file instanceof ProductImage imageFile) {
@@ -125,7 +125,17 @@ public class Product extends BaseTimeEntity {
         this.productStatus = status;
     }
 
-//    public void changeProduct()
+    public void changeProduct(String name,String info, Category category,LocalDateTime endDate,Integer buyNowPrice,int startPrice,int priceUnit) {
+        this.name =name;
+        this.info=info;
+        this.category=category;
+        this.auctionEndDate = endDate;
+        if (buyNowPrice != null) { // 즉시 판매가가 있는 경우
+            this.buyNowPrice = buyNowPrice;
+        }
+        this.startPrice = startPrice;
+        this.priceUnit = priceUnit;
+    }
 
     @PrePersist
     private void initProductAndTransStatus() {
