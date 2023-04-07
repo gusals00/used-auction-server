@@ -154,4 +154,10 @@ public class ProductController {
         productService.deleteProduct(productId,user.getUsername());
         return new ResultRes<>(new MessageRes("상품 삭제를 성공했습니다."));
     }
+
+//    @PatchMapping("/{productId}")
+//    public ResultRes updateProduct(@PathVariable Long productId,@RequestBody @Valid ProductUpdateReq,@AuthenticationPrincipal User user) {
+//
+//    }
+
 }

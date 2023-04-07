@@ -64,7 +64,7 @@ public class Product extends BaseTimeEntity {
     private List<File> fileList = new ArrayList<>();
 
     @Builder
-    public Product(String name, String info, Long buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionEndDate,
+    public Product(String name, String info, Integer buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionEndDate,
                    Category category, Member member, List<ProductImage> ordinalImageList, ProductImage sigImage) {
 
         if (buyNowPrice != null) {
@@ -124,6 +124,8 @@ public class Product extends BaseTimeEntity {
     public void changeProductStatus(ProductStatus status) {
         this.productStatus = status;
     }
+
+    public void changeProduct()
 
     @PrePersist
     private void initProductAndTransStatus() {

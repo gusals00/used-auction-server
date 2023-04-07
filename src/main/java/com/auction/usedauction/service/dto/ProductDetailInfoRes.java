@@ -29,9 +29,9 @@ public class ProductDetailInfoRes {
     @Schema(description = "판매자 로그인 아이디",example = "lovesoe1234")
     private String nickname;
     @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01")
-    private String auction_end_date;
-    @Schema(description = "즉시 구매가",example = "10000")
-    private int buyNowPrice;
+    private String auctionEndDate;
+    @Schema(description = "즉시 구매가",example = "10000, 즉시 구매가 없으면 null 넘어감")
+    private Integer buyNowPrice;
     @Schema(description = "현재 가격",example = "10000")
     private int nowPrice;
     @Schema(description = "시작 가격",example = "1000")
@@ -49,13 +49,15 @@ public class ProductDetailInfoRes {
         this.categoryName = product.getCategory().getName();
         this.memberId = product.getMember().getId();
         this.nickname = product.getMember().getName();
-        this.auction_end_date = product.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        this.buyNowPrice = product.getBuyNowPrice();
+        this.auctionEndDate = product.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.nowPrice = product.getNowPrice();
         this.startPrice = product.getStartPrice();
         this.priceUnit = product.getPriceUnit();
         this.viewCount = product.getViewCount();
-
+        this.buyNowPrice = product.getBuyNowPrice();
+        if (buyNowPrice == -1) {
+            buyNowPrice=null;
+        }
         File sigImage = product.getSigImage();
         this.sigImg = new ImageInfoRes(sigImage.getOriginalName(), sigImage.getFullPath());
         this.ordinalImgList = product.getOrdinalImageList()
