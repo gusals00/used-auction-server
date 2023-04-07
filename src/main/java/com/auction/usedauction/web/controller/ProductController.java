@@ -141,7 +141,6 @@ public class ProductController {
         log.info("상품 상세 조회 컨트롤러 호출");
         log.info("찾는 productId = {}", productId);
 
-
         return new ResultRes<>(productQueryService.getProductDetail(productId));
     }
 
@@ -155,9 +154,12 @@ public class ProductController {
         return new ResultRes<>(new MessageRes("상품 삭제를 성공했습니다."));
     }
 
-//    @PatchMapping("/{productId}")
-//    public ResultRes updateProduct(@PathVariable Long productId,@RequestBody @Valid ProductUpdateReq,@AuthenticationPrincipal User user) {
-//
-//    }
+    @PatchMapping("/{productId}")
+    public ResultRes<MessageRes> updateProduct(@PathVariable Long productId,@RequestBody @Valid ProductUpdateReq updateReq,@AuthenticationPrincipal User user) {
+        log.info("상품 수정 컨트롤러 호출");
+
+        productService.updateProduct(productId, updateReq, user.getUsername())
+        return new ResultRes<>(new MessageRes("상품 수정을 성공했습니다."));
+    }
 
 }
