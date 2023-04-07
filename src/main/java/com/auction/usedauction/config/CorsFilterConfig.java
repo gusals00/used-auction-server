@@ -12,21 +12,21 @@ import java.util.Arrays;
 @Configuration
 public class CorsFilterConfig {
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(
-                Arrays.asList(
-                "https://bkkang1.github.io",
-                "https://usedauction.shop"
-                ,"https://112.217.167.202",
-                "http://112.217.167.202"));
-
-        source.registerCorsConfiguration("/**", configuration);
-        return new CorsFilter(source);
-    }
+//    @Bean
+//    public CorsFilter corsFilter() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowCredentials(true);
+//        configuration.setAllowedOrigins(
+//                Arrays.asList(
+//                "https://bkkang1.github.io",
+//                "https://usedauction.shop"
+//                ,"https://112.217.167.202",
+//                "http://112.217.167.202"));
+//        configuration.setAllowedHeaders(Arrays.asList("*"));
+//        source.registerCorsConfiguration("/**", configuration);
+//        return new CorsFilter(source);
+//    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
@@ -34,6 +34,7 @@ public class CorsFilterConfig {
         configuration.setAllowedOrigins(Arrays.asList("https://bkkang1.github.io","http://bkkang1.github.io"));
         configuration.setAllowedMethods(Arrays.asList("GET","HEAD","POST","PUT","DELETE","TRACE","OPTIONS","PATCH"));
         configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
