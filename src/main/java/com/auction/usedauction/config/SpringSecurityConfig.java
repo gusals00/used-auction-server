@@ -25,7 +25,6 @@ import org.springframework.web.cors.CorsUtils;
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
 
-//    private final CorsFilter corsFilter;
     private final TokenProvider tokenProvider;
 
     @Bean
@@ -37,14 +36,12 @@ public class SpringSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf().disable()
-
-//                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(Customizer.withDefaults())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // session 기반 인증방식 사용하지 않기 때문에 STATELESS로 설정
 
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+//                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .requestMatchers("/api/member/signup").permitAll()
                 .requestMatchers("/api/member/login").permitAll()
                 .requestMatchers("/api/email/*").permitAll()
