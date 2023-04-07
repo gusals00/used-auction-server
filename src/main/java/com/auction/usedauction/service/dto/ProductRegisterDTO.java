@@ -26,7 +26,7 @@ public class ProductRegisterDTO {
     private String info;
     private Long categoryId;
     private LocalDateTime auctionEndDate;
-    private Long buyNowPrice;
+    private Integer buyNowPrice;
     private int startPrice;
     private int priceUnit;
 
