@@ -158,7 +158,7 @@ public class ProductController {
     public ResultRes<MessageRes> updateProduct(@PathVariable Long productId,@RequestBody @Valid ProductUpdateReq updateReq,@AuthenticationPrincipal User user) {
         log.info("상품 수정 컨트롤러 호출");
 
-        productService.updateProduct(productId, updateReq, user.getUsername())
+        productService.updateProduct(productId, updateReq, user.getUsername());
         return new ResultRes<>(new MessageRes("상품 수정을 성공했습니다."));
     }
 
