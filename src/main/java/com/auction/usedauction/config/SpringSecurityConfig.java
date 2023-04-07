@@ -41,7 +41,6 @@ public class SpringSecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
-//                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .requestMatchers("/api/member/signup").permitAll()
                 .requestMatchers("/api/member/login").permitAll()
                 .requestMatchers("/api/email/*").permitAll()
@@ -63,7 +62,6 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/sessions").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
-                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .anyRequest().authenticated()
 
                 .and()
