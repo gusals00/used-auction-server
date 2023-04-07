@@ -15,7 +15,9 @@ public class CorsConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://bkkang1.github.io"));
+//        configuration.setAllowedOrigins(Arrays.asList("https://bkkang1.github.io"));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+
         configuration.setAllowedMethods(Arrays.asList("GET","HEAD","POST","PUT","DELETE","TRACE","OPTIONS","PATCH"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("*"));
