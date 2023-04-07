@@ -7,6 +7,7 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
 import com.auction.usedauction.exception.error_code.ProductErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
+import com.auction.usedauction.repository.AuctionHistoryRepository;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.auction.usedauction.domain.ProductStatus.*;
 import static java.util.stream.Collectors.*;
 
 @Service
@@ -31,9 +33,9 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
+    private final AuctionHistoryRepository auctionHistoryRepository;
 
     @Transactional
-
     public Long register(ProductRegisterDTO productRegisterDTO) {
 
         // 판매자 존재 체크
@@ -59,27 +61,40 @@ public class ProductService {
     }
 
     @Transactional
-    public Long deleteProduct(Long productId,String loginId) {
+    public Long deleteProduct(Long productId, String loginId) {
+        ProductStatus[] productStatuses = {
+                BID,
+                TRANSACTION_OK,
+                TRANSACTION_FAIL,
+                FAIL_BID};
+
         // 상품이 존재하는지 확인
-        Product findProduct = productRepository.findByIdAndProductStatusNot(productId, ProductStatus.DELETED)
+        // 입찰/거래 완료/낙찰 실패/거래 실패 상태인 상품
+        Product findProduct = productRepository.findByIdAndProductStatusIn(productId,productStatuses)
                 .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
+        //상품이 입찰 상태일 때 입찰 기록이 없는 경우만 가능
+        if (findProduct.getProductStatus()== BID && auctionHistoryRepository.findAllByProduct(findProduct).size() > 0) {
+            throw new CustomException(ProductErrorCode.PRODUCT_DELETE_FAIL);
+        }
+
         // 상품 제거 권한 있는 판매자인지 + 탈퇴하지 않은 존재하는 판매자인지
-        validRightSeller(findProduct.getMember(),loginId);
+        validRightSeller(findProduct.getMember(), loginId);
 
         //상품 상태 DELETED(삭제)로 변경
-        findProduct.changeProductStatus(ProductStatus.DELETED);
+        findProduct.changeProductStatus(DELETED);
 
         return findProduct.getId();
     }
 
-    private void validRightSeller(Member member,String loginId) {
+    private void validRightSeller(Member member, String loginId) {
         if (!isRightSeller(member, loginId)) {
             throw new CustomException(UserErrorCode.INVALID_USER);
         }
     }
-    private boolean isRightSeller(Member member,String loginId) {
-        return member.getLoginId().equals(loginId) && member.getStatus()==MemberStatus.EXIST;
+
+    private boolean isRightSeller(Member member, String loginId) {
+        return member.getLoginId().equals(loginId) && member.getStatus() == MemberStatus.EXIST;
     }
 
     public String getOrdinalImagesIdsToString(List<ProductImage> images) {

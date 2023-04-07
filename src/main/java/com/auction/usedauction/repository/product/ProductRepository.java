@@ -7,8 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ProductRepository extends JpaRepository<Product, Long>,ProductRepositoryCustom {
+public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom {
 
     @EntityGraph(attributePaths = "member")
-    Optional<Product> findByIdAndProductStatusNot(Long id,ProductStatus productStatus);
+    Optional<Product> findByIdAndProductStatusNot(Long id, ProductStatus productStatus);
+
+    @EntityGraph(attributePaths = "member")
+    Optional<Product> findByIdAndProductStatusIn(Long id, ProductStatus[] productStatus);
 }
