@@ -15,11 +15,11 @@ public class CorsConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://bkkang1.github.io",
-                "https://117.20.198.95",
-                "http://117.20.198.95",
-                "http://localhost:3001"));
-        configuration.setAllowedMethods(Arrays.asList("GET","HEAD","POST","PUT","DELETE","TRACE","OPTIONS","PATCH"));
+        configuration.setAllowedOrigins(
+                Arrays.asList(
+                        "https://bkkang1.github.io",
+                        "http://localhost:3001"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS", "PATCH"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
