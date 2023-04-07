@@ -44,13 +44,15 @@ public class SpringSecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .requestMatchers("/api/member/signup").permitAll()
                 .requestMatchers("/api/member/login").permitAll()
                 .requestMatchers("/api/email/*").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products/*").permitAll()
-                .requestMatchers("/api/member/email/*").permitAll()
-                .requestMatchers("/api/member/loginid/*").permitAll()
+                .requestMatchers("/api/member/email/**").permitAll()
+                .requestMatchers("/api/member/loginid/**").permitAll()
+                .requestMatchers("/api/member/name/**").permitAll()
 
                 //question
                 .requestMatchers("/api/questions/*").permitAll()
