@@ -14,12 +14,12 @@ public class ErrorRes {
 
     private final HttpStatus status;
     private final String code;
-    private final String message;
+    private final String msg;
 
     public ErrorRes(ErrorCode errorCode) {
         this.status = errorCode.getStatus();
         this.code = errorCode.name();
-        this.message = errorCode.getMessage();
+        this.msg = errorCode.getMessage();
     }
 
     public static ResponseEntity<ErrorRes> error(CustomException e) {
@@ -28,7 +28,7 @@ public class ErrorRes {
                 .body(ErrorRes.builder()
                         .status(e.getErrorCode().getStatus())
                         .code(e.getErrorCode().name())
-                        .message(e.getErrorCode().getMessage())
+                        .msg(e.getErrorCode().getMessage())
                         .build());
     }
 
@@ -38,7 +38,7 @@ public class ErrorRes {
                 .body(ErrorRes.builder()
                         .status(errorCode.getStatus())
                         .code(errorCode.name())
-                        .message(message)
+                        .msg(message)
                         .build());
     }
 }
