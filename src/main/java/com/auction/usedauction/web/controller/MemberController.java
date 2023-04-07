@@ -25,13 +25,13 @@ public class MemberController {
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<LoginRes> login(@RequestBody @Valid LoginReq loginReq) {
+    public ResponseEntity<ResultRes<LoginRes>> login(@RequestBody @Valid LoginReq loginReq) {
         String token = memberService.login(loginReq.getLoginId(), loginReq.getPassword());
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(AuthConstants.AUTH_HEADER, AuthConstants.TOKEN_TYPE + " " + token);
 
-        return new ResponseEntity<>(new LoginRes(token), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new ResultRes(new LoginRes(token)), httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "회원가입")
@@ -41,6 +41,7 @@ public class MemberController {
 
         return new ResultRes(new MessageRes("회원가입 성공"));
     }
+
 
     @Operation(summary = "회원탈퇴")
     @DeleteMapping
@@ -60,5 +61,11 @@ public class MemberController {
     @GetMapping("/loginid/{loginid}/exists")
     public ResultRes<Boolean> checkLoginIdDuplicate(@PathVariable String loginid) {
         return new ResultRes(memberService.checkLoginIdDuplicate(loginid));
+    }
+
+    @Operation(summary = "닉네임 중복 확인")
+    @GetMapping("name/{name}/exists")
+    public ResultRes<Boolean> checkNameDuplicate(@PathVariable String name) {
+        return new ResultRes(memberService.checkNameDuplicate(name));
     }
 }

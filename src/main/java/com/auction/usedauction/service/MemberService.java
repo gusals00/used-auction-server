@@ -56,9 +56,9 @@ public class MemberService {
     public Long register(RegisterReq registerReq, HttpSession session) {
 
         // 이메일 인증 확인
-//        if(!emailService.isAuthenticated(session, registerReq.getEmail(), registerReq.getCode())) {
-//            throw new CustomException(UserErrorCode.EMAIL_AUTH_FAIL);
-//        }
+        if(!emailService.isAuthenticated(session, registerReq.getEmail(), registerReq.getCode())) {
+            throw new CustomException(UserErrorCode.EMAIL_AUTH_FAIL);
+        }
 
         session.removeAttribute(EMAIL_AUTH);
         
@@ -115,6 +115,10 @@ public class MemberService {
 
     public boolean checkLoginIdDuplicate(String loginId) {
         return memberRepository.existsByLoginId(loginId);
+    }
+
+    public boolean checkNameDuplicate(String name) {
+        return memberRepository.existsByName(name);
     }
 
     private boolean passwordCheck(String password, String encodedPassword) {
