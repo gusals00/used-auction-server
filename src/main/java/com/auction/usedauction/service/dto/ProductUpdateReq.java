@@ -26,8 +26,6 @@ public class ProductUpdateReq {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull
     private LocalDateTime auctionEndDate;
-    @Min(1000)
-    private Integer buyNowPrice;
     @Min(100)
     @NotNull
     private int startPrice;

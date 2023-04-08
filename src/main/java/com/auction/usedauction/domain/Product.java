@@ -32,8 +32,6 @@ public class Product extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ProductStatus productStatus;
 
-    private int buyNowPrice=-1; // 즉시구매가 설정 안할 경우 -> -1
-
     private int nowPrice;
 
     private int startPrice;
@@ -64,12 +62,9 @@ public class Product extends BaseTimeEntity {
     private List<File> fileList = new ArrayList<>();
 
     @Builder
-    public Product(String name, String info, Integer buyNowPrice, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionEndDate,
+    public Product(String name, String info, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionEndDate,
                    Category category, Member member, List<ProductImage> ordinalImageList, ProductImage sigImage) {
 
-        if (buyNowPrice != null) {
-            this.buyNowPrice = buyNowPrice.intValue();
-        }
         if (member != null) {
             member.getProducts().add(this);
             this.member = member;
@@ -125,14 +120,11 @@ public class Product extends BaseTimeEntity {
         this.productStatus = status;
     }
 
-    public void changeProduct(String name,String info, Category category,LocalDateTime endDate,Integer buyNowPrice,int startPrice,int priceUnit) {
+    public void changeProduct(String name,String info, Category category,LocalDateTime endDate,int startPrice,int priceUnit) {
         this.name =name;
         this.info=info;
         this.category=category;
         this.auctionEndDate = endDate;
-        if (buyNowPrice != null) { // 즉시 판매가가 있는 경우
-            this.buyNowPrice = buyNowPrice;
-        }
         this.startPrice = startPrice;
         this.priceUnit = priceUnit;
     }

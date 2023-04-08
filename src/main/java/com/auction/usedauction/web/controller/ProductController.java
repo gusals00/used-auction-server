@@ -155,7 +155,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}")
-    public ResultRes<MessageRes> updateProduct(@PathVariable Long productId,@RequestBody @Valid ProductUpdateReq updateReq,@AuthenticationPrincipal User user) {
+    public ResultRes<MessageRes> updateProduct(@PathVariable Long productId, @Valid ProductUpdateReq updateReq,@AuthenticationPrincipal User user) {
         log.info("상품 수정 컨트롤러 호출");
 
         productService.updateProduct(productId, updateReq, user.getUsername());

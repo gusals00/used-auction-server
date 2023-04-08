@@ -127,7 +127,7 @@ public class ProductService {
 
         //상품 정보들 수정
         findProduct.changeProduct(updateReq.getProductName(), updateReq.getInfo(), category, updateReq.getAuctionEndDate(),
-                updateReq.getBuyNowPrice(), updateReq.getStartPrice(), updateReq.getPriceUnit());
+                 updateReq.getStartPrice(), updateReq.getPriceUnit());
 
         return findProduct.getId();
     }
@@ -226,7 +226,6 @@ public class ProductService {
                                   Member member, Category category) {
         return Product.builder()
                 .auctionEndDate(productRegisterDTO.getAuctionEndDate())
-                .buyNowPrice(productRegisterDTO.getBuyNowPrice())
                 .nowPrice(productRegisterDTO.getStartPrice())
                 .priceUnit(productRegisterDTO.getPriceUnit())
                 .startPrice(productRegisterDTO.getStartPrice())
