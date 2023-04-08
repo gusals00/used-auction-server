@@ -45,7 +45,8 @@ public class ProductUpdateReq {
     @Schema(description = "입찰 단위가", example = "10000")
     private int priceUnit;
 
-    private List<MultipartFile> img;
+    @NotNull
+    private List<MultipartFile> imgList;
     @NotNull
     @Schema(description = "수정할 대표 사진")
     private MultipartFile sigImg;

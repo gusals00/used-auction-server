@@ -1,6 +1,8 @@
 package com.auction.usedauction.web.controller;
 
 
+import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.FileErrorCode;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.service.ProductService;
@@ -157,9 +159,24 @@ public class ProductController {
     @PatchMapping("/{productId}")
     public ResultRes<MessageRes> updateProduct(@PathVariable Long productId, @Valid ProductUpdateReq updateReq,@AuthenticationPrincipal User user) {
         log.info("상품 수정 컨트롤러 호출");
+        List<MultipartFile> img = updateReq.getImgList();
+
+        //파일리스트가 비어있는지 확인
+        if (isEmptyMultipartFileList(updateReq.getImgList())) {
+            throw new CustomException(FileErrorCode.FILE_EMPTY);
+        }
 
         productService.updateProduct(productId, updateReq, user.getUsername());
         return new ResultRes<>(new MessageRes("상품 수정을 성공했습니다."));
+    }
+
+    private boolean isEmptyMultipartFileList(List<MultipartFile> fileList) {
+        for (MultipartFile multipartFile : fileList) {
+            if (multipartFile.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

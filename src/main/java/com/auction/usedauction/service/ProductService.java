@@ -122,7 +122,7 @@ public class ProductService {
         }
 
         //사진수정
-        updateOrdinalImage(findProduct,updateReq.getImg());
+        updateOrdinalImage(findProduct,updateReq.getImgList());
         updateSigImage(findProduct,updateReq.getSigImg());
 
         //상품 정보들 수정
@@ -134,8 +134,8 @@ public class ProductService {
 
     private void updateOrdinalImage(Product product, List<MultipartFile> multipartFileList) {
         List<ProductImage> ordinalImageList = product.getOrdinalImageList();
-        deleteImageForUpdate(ordinalImageList, multipartFileList);
-        insertImageUpdate(ordinalImageList, multipartFileList, ProductImageType.ORDINAL);
+        deleteImageForUpdate(ordinalImageList, multipartFileList,product);
+        insertImageUpdate(ordinalImageList, multipartFileList, ProductImageType.ORDINAL,product);
     }
 
     private void updateSigImage(Product product, MultipartFile multipartFile) {
@@ -143,11 +143,11 @@ public class ProductService {
         List<ProductImage> ordinalImageList = new ArrayList<>(Arrays.asList(product.getSigImage()));
         List<MultipartFile> multipartFileList = new ArrayList<>(Arrays.asList(multipartFile));
 
-        deleteImageForUpdate(ordinalImageList, multipartFileList);
-        insertImageUpdate(ordinalImageList, multipartFileList, ProductImageType.SIGNATURE);
+        deleteImageForUpdate(ordinalImageList, multipartFileList,product);
+        insertImageUpdate(ordinalImageList, multipartFileList, ProductImageType.SIGNATURE,product);
     }
 
-    private void deleteImageForUpdate(List<ProductImage> productImageList, List<MultipartFile> multipartImages) {
+    private void deleteImageForUpdate(List<ProductImage> productImageList, List<MultipartFile> multipartImages,Product product) {
         String[] inputOriginalNames = multipartImages.stream()
                 .map(MultipartFile::getOriginalFilename)
                 .toArray(String[]::new);
@@ -156,6 +156,8 @@ public class ProductService {
         List<ProductImage> deleteImageEntityList = findDeleteImageEntityList(productImageList, inputOriginalNames);
 
         // 엔티티 삭제
+        // 양방향 매핑되어 있어서 product 쪽에서도 FileList 에서 ProductImage 삭제하여 상태를 동기화 시킨 후 엔티티 삭제해야 함.
+        product.getFileList().removeIf(deleteImageEntityList::contains);
         fileRepository.deleteAll(deleteImageEntityList);
 
         // s3 삭제
@@ -167,9 +169,9 @@ public class ProductService {
         );
     }
 
-    private void insertImageUpdate(List<ProductImage> productImageList, List<MultipartFile> multipartImages, ProductImageType imageType) {
+    private void insertImageUpdate(List<ProductImage> productImageList, List<MultipartFile> multipartImages, ProductImageType imageType,Product product) {
         String[] productImageOriginalNames = productImageList.stream()
-                .map(File::getPath)
+                .map(File::getOriginalName)
                 .toArray(String[]::new);
 
         //추가해야 할 multipartFile 찾기
@@ -200,6 +202,10 @@ public class ProductService {
     }
 
     private boolean doesNotContain(String target, String[] elements) {
+        return !StringUtils.containsAny(target, elements);
+    }
+
+    private boolean doesContain(String target, String[] elements) {
         return !StringUtils.containsAny(target, elements);
     }
 
@@ -238,12 +244,28 @@ public class ProductService {
                 .build();
     }
 
+    private List<ProductImage> createProductImageList(List<UploadFIleDTO> uploadImageList, ProductImageType imageType,Product product) {
+        return uploadImageList.stream()
+                .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType, product))
+                .collect(toList());
+    }
+
     private List<ProductImage> createProductImageList(List<UploadFIleDTO> uploadImageList, ProductImageType imageType) {
         return uploadImageList.stream()
                 .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType))
                 .collect(toList());
     }
 
+    private ProductImage createProductImage(UploadFIleDTO uploadImage, ProductImageType imageType,Product product) {
+        ProductImage productImage = ProductImage.builder()
+                .originalName(uploadImage.getUploadFileName())
+                .path(uploadImage.getStoreUrl())
+                .fullPath(uploadImage.getStoreFullUrl())
+                .type(imageType)
+                .build();
+        productImage.changeProduct(product);
+        return productImage;
+    }
     private ProductImage createProductImage(UploadFIleDTO uploadImage, ProductImageType imageType) {
         return ProductImage.builder()
                 .originalName(uploadImage.getUploadFileName())
@@ -251,6 +273,5 @@ public class ProductService {
                 .fullPath(uploadImage.getStoreFullUrl())
                 .type(imageType)
                 .build();
-
     }
 }
