@@ -34,9 +34,7 @@ public class ProductRegisterReq {
     @NotNull
     @Schema(description = "경매 종료 날짜",defaultValue = "2023-10-03 12:10:00")
     private LocalDateTime auctionEndDate;
-    @Min(1000)
-    @Schema(description = "즉시 구매가, nullable",example = "3000, 즉시 구매가 없으면 null",minimum = "1000",nullable = true)
-    private Integer buyNowPrice;
+
     @Min(100)
     @NotNull
     @Schema(description = "경매 시작가",example = "1000",minimum = "100")

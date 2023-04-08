@@ -47,6 +47,7 @@ public class QuestionController {
         return new PageListRes<>(questionPage.getQuestionPageContents(),questionPage.getPage());
     }
 
+    @Operation(summary = "질문 삭제 메서드")
     @DeleteMapping("/{questionId}")
     public ResultRes<MessageRes> deleteQuestion(@PathVariable Long questionId, @AuthenticationPrincipal User user) {
         log.info("댓글 삭제 컨트롤러");
