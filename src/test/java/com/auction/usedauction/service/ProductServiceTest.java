@@ -15,7 +15,6 @@ import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFileDTO;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -282,6 +281,44 @@ class ProductServiceTest {
 
     }
 
+    @Test
+    @DisplayName("상품 삭제 실패, 삭제하려는 member 가 올바르지 않은 경우")
+    void deleteFail3() throws Exception{
+        //given
+        // 사진 등록
+        String fileName1 = "test1.png";
+        String fileName2 = "test2.png";
+        String contentType = "image/png";
+
+        MultipartFile sigFile = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        MultipartFile file1 = new MockMultipartFile("testFile2", fileName2, contentType, "test2".getBytes());
+        List<MultipartFile> ordinalFileList = new ArrayList<>(Arrays.asList(file1));
+
+        UploadFileDTO sigFileDTO = fileUploader.uploadFile(sigFile, FileSubPath.PRODUCT_IMG_PATH);
+        List<UploadFileDTO> ordinalFileDTOList = fileUploader.uploadFiles(ordinalFileList, FileSubPath.PRODUCT_IMG_PATH);
+
+        // 등록 dto 생성
+        Member seller1 = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member seller2 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        Category findCategory = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        ProductRegisterReq registerReq = new ProductRegisterReq("상품이름", "정보", findCategory.getId(), LocalDateTime.now().plusDays(2), 10000L, 1000L, ordinalFileList, sigFile);
+
+        ProductRegisterDTO registerDTO = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, seller1.getLoginId());
+
+        // 상품 저장
+        Long savedId1 = productService.register(registerDTO);
+        Product savedProduct = productRepository.findById(savedId1).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+
+        //then
+        // 판매자가 아닌 회원이 상품 삭제하려는 경우
+        assertThatThrownBy(() -> productService.deleteProduct(savedId1, seller2.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(UserErrorCode.INVALID_USER.getMessage());
+
+    }
+
     private AuctionHistory createAuctionHistory(Product product, int bidPrice, Member member) {
         return AuctionHistory.builder()
                 .product(product)
@@ -289,6 +326,7 @@ class ProductServiceTest {
                 .member(member)
                 .build();
     }
+
     private Member createMember(String name, String birth, String email, String loginId, String password, String phoneNumber, Authority authorities) {
         return Member.builder()
                 .name(name)

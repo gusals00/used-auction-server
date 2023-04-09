@@ -89,7 +89,7 @@ public class ProductService {
         }
 
         // 상품 제거 권한 있는 판매자인지 + 탈퇴하지 않은 존재하는 판매자인지
-        validRightSeller(findProduct.getMember(), loginId);
+        validRightSeller(findProduct, loginId);
 
         //상품 상태 DELETED(삭제)로 변경
         findProduct.changeProductStatus(DELETED);
@@ -113,7 +113,7 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
 
         //수정하려는 판매자가 올바른 판매자인지(상품 등록자가 맞는지 + 상품 등록자 상태가 EXIST 인지)
-        validRightSeller(findProduct.getMember(), loginId);
+        validRightSeller(findProduct, loginId);
 
         //수정 가능한 상품 상태인지(상품이 입찰 상태일 때 입찰 기록이 없는 경우)
         if (hasAuctionHistoryWhenBidding(findProduct)) {
@@ -209,14 +209,14 @@ public class ProductService {
     }
 
 
-    private void validRightSeller(Member member, String loginId) {
-        if (!isRightSeller(member, loginId)) {
+    private void validRightSeller(Product product, String loginId) {
+        if (!isRightSeller(product, loginId)) {
             throw new CustomException(UserErrorCode.INVALID_USER);
         }
     }
 
-    private boolean isRightSeller(Member member, String loginId) {
-        return member.getLoginId().equals(loginId) && member.getStatus() == MemberStatus.EXIST;
+    private boolean isRightSeller(Product product, String loginId) {
+        return product.getMember().getLoginId().equals(loginId) && product.getMember().getStatus()== MemberStatus.EXIST;
     }
 
     public String getOrdinalImagesIdsToString(List<ProductImage> images) {
