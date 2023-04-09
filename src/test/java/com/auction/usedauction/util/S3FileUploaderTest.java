@@ -46,14 +46,14 @@ class S3FileUploaderTest {
         fileList.add(file4);
 
         //when
-        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
-        List<UploadFIleDTO> uploadFileDTOS = fileUploader.uploadFiles(fileList, STREAMING_VIDEO_PATH);
+        UploadFileDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+        List<UploadFileDTO> uploadFileDTOS = fileUploader.uploadFiles(fileList, STREAMING_VIDEO_PATH);
 
         //then
         assertThat(uploadFileDTO.getStoreFullUrl()).contains(PRODUCT_IMG_PATH);
         assertThat(uploadFileDTO.getUploadFileName()).isEqualTo(fileName1);
 
-        assertThat(uploadFileDTOS).extracting(UploadFIleDTO::getUploadFileName).containsExactly(fileName2, fileName3, fileName4);
+        assertThat(uploadFileDTOS).extracting(UploadFileDTO::getUploadFileName).containsExactly(fileName2, fileName3, fileName4);
     }
 
     @Test
@@ -98,7 +98,7 @@ class S3FileUploaderTest {
         File file = new File(path+fileName);
 
         //when
-        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
+        UploadFileDTO uploadFileDTO = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
 
         //then
         assertThat(uploadFileDTO.getUploadFileName()).isEqualTo(fileName);
@@ -130,11 +130,11 @@ class S3FileUploaderTest {
 
         //multipart 파일
         MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
-        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+        UploadFileDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
 
         //File
         File file = new File(path+fileName);
-        UploadFIleDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
+        UploadFileDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
 
         //when
         String deletedPath1 = fileUploader.deleteFile(uploadFileDTO.getStoreUrl());
@@ -157,11 +157,11 @@ class S3FileUploaderTest {
 
         //multipart 파일
         MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
-        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+        UploadFileDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
 
         //File
         File file = new File(path+fileName);
-        UploadFIleDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
+        UploadFileDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
 
         //when
         fileUploader.deleteFile(uploadFileDTO.getStoreUrl());
@@ -190,11 +190,11 @@ class S3FileUploaderTest {
 
         //multipart 파일
         MockMultipartFile file1 = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
-        UploadFIleDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
+        UploadFileDTO uploadFileDTO = fileUploader.uploadFile(file1, PRODUCT_IMG_PATH);
 
         //File
         File file = new File(path+fileName);
-        UploadFIleDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
+        UploadFileDTO uploadFileDTO2 = fileUploader.uploadFile(file, STREAMING_VIDEO_PATH);
 
         //then
         assertThatThrownBy(() -> fileUploader.deleteFile(STREAMING_VIDEO_PATH + uploadFileDTO.getStoreFileName()))

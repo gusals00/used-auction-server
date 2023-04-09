@@ -17,7 +17,7 @@ import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.service.dto.ProductUpdateReq;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
-import com.auction.usedauction.util.UploadFIleDTO;
+import com.auction.usedauction.util.UploadFileDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,18 +79,17 @@ public class ProductService {
                 TRANSACTION_FAIL,
                 FAIL_BID};
 
-        // 상품이 존재하는지 확인
-        // 입찰/거래 완료/낙찰 실패/거래 실패 상태인 상품
+        // 입찰/거래 완료/낙찰 실패/거래 실패 상태인 상품인지 확인
         Product findProduct = productRepository.findByIdAndProductStatusIn(productId, productStatuses)
-                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ProductErrorCode.INVALID_DELETE_PRODUCT_STATUS));
 
-        //상품이 입찰 상태일 때 입찰 기록이 없는 경우만 가능
+        //상품이 입찰 상태일 때는 입찰 기록이 없는 경우만 가능
         if (hasAuctionHistoryWhenBidding(findProduct)) {
-            throw new CustomException(ProductErrorCode.PRODUCT_DELETE_FAIL);
+            throw new CustomException(ProductErrorCode.INVALID_DELETE_PRODUCT_HISTORY);
         }
 
         // 상품 제거 권한 있는 판매자인지 + 탈퇴하지 않은 존재하는 판매자인지
-        validRightSeller(findProduct.getMember(), loginId);
+        validRightSeller(findProduct, loginId);
 
         //상품 상태 DELETED(삭제)로 변경
         findProduct.changeProductStatus(DELETED);
@@ -105,20 +104,20 @@ public class ProductService {
 
     @Transactional
     public Long updateProduct(Long productId, ProductUpdateReq updateReq, String loginId) {
-        // 상품 존재 확인
-        Product findProduct = productRepository.findByIdAndProductStatusNot(productId, DELETED)
-                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        // 상품이 입찰 상태인지 확인
+        Product findProduct = productRepository.findByIdAndProductStatus(productId, BID)
+                .orElseThrow(() -> new CustomException(ProductErrorCode.INVALID_UPDATE_PRODUCT_STATUS));
 
         // 카테고리 존재 확인
         Category category = categoryRepository.findById(updateReq.getCategoryId())
                 .orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
 
         //수정하려는 판매자가 올바른 판매자인지(상품 등록자가 맞는지 + 상품 등록자 상태가 EXIST 인지)
-        validRightSeller(findProduct.getMember(), loginId);
+        validRightSeller(findProduct, loginId);
 
-        //수정 가능한 상품 상태인지(상품이 입찰 상태일 때 입찰 기록이 없는 경우)
-        if (hasAuctionHistoryWhenBidding(findProduct)) {
-            throw new CustomException(ProductErrorCode.PRODUCT_NOT_UPDATE);
+        //수정 가능한 상품 상태인지(상품이 입찰 상태일 때 입찰 기록이 없는 경우에 상품 변경 가능)
+        if (hasAuctionHistoryWhenBidding(findProduct)) { // 입찰 기록이 있는 경우
+            throw new CustomException(ProductErrorCode.INVALID_UPDATE_PRODUCT_HISTORY);
         }
 
         //사진수정
@@ -177,11 +176,11 @@ public class ProductService {
         //추가해야 할 multipartFile 찾기
         List<MultipartFile> insertMultipartFiles = findInsertMultipartFiles(multipartImages, productImageOriginalNames);
         //사진 저장
-        List<UploadFIleDTO> uploadFIleDTOList = fileUploader.uploadFiles(insertMultipartFiles, FileSubPath.PRODUCT_IMG_PATH);
+        List<UploadFileDTO> uploadFIleDTOList = fileUploader.uploadFiles(insertMultipartFiles, FileSubPath.PRODUCT_IMG_PATH);
 
         //엔티티 생성
         List<ProductImage> createdProductImageList = uploadFIleDTOList.stream()
-                .map(uploadFIle -> createProductImage(uploadFIle, imageType))
+                .map(uploadFIle -> createProductImage(uploadFIle, imageType, product))
                 .toList();
         //엔티티 저장
         fileRepository.saveAll(createdProductImageList);
@@ -205,19 +204,15 @@ public class ProductService {
         return !StringUtils.containsAny(target, elements);
     }
 
-    private boolean doesContain(String target, String[] elements) {
-        return !StringUtils.containsAny(target, elements);
-    }
 
-
-    private void validRightSeller(Member member, String loginId) {
-        if (!isRightSeller(member, loginId)) {
+    private void validRightSeller(Product product, String loginId) {
+        if (!isRightSeller(product, loginId)) {
             throw new CustomException(UserErrorCode.INVALID_USER);
         }
     }
 
-    private boolean isRightSeller(Member member, String loginId) {
-        return member.getLoginId().equals(loginId) && member.getStatus() == MemberStatus.EXIST;
+    private boolean isRightSeller(Product product, String loginId) {
+        return product.getMember().getLoginId().equals(loginId) && product.getMember().getStatus()== MemberStatus.EXIST;
     }
 
     public String getOrdinalImagesIdsToString(List<ProductImage> images) {
@@ -244,19 +239,14 @@ public class ProductService {
                 .build();
     }
 
-    private List<ProductImage> createProductImageList(List<UploadFIleDTO> uploadImageList, ProductImageType imageType,Product product) {
-        return uploadImageList.stream()
-                .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType, product))
-                .collect(toList());
-    }
 
-    private List<ProductImage> createProductImageList(List<UploadFIleDTO> uploadImageList, ProductImageType imageType) {
+    private List<ProductImage> createProductImageList(List<UploadFileDTO> uploadImageList, ProductImageType imageType) {
         return uploadImageList.stream()
                 .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType))
                 .collect(toList());
     }
 
-    private ProductImage createProductImage(UploadFIleDTO uploadImage, ProductImageType imageType,Product product) {
+    private ProductImage createProductImage(UploadFileDTO uploadImage, ProductImageType imageType, Product product) {
         ProductImage productImage = ProductImage.builder()
                 .originalName(uploadImage.getUploadFileName())
                 .path(uploadImage.getStoreUrl())
@@ -266,7 +256,7 @@ public class ProductService {
         productImage.changeProduct(product);
         return productImage;
     }
-    private ProductImage createProductImage(UploadFIleDTO uploadImage, ProductImageType imageType) {
+    private ProductImage createProductImage(UploadFileDTO uploadImage, ProductImageType imageType) {
         return ProductImage.builder()
                 .originalName(uploadImage.getUploadFileName())
                 .path(uploadImage.getStoreUrl())

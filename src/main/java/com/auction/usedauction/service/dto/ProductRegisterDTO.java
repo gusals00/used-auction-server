@@ -1,6 +1,6 @@
 package com.auction.usedauction.service.dto;
 
-import com.auction.usedauction.util.UploadFIleDTO;
+import com.auction.usedauction.util.UploadFileDTO;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,11 +22,11 @@ public class ProductRegisterDTO {
     private int startPrice;
     private int priceUnit;
 
-    private UploadFIleDTO sigProductImg;
-    private List<UploadFIleDTO> ordinalProductImg;
+    private UploadFileDTO sigProductImg;
+    private List<UploadFileDTO> ordinalProductImg;
     private String loginId;
 
-    public ProductRegisterDTO(ProductRegisterReq registerReq,UploadFIleDTO sigProductImg,List<UploadFIleDTO> ordinalProductImg,String loginId) {
+    public ProductRegisterDTO(ProductRegisterReq registerReq, UploadFileDTO sigProductImg, List<UploadFileDTO> ordinalProductImg, String loginId) {
         this.name = registerReq.getName();
         this.info = registerReq.getInfo();
         this.categoryId = registerReq.getCategoryId();

@@ -11,6 +11,6 @@ public enum ProductOrderCond {
     BID_CLOSING_ORDER("경매 마감 임박순"),
     HIGH_PRICE_ORDER("현재 가격 높은순"),
     LOW_PRICE_ORDER("현재 가격 낮은순");
-    private final String descrpition;
+    private final String description;
 
 }

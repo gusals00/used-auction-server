@@ -10,7 +10,7 @@ import com.auction.usedauction.service.dto.*;
 import com.auction.usedauction.service.query.ProductQueryService;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
-import com.auction.usedauction.util.UploadFIleDTO;
+import com.auction.usedauction.util.UploadFileDTO;
 import com.auction.usedauction.web.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -83,7 +83,7 @@ public class ProductController {
 
         public OrderByRes(ProductOrderCond orderCond) {
             this.name = orderCond.name();
-            this.description = orderCond.getDescrpition();
+            this.description = orderCond.getDescription();
         }
     }
 
@@ -94,19 +94,19 @@ public class ProductController {
         log.info("상품 등록 컨트롤러 호출");
 
         // 대표 사진 s3에 저장
-        UploadFIleDTO uploadSigFileDTO = fileUploader.uploadFile(registerReq.getSigImg(), FileSubPath.PRODUCT_IMG_PATH);
+        UploadFileDTO uploadSigFileDTO = fileUploader.uploadFile(registerReq.getSigImg(), FileSubPath.PRODUCT_IMG_PATH);
 
         // 일반 사진 s3에 저장
-        List<UploadFIleDTO> uploadOrdinalFileDTOS = uploadOrdinalImages(registerReq);
+        List<UploadFileDTO> uploadOrdinalFileDTOS = uploadOrdinalImages(registerReq);
 
         ProductRegisterDTO productRegisterDTO = new ProductRegisterDTO(registerReq, uploadSigFileDTO, uploadOrdinalFileDTOS, user.getUsername());
         productService.register(productRegisterDTO);
         return new ResultRes<>(new MessageRes("상품 등록 성공"));
     }
 
-    private List<UploadFIleDTO> uploadOrdinalImages(ProductRegisterReq registerReq) {
+    private List<UploadFileDTO> uploadOrdinalImages(ProductRegisterReq registerReq) {
 
-        List<UploadFIleDTO> uploadOrdinalFileDTOS;
+        List<UploadFileDTO> uploadOrdinalFileDTOS;
 
         if (isEmptyImgList(registerReq.getImgList())) {// 일반 사진들이 없으면 대표사진을 일반 사진에 저장
             List<MultipartFile> imgList = new ArrayList<>();
@@ -156,6 +156,7 @@ public class ProductController {
         return new ResultRes<>(new MessageRes("상품 삭제를 성공했습니다."));
     }
 
+    @Operation(summary = "상품 수정 메서드")
     @PatchMapping("/{productId}")
     public ResultRes<MessageRes> updateProduct(@PathVariable Long productId, @Valid ProductUpdateReq updateReq,@AuthenticationPrincipal User user) {
         log.info("상품 수정 컨트롤러 호출");

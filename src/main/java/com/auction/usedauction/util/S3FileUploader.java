@@ -29,11 +29,11 @@ public class S3FileUploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public List<UploadFIleDTO> uploadFiles(List<MultipartFile> multipartFileList, String subPath) {
+    public List<UploadFileDTO> uploadFiles(List<MultipartFile> multipartFileList, String subPath) {
         if (multipartFileList == null) {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
         }
-        List<UploadFIleDTO> storeResult = new ArrayList<>();
+        List<UploadFileDTO> storeResult = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFileList) {
             storeResult.add(uploadFile(multipartFile, subPath));
         }
@@ -41,7 +41,7 @@ public class S3FileUploader {
         return storeResult;
     }
 
-    public UploadFIleDTO uploadFile(MultipartFile multipartFile, String subPath) {
+    public UploadFileDTO uploadFile(MultipartFile multipartFile, String subPath) {
         if (isEmptyFile(multipartFile)) {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
         }
@@ -52,7 +52,7 @@ public class S3FileUploader {
         String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, multipartFile);
         log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, storeFileFullUrl);
 
-        return new UploadFIleDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
+        return new UploadFileDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
     }
 
     private String sendAwsS3(String bucketName, String filePath, MultipartFile uploadFile) {
@@ -71,7 +71,7 @@ public class S3FileUploader {
 
     }
 
-    public UploadFIleDTO uploadFile(File file, String subPath) {
+    public UploadFileDTO uploadFile(File file, String subPath) {
         if (isEmptyFile(file)) {
             throw new CustomException(FileErrorCode.FILE_NOT_FOUND);
         }
@@ -82,7 +82,7 @@ public class S3FileUploader {
         String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, file);
         log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, storeFileFullUrl);
 
-        return new UploadFIleDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
+        return new UploadFileDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
     }
 
     private String sendAwsS3(String bucketName, String filePath, File uploadFile) {
@@ -97,13 +97,17 @@ public class S3FileUploader {
             throw new CustomException(FileErrorCode.NO_FILE_NAME);
         }
 
-        boolean isExist = amazonS3Client.doesObjectExist(bucket, filePath);
+        boolean isExist = isExistObjectInS3(bucket, filePath);
         if (!isExist) {
             throw new CustomException(FileErrorCode.S3_FILE_NOT_FOUND);
         }
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filePath));
         log.info("S3 파일 삭제 완료 deletedFilePath = {}", filePath);
         return filePath;
+    }
+
+    public boolean isExistObjectInS3(String bucket, String filePath) {
+        return amazonS3Client.doesObjectExist(bucket, filePath);
     }
 
     public List<String> deleteFiles(List<String> filePaths) {
