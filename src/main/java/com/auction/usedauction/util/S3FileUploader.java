@@ -97,13 +97,17 @@ public class S3FileUploader {
             throw new CustomException(FileErrorCode.NO_FILE_NAME);
         }
 
-        boolean isExist = amazonS3Client.doesObjectExist(bucket, filePath);
+        boolean isExist = isExistObjectInS3(bucket, filePath);
         if (!isExist) {
             throw new CustomException(FileErrorCode.S3_FILE_NOT_FOUND);
         }
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filePath));
         log.info("S3 파일 삭제 완료 deletedFilePath = {}", filePath);
         return filePath;
+    }
+
+    public boolean isExistObjectInS3(String bucket, String filePath) {
+        return amazonS3Client.doesObjectExist(bucket, filePath);
     }
 
     public List<String> deleteFiles(List<String> filePaths) {

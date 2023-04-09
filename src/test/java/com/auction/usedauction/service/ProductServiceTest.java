@@ -11,6 +11,7 @@ import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
+import com.auction.usedauction.service.dto.ProductUpdateReq;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFileDTO;
@@ -164,7 +165,7 @@ class ProductServiceTest {
 
     @Test
     @DisplayName("상품 삭제 성공")
-    void delete() throws Exception{
+    void delete() throws Exception {
         //given
         // 사진 등록
         String fileName1 = "test1.png";
@@ -196,14 +197,14 @@ class ProductServiceTest {
         Product findProduct1 = productRepository.findByIdAndProductStatusNot(deletedId, ProductStatus.DELETED).orElse(null);
         assertThat(findProduct1).isNull();
 
-        Product findProduct2 = productRepository.findById(deletedId).orElseThrow(()->new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        Product findProduct2 = productRepository.findById(deletedId).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
         assertThat(findProduct2.getProductStatus()).isEqualTo(ProductStatus.DELETED);
 
     }
 
     @Test
     @DisplayName("상품 삭제 실패, 상품 상태가 삭제(DELETED)이거나 낙찰 성공(SUCCESS_BID)인 경우")
-    void deleteFail() throws Exception{
+    void deleteFail() throws Exception {
         //given
         // 사진 등록
         String fileName1 = "test1.png";
@@ -244,7 +245,7 @@ class ProductServiceTest {
 
     @Test
     @DisplayName("상품 삭제 실패, 경매중일 때 입찰 기록이 있는 경우")
-    void deleteFail2() throws Exception{
+    void deleteFail2() throws Exception {
         //given
         // 사진 등록
         String fileName1 = "test1.png";
@@ -283,7 +284,7 @@ class ProductServiceTest {
 
     @Test
     @DisplayName("상품 삭제 실패, 삭제하려는 member 가 올바르지 않은 경우")
-    void deleteFail3() throws Exception{
+    void deleteFail3() throws Exception {
         //given
         // 사진 등록
         String fileName1 = "test1.png";
@@ -316,6 +317,209 @@ class ProductServiceTest {
         assertThatThrownBy(() -> productService.deleteProduct(savedId1, seller2.getLoginId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(UserErrorCode.INVALID_USER.getMessage());
+
+    }
+
+    @Test
+    @DisplayName("상품 수정 성공")
+    void update() throws Exception {
+        //given
+        // 사진 등록
+        String fileName1 = "test1.png";
+        String fileName2 = "test2.png";
+        String fileName3 = "test3.png";
+        String fileName4 = "test4.png";
+
+        String contentType = "image/png";
+        String productName = "상품이름";
+        String info = "정보";
+        LocalDateTime now = LocalDateTime.now();
+        Long startPrice = 10000L;
+        Long priceUnit = 1000L;
+        LocalDateTime savedTime = now.plusDays(2);
+        LocalDateTime updatedTime = now.plusMonths(1);
+        MultipartFile sigFile = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        MultipartFile file1 = new MockMultipartFile("testFile2", fileName2, contentType, "test2".getBytes());
+        MultipartFile file2 = new MockMultipartFile("testFile3", fileName3, contentType, "test3".getBytes());
+        MultipartFile file3 = new MockMultipartFile("testFile3", fileName4, contentType, "test4".getBytes());
+
+        List<MultipartFile> ordinalFileList = new ArrayList<>(Arrays.asList(file1, file2));
+        List<MultipartFile> updatedOrdinalFileList = new ArrayList<>(Arrays.asList(file2, file3));
+
+        UploadFileDTO sigFileDTO = fileUploader.uploadFile(sigFile, FileSubPath.PRODUCT_IMG_PATH);
+        List<UploadFileDTO> ordinalFileDTOList = fileUploader.uploadFiles(ordinalFileList, FileSubPath.PRODUCT_IMG_PATH);
+
+        // 등록 dto 생성
+        Member findMember = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Category findCategory = categoryRepository.findCategoryByName("생활/주방").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Category updateCategory = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+
+        ProductRegisterReq registerReq = new ProductRegisterReq(productName, info, findCategory.getId(), savedTime, startPrice, priceUnit, ordinalFileList, sigFile);
+
+        // 상품 등록
+        ProductRegisterDTO registerDTO = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, findMember.getLoginId());
+        Long savedId = productService.register(registerDTO);
+
+
+        //when
+        ProductUpdateReq productUpdateReq = new ProductUpdateReq(productName, info, updateCategory.getId(), updatedTime, startPrice.intValue(), priceUnit.intValue(), updatedOrdinalFileList, sigFile);
+        Long updatedId = productService.updateProduct(savedId, productUpdateReq, findMember.getLoginId());
+
+        //then
+        Product findProduct = productRepository.findById(updatedId).
+                orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        assertThat(findProduct.getName()).isEqualTo(productName);
+        assertThat(findProduct.getInfo()).isEqualTo(info);
+        assertThat(findProduct.getCategory()).isSameAs(updateCategory);
+        assertThat(findProduct.getAuctionEndDate()).isEqualTo(updatedTime);
+        assertThat(findProduct.getStartPrice()).isEqualTo(startPrice.intValue());
+        assertThat(findProduct.getPriceUnit()).isEqualTo(priceUnit.intValue());
+
+        // 사진 검증
+        // 대표 사진
+        assertThat(findProduct.getSigImage().getOriginalName()).isEqualTo(sigFile.getOriginalFilename());
+        // 일반 사진
+        assertThat(findProduct.getOrdinalImageList().size()).isEqualTo(2);
+        assertThat(findProduct.getOrdinalImageList()).extracting("originalName")
+                .containsExactlyInAnyOrder(file2.getOriginalFilename(), file3.getOriginalFilename());
+    }
+
+    @Test
+    @DisplayName("상품 수정 실패, 상품이 존재 x/ 카테고리가 존재 x/ 올바른 판매자가 아닌 경우")
+    void updateFail1() throws Exception {
+        //given
+        // 사진 등록
+        String fileName1 = "test1.png";
+        String fileName2 = "test2.png";
+        String fileName3 = "test3.png";
+        String fileName4 = "test4.png";
+
+        String contentType = "image/png";
+        String productName = "상품이름";
+        String info = "정보";
+        LocalDateTime now = LocalDateTime.now();
+        Long startPrice = 10000L;
+        Long priceUnit = 1000L;
+        LocalDateTime savedTime = now.plusDays(2);
+        LocalDateTime updatedTime = now.plusMonths(1);
+        MultipartFile sigFile = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        MultipartFile file1 = new MockMultipartFile("testFile2", fileName2, contentType, "test2".getBytes());
+        MultipartFile file2 = new MockMultipartFile("testFile3", fileName3, contentType, "test3".getBytes());
+        MultipartFile file3 = new MockMultipartFile("testFile3", fileName4, contentType, "test4".getBytes());
+
+        List<MultipartFile> ordinalFileList = new ArrayList<>(Arrays.asList(file1, file2));
+        List<MultipartFile> updatedOrdinalFileList = new ArrayList<>(Arrays.asList(file2, file3));
+
+        UploadFileDTO sigFileDTO = fileUploader.uploadFile(sigFile, FileSubPath.PRODUCT_IMG_PATH);
+        List<UploadFileDTO> ordinalFileDTOList = fileUploader.uploadFiles(ordinalFileList, FileSubPath.PRODUCT_IMG_PATH);
+
+        // 등록 dto 생성
+        Member findMember1 = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member findMember2 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Category findCategory = categoryRepository.findCategoryByName("생활/주방").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Category updateCategory = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+
+        ProductRegisterReq registerReq = new ProductRegisterReq(productName, info, findCategory.getId(), savedTime, startPrice, priceUnit, ordinalFileList, sigFile);
+
+        // 상품 상태가 입찰 중이 아닌 경우(BID)
+        ProductRegisterDTO registerDTO1 = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, findMember1.getLoginId());
+        Long savedId1 = productService.register(registerDTO1);
+        Product findProduct1 = productRepository.findById(savedId1).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        findProduct1.changeProductStatus(ProductStatus.TRANSACTION_FAIL);
+        ProductUpdateReq productUpdateReq1 = new ProductUpdateReq(productName, info, updateCategory.getId(), updatedTime, startPrice.intValue(), priceUnit.intValue(), updatedOrdinalFileList, sigFile);
+
+        // 상품이 존재하지 않는 경우
+        ProductRegisterDTO registerDTO2 = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, findMember1.getLoginId());
+        Long savedId2 = productService.register(registerDTO2);
+        ProductUpdateReq productUpdateReq2 = new ProductUpdateReq(productName, info, -1L, updatedTime, startPrice.intValue(), priceUnit.intValue(), updatedOrdinalFileList, sigFile);
+
+        // 올바른 판매자가 아닌 경우 (판매자가 아닌 사람이 수정하려 할 때)
+        ProductRegisterDTO registerDTO3 = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, findMember1.getLoginId());
+        Long savedId3 = productService.register(registerDTO3);
+        ProductUpdateReq productUpdateReq3 = new ProductUpdateReq(productName, info, updateCategory.getId(), updatedTime, startPrice.intValue(), priceUnit.intValue(), updatedOrdinalFileList, sigFile);
+
+        // 올바른 판매자가 아닌 경우 (상품 판매자는 맞지만 존재하지 않는 판매자(DELETED)일 경우)
+        ProductRegisterDTO registerDTO4 = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, findMember2.getLoginId());
+        Long savedId4 = productService.register(registerDTO4);
+        ProductUpdateReq productUpdateReq4 = new ProductUpdateReq(productName, info, updateCategory.getId(), updatedTime, startPrice.intValue(), priceUnit.intValue(), updatedOrdinalFileList, sigFile);
+        findMember2.changeStatus(MemberStatus.DELETED);
+
+        //then
+        // 상품이 존재하지 않는 경우
+        assertThatThrownBy(() ->productService.updateProduct(savedId1, productUpdateReq1, findMember1.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ProductErrorCode.INVALID_UPDATE_PRODUCT_STATUS.getMessage());
+
+        // 상품이 존재하지 않는 경우
+        assertThatThrownBy(() ->productService.updateProduct(savedId2, productUpdateReq2, findMember1.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(CategoryErrorCode.CATEGORY_NOT_FOUND.getMessage());
+
+        // 올바른 판매자가 아닌 경우 (판매자가 아닌 사람이 수정하려 할 때)
+        assertThatThrownBy(() ->productService.updateProduct(savedId3, productUpdateReq3, findMember2.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(UserErrorCode.INVALID_USER.getMessage());
+
+        // 올바른 판매자가 아닌 경우 (상품 판매자는 맞지만 존재하지 않는 판매자(DELETED)일 경우)
+        assertThatThrownBy(() ->productService.updateProduct(savedId4, productUpdateReq4, findMember2.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(UserErrorCode.INVALID_USER.getMessage());
+    }
+
+    @Test
+    @DisplayName("상품 수정 실패, 상품 입찰 기록이 있는 경우")
+    void updateFai2() throws Exception {
+        //given
+        // 사진 등록
+        String fileName1 = "test1.png";
+        String fileName2 = "test2.png";
+        String fileName3 = "test3.png";
+        String fileName4 = "test4.png";
+
+        String contentType = "image/png";
+        String productName = "상품이름";
+        String info = "정보";
+        LocalDateTime now = LocalDateTime.now();
+        Long startPrice = 10000L;
+        Long priceUnit = 1000L;
+        LocalDateTime savedTime = now.plusDays(2);
+        LocalDateTime updatedTime = now.plusMonths(1);
+        MultipartFile sigFile = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        MultipartFile file1 = new MockMultipartFile("testFile2", fileName2, contentType, "test2".getBytes());
+        MultipartFile file2 = new MockMultipartFile("testFile3", fileName3, contentType, "test3".getBytes());
+        MultipartFile file3 = new MockMultipartFile("testFile3", fileName4, contentType, "test4".getBytes());
+
+        List<MultipartFile> ordinalFileList = new ArrayList<>(Arrays.asList(file1, file2));
+        List<MultipartFile> updatedOrdinalFileList = new ArrayList<>(Arrays.asList(file2, file3));
+
+        UploadFileDTO sigFileDTO = fileUploader.uploadFile(sigFile, FileSubPath.PRODUCT_IMG_PATH);
+        List<UploadFileDTO> ordinalFileDTOList = fileUploader.uploadFiles(ordinalFileList, FileSubPath.PRODUCT_IMG_PATH);
+
+        // 등록 dto 생성
+        Member findMember1 = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member findMember2 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Category findCategory = categoryRepository.findCategoryByName("생활/주방").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Category updateCategory = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+
+        ProductRegisterReq registerReq = new ProductRegisterReq(productName, info, findCategory.getId(), savedTime, startPrice, priceUnit, ordinalFileList, sigFile);
+
+        // 상품 입찰 기록이 있는 경우
+        ProductRegisterDTO registerDTO1 = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, findMember1.getLoginId());
+        Long savedId1 = productService.register(registerDTO1);
+        Product findProduct1 = productRepository.findById(savedId1).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        // 상품 입찰
+        AuctionHistory auctionHistory = createAuctionHistory(findProduct1, 11000, findMember2);
+        auctionHistoryRepository.save(auctionHistory);
+
+
+        //then
+        // 상품 입찰 기록이 있는 경우
+        ProductUpdateReq productUpdateReq1 = new ProductUpdateReq(productName, info, updateCategory.getId(), updatedTime, startPrice.intValue(), priceUnit.intValue(), updatedOrdinalFileList, sigFile);
+        assertThatThrownBy(() ->productService.updateProduct(savedId1, productUpdateReq1, findMember1.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ProductErrorCode.INVALID_UPDATE_PRODUCT_HISTORY.getMessage());
+
 
     }
 

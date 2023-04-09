@@ -104,9 +104,9 @@ public class ProductService {
 
     @Transactional
     public Long updateProduct(Long productId, ProductUpdateReq updateReq, String loginId) {
-        // 상품 존재 확인
-        Product findProduct = productRepository.findByIdAndProductStatusNot(productId, DELETED)
-                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        // 상품이 입찰 상태인지 확인
+        Product findProduct = productRepository.findByIdAndProductStatus(productId, BID)
+                .orElseThrow(() -> new CustomException(ProductErrorCode.INVALID_UPDATE_PRODUCT_STATUS));
 
         // 카테고리 존재 확인
         Category category = categoryRepository.findById(updateReq.getCategoryId())
@@ -115,9 +115,9 @@ public class ProductService {
         //수정하려는 판매자가 올바른 판매자인지(상품 등록자가 맞는지 + 상품 등록자 상태가 EXIST 인지)
         validRightSeller(findProduct, loginId);
 
-        //수정 가능한 상품 상태인지(상품이 입찰 상태일 때 입찰 기록이 없는 경우)
-        if (hasAuctionHistoryWhenBidding(findProduct)) {
-            throw new CustomException(ProductErrorCode.PRODUCT_NOT_UPDATE);
+        //수정 가능한 상품 상태인지(상품이 입찰 상태일 때 입찰 기록이 없는 경우에 상품 변경 가능)
+        if (hasAuctionHistoryWhenBidding(findProduct)) { // 입찰 기록이 있는 경우
+            throw new CustomException(ProductErrorCode.INVALID_UPDATE_PRODUCT_HISTORY);
         }
 
         //사진수정
@@ -180,7 +180,7 @@ public class ProductService {
 
         //엔티티 생성
         List<ProductImage> createdProductImageList = uploadFIleDTOList.stream()
-                .map(uploadFIle -> createProductImage(uploadFIle, imageType))
+                .map(uploadFIle -> createProductImage(uploadFIle, imageType, product))
                 .toList();
         //엔티티 저장
         fileRepository.saveAll(createdProductImageList);
@@ -201,10 +201,6 @@ public class ProductService {
     }
 
     private boolean doesNotContain(String target, String[] elements) {
-        return !StringUtils.containsAny(target, elements);
-    }
-
-    private boolean doesContain(String target, String[] elements) {
         return !StringUtils.containsAny(target, elements);
     }
 
@@ -243,11 +239,6 @@ public class ProductService {
                 .build();
     }
 
-    private List<ProductImage> createProductImageList(List<UploadFileDTO> uploadImageList, ProductImageType imageType, Product product) {
-        return uploadImageList.stream()
-                .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType, product))
-                .collect(toList());
-    }
 
     private List<ProductImage> createProductImageList(List<UploadFileDTO> uploadImageList, ProductImageType imageType) {
         return uploadImageList.stream()
