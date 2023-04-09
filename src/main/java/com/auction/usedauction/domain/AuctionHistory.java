@@ -32,10 +32,14 @@ public class AuctionHistory extends BaseTimeEntity {
     private Product product;
 
     @Builder
-    public AuctionHistory(int bidPrice, AuctionHistoryStatus status, Member member, Product product) {
+    public AuctionHistory(int bidPrice, Member member, Product product) {
         this.bidPrice = bidPrice;
-        this.status = status;
         this.member = member;
         this.product = product;
+    }
+
+    @PrePersist
+    private void initStatus() {
+        this.status = AuctionHistoryStatus.BID;
     }
 }

@@ -17,7 +17,7 @@ import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.service.dto.ProductUpdateReq;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
-import com.auction.usedauction.util.UploadFIleDTO;
+import com.auction.usedauction.util.UploadFileDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,14 +79,13 @@ public class ProductService {
                 TRANSACTION_FAIL,
                 FAIL_BID};
 
-        // 상품이 존재하는지 확인
-        // 입찰/거래 완료/낙찰 실패/거래 실패 상태인 상품
+        // 입찰/거래 완료/낙찰 실패/거래 실패 상태인 상품인지 확인
         Product findProduct = productRepository.findByIdAndProductStatusIn(productId, productStatuses)
-                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ProductErrorCode.INVALID_DELETE_PRODUCT_STATUS));
 
-        //상품이 입찰 상태일 때 입찰 기록이 없는 경우만 가능
+        //상품이 입찰 상태일 때는 입찰 기록이 없는 경우만 가능
         if (hasAuctionHistoryWhenBidding(findProduct)) {
-            throw new CustomException(ProductErrorCode.PRODUCT_DELETE_FAIL);
+            throw new CustomException(ProductErrorCode.INVALID_DELETE_PRODUCT_HISTORY);
         }
 
         // 상품 제거 권한 있는 판매자인지 + 탈퇴하지 않은 존재하는 판매자인지
@@ -177,7 +176,7 @@ public class ProductService {
         //추가해야 할 multipartFile 찾기
         List<MultipartFile> insertMultipartFiles = findInsertMultipartFiles(multipartImages, productImageOriginalNames);
         //사진 저장
-        List<UploadFIleDTO> uploadFIleDTOList = fileUploader.uploadFiles(insertMultipartFiles, FileSubPath.PRODUCT_IMG_PATH);
+        List<UploadFileDTO> uploadFIleDTOList = fileUploader.uploadFiles(insertMultipartFiles, FileSubPath.PRODUCT_IMG_PATH);
 
         //엔티티 생성
         List<ProductImage> createdProductImageList = uploadFIleDTOList.stream()
@@ -244,19 +243,19 @@ public class ProductService {
                 .build();
     }
 
-    private List<ProductImage> createProductImageList(List<UploadFIleDTO> uploadImageList, ProductImageType imageType,Product product) {
+    private List<ProductImage> createProductImageList(List<UploadFileDTO> uploadImageList, ProductImageType imageType, Product product) {
         return uploadImageList.stream()
                 .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType, product))
                 .collect(toList());
     }
 
-    private List<ProductImage> createProductImageList(List<UploadFIleDTO> uploadImageList, ProductImageType imageType) {
+    private List<ProductImage> createProductImageList(List<UploadFileDTO> uploadImageList, ProductImageType imageType) {
         return uploadImageList.stream()
                 .map(uploadFIleDTO -> createProductImage(uploadFIleDTO, imageType))
                 .collect(toList());
     }
 
-    private ProductImage createProductImage(UploadFIleDTO uploadImage, ProductImageType imageType,Product product) {
+    private ProductImage createProductImage(UploadFileDTO uploadImage, ProductImageType imageType, Product product) {
         ProductImage productImage = ProductImage.builder()
                 .originalName(uploadImage.getUploadFileName())
                 .path(uploadImage.getStoreUrl())
@@ -266,7 +265,7 @@ public class ProductService {
         productImage.changeProduct(product);
         return productImage;
     }
-    private ProductImage createProductImage(UploadFIleDTO uploadImage, ProductImageType imageType) {
+    private ProductImage createProductImage(UploadFileDTO uploadImage, ProductImageType imageType) {
         return ProductImage.builder()
                 .originalName(uploadImage.getUploadFileName())
                 .path(uploadImage.getStoreUrl())
