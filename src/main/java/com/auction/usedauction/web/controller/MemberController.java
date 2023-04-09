@@ -34,6 +34,20 @@ public class MemberController {
         return new ResponseEntity<>(new ResultRes(new LoginRes(token)), httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "로그인 체크")
+    @GetMapping("/is-login")
+    public ResultRes<LoginCheckRes> loginCheck(@AuthenticationPrincipal User user) {
+        boolean isLogin = false;
+        String loginId = "";
+
+        if(user != null) {
+            isLogin = true;
+            loginId = user.getUsername();
+        }
+
+        return new ResultRes(new LoginCheckRes(isLogin, loginId));
+    }
+
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResultRes<MessageRes> register(@RequestBody @Valid RegisterReq registerReq, HttpSession session) {
