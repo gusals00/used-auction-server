@@ -1,6 +1,7 @@
 package com.auction.usedauction.service;
 
 import com.auction.usedauction.domain.*;
+import com.auction.usedauction.domain.file.QuestionStatus;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
 import com.auction.usedauction.exception.error_code.ProductErrorCode;
@@ -76,7 +77,7 @@ class QuestionServiceTest {
 
     @Test
     @DisplayName("질문 등록 성공")
-    void register() throws Exception{
+    void register() throws Exception {
         //given
         // 사진 등록
         String fileName1 = "test1.png";
@@ -106,7 +107,7 @@ class QuestionServiceTest {
 
         //when
         // 부모 댓글
-        Long savedQuestionId1 = questionService.registerQuestion(new QuestionRegisterDTO(null,parentContent , savedProductId, seller.getLoginId()));
+        Long savedQuestionId1 = questionService.registerQuestion(new QuestionRegisterDTO(null, parentContent, savedProductId, seller.getLoginId()));
         //자식 댓글
         Long savedQuestionId2 = questionService.registerQuestion(new QuestionRegisterDTO(savedQuestionId1, childContent, savedProductId, buyer.getLoginId()));
 
@@ -125,13 +126,11 @@ class QuestionServiceTest {
         assertThat(findQuestion2.getContent()).isEqualTo(childContent);
         assertThat(findQuestion2.getLayer()).isEqualTo(1);
         assertThat(findQuestion2.getMember()).isSameAs(buyer);
-
-
     }
 
     @Test
     @DisplayName("질문 등록 실패, 작성자 존재 / 상품 존재하지 않는 경우")
-    void registerFail1() throws Exception{
+    void registerFail1() throws Exception {
         //given
         // 사진 등록
         String fileName1 = "test1.png";
@@ -169,12 +168,12 @@ class QuestionServiceTest {
 
         //then
         //작성 상품이 존재하지 않는 경우
-        assertThatThrownBy(() -> questionService.registerQuestion(new QuestionRegisterDTO(null,parentContent , savedProductId1, seller.getLoginId())))
+        assertThatThrownBy(() -> questionService.registerQuestion(new QuestionRegisterDTO(null, parentContent, savedProductId1, seller.getLoginId())))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ProductErrorCode.PRODUCT_NOT_FOUND.getMessage());
 
         //작성자가 존재하지 않는 경우
-        assertThatThrownBy(() -> questionService.registerQuestion(new QuestionRegisterDTO(null,parentContent , savedProductId2, buyer.getLoginId())))
+        assertThatThrownBy(() -> questionService.registerQuestion(new QuestionRegisterDTO(null, parentContent, savedProductId2, buyer.getLoginId())))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(UserErrorCode.USER_NOT_FOUND.getMessage());
 
@@ -182,7 +181,7 @@ class QuestionServiceTest {
 
     @Test
     @DisplayName("질문 등록 실패, 대댓글 작성자가 판매자가 아닌 경우/ 대댓글까지만 작성이 가능")
-    void registerFail2() throws Exception{
+    void registerFail2() throws Exception {
         //given
         // 사진 등록
         String fileName1 = "test1.png";
@@ -207,8 +206,8 @@ class QuestionServiceTest {
         ProductRegisterDTO registerDTO1 = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, seller.getLoginId());
         Long savedProductId1 = productService.register(registerDTO1);
 
-        String parentContent="질문이요";
-        String childContent="질문 답글이요";
+        String parentContent = "질문이요";
+        String childContent = "질문 답글이요";
         // 부모 댓글 작성
         Long parentId = questionService.registerQuestion(new QuestionRegisterDTO(null, parentContent, savedProductId1, buyer.getLoginId()));
 
@@ -217,24 +216,109 @@ class QuestionServiceTest {
 
         //then
         //작성 상품이 존재하지 않는 경우
-        assertThatThrownBy(() -> questionService.registerQuestion(new QuestionRegisterDTO(parentId,childContent , savedProductId1, buyer.getLoginId())))
+        assertThatThrownBy(() -> questionService.registerQuestion(new QuestionRegisterDTO(parentId, childContent, savedProductId1, buyer.getLoginId())))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(QuestionErrorCode.QUESTION_WRITE_SELLER_ONLY.getMessage());
 
         //대대댓글 작성하는 경우(대댓글까지만 작성 가능)
-        assertThatThrownBy(() -> questionService.registerQuestion(new QuestionRegisterDTO(childId,childContent , savedProductId1, buyer.getLoginId())))
+        assertThatThrownBy(() -> questionService.registerQuestion(new QuestionRegisterDTO(childId, childContent, savedProductId1, buyer.getLoginId())))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(QuestionErrorCode.INVALID_LAYER_QUESTION.getMessage());
     }
 
-    private AuctionHistory createAuctionHistory(Product product, int bidPrice, Member member) {
-        return AuctionHistory.builder()
-                .product(product)
-                .bidPrice(bidPrice)
-                .member(member)
-                .build();
+    @Test
+    @DisplayName("질문 삭제 성공")
+    void delete() throws Exception {
+        //given
+        // 사진 등록
+        String fileName1 = "test1.png";
+        String fileName2 = "test2.png";
+        String fileName3 = "test3.png";
+        String contentType = "image/png";
+
+        MultipartFile sigFile = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        MultipartFile file1 = new MockMultipartFile("testFile2", fileName2, contentType, "test2".getBytes());
+        MultipartFile file2 = new MockMultipartFile("testFile3", fileName3, contentType, "test3".getBytes());
+        List<MultipartFile> ordinalFileList = new ArrayList<>(Arrays.asList(file1, file2));
+
+        UploadFileDTO sigFileDTO = fileUploader.uploadFile(sigFile, FileSubPath.PRODUCT_IMG_PATH);
+        List<UploadFileDTO> ordinalFileDTOList = fileUploader.uploadFiles(ordinalFileList, FileSubPath.PRODUCT_IMG_PATH);
+
+        // 등록 dto 생성
+        Member seller = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Category findCategory = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        ProductRegisterReq registerReq = new ProductRegisterReq("상품이름", "정보", findCategory.getId(), LocalDateTime.now().plusDays(2), 10000L, 1000L, ordinalFileList, sigFile);
+
+        // 상품 등록
+        ProductRegisterDTO registerDTO = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, seller.getLoginId());
+        Long savedProductId = productService.register(registerDTO);
+        String parentContent = "질문 있습니다1";
+        String childContent = "질문 있습니다2";
+
+        // 부모 댓글
+        Long savedQuestionId1 = questionService.registerQuestion(new QuestionRegisterDTO(null, parentContent, savedProductId, buyer.getLoginId()));
+        //자식 댓글
+        Long savedQuestionId2 = questionService.registerQuestion(new QuestionRegisterDTO(savedQuestionId1, childContent, savedProductId, seller.getLoginId()));
+
+        //when
+        Long deletedQuestionId1 = questionService.deleteQuestion(savedQuestionId1, buyer.getLoginId());
+        Long deletedQuestionId2 = questionService.deleteQuestion(savedQuestionId2,seller.getLoginId());
+
+        //then
+        Question findQuestion1 = questionRepository.findById(deletedQuestionId1).orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
+        Question findQuestion2 = questionRepository.findById(deletedQuestionId2).orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
+        assertThat(findQuestion1.getStatus()).isEqualTo(QuestionStatus.DELETED);
+        assertThat(findQuestion2.getStatus()).isEqualTo(QuestionStatus.DELETED);
+
     }
 
+    @Test
+    @DisplayName("질문 삭제 실패, 질문이 존재하지 않는 경우/ 질문 작성자가 아닌 회원이 제거하는 경우")
+    void deleteFail() throws Exception {
+        //given
+        // 사진 등록
+        String fileName1 = "test1.png";
+        String fileName2 = "test2.png";
+        String fileName3 = "test3.png";
+        String contentType = "image/png";
+
+        MultipartFile sigFile = new MockMultipartFile("testFile1", fileName1, contentType, "test1".getBytes());
+        MultipartFile file1 = new MockMultipartFile("testFile2", fileName2, contentType, "test2".getBytes());
+        MultipartFile file2 = new MockMultipartFile("testFile3", fileName3, contentType, "test3".getBytes());
+        List<MultipartFile> ordinalFileList = new ArrayList<>(Arrays.asList(file1, file2));
+
+        UploadFileDTO sigFileDTO = fileUploader.uploadFile(sigFile, FileSubPath.PRODUCT_IMG_PATH);
+        List<UploadFileDTO> ordinalFileDTOList = fileUploader.uploadFiles(ordinalFileList, FileSubPath.PRODUCT_IMG_PATH);
+
+        // 등록 dto 생성
+        Member seller = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Category findCategory = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        ProductRegisterReq registerReq = new ProductRegisterReq("상품이름", "정보", findCategory.getId(), LocalDateTime.now().plusDays(2), 10000L, 1000L, ordinalFileList, sigFile);
+
+        // 상품 등록
+        ProductRegisterDTO registerDTO = new ProductRegisterDTO(registerReq, sigFileDTO, ordinalFileDTOList, seller.getLoginId());
+        Long savedProductId1 = productService.register(registerDTO);
+
+        String content = "질문 있습니다1";
+
+        Long savedQuestionId1 = questionService.registerQuestion(new QuestionRegisterDTO(null, content, savedProductId1, buyer.getLoginId()));
+
+        Long savedQuestionId2 = questionService.registerQuestion(new QuestionRegisterDTO(null, content, savedProductId1, buyer.getLoginId()));
+        Question findQuestion2 = questionRepository.findById(savedQuestionId2).orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
+        findQuestion2.changeStatus(QuestionStatus.DELETED
+        );
+        //then
+        // 질문 작성자가 아닌 회원이 질문 삭제하려는 경우
+        assertThatThrownBy(() -> questionService.deleteQuestion(savedQuestionId1, seller.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(UserErrorCode.INVALID_USER.getMessage());
+        // 질문이 존재하지 않는 경우
+        assertThatThrownBy(() -> questionService.deleteQuestion(savedQuestionId2, buyer.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(QuestionErrorCode.QUESTION_NOT_FOUND.getMessage());
+    }
     private Member createMember(String name, String birth, String email, String loginId, String password, String phoneNumber, Authority authorities) {
         return Member.builder()
                 .name(name)

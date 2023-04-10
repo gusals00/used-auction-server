@@ -42,6 +42,8 @@ public class QuestionService {
 
     @Transactional
     public Long deleteQuestion(Long questionId, String loginId) {
+
+        // 존재하는 질문인지 확인
         Question findQuestion = questionRepository.findByIdAndStatus(questionId, QuestionStatus.EXIST)
                 .orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
 
