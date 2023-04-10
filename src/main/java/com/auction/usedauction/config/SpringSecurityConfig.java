@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsUtils;
 
 @Configuration
 @EnableWebSecurity
@@ -54,7 +53,7 @@ public class SpringSecurityConfig {
                 .requestMatchers("/api/member/name/**").permitAll()
 
                 //question
-                .requestMatchers("/api/questions/*").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/questions/*").permitAll()
 
                 //swagger
                 .requestMatchers("/swagger-ui/*").permitAll()
