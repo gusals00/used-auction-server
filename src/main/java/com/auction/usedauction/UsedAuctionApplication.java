@@ -1,5 +1,7 @@
 package com.auction.usedauction;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
@@ -13,9 +15,11 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 
+
 @SpringBootApplication
 @EnableJpaAuditing
 @Slf4j
+@OpenAPIDefinition(servers = {@Server(url = "/", description = "Default Server URL")})
 public class UsedAuctionApplication {
 
 	public static void main(String[] args) {
