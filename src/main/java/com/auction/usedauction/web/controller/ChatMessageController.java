@@ -1,9 +1,6 @@
 package com.auction.usedauction.web.controller;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +19,7 @@ public class ChatMessageController {
     @Getter
     @Setter
     @AllArgsConstructor
+    @NoArgsConstructor
     static class TestMessage {
         String test;
     }
