@@ -4,7 +4,6 @@ import com.auction.usedauction.domain.BaseTimeEntity;
 import com.auction.usedauction.domain.Question;
 import com.auction.usedauction.domain.file.QuestionStatus;
 import com.auction.usedauction.util.DeletedQuestionMessage;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,8 +28,8 @@ public class QuestionPageContentRes {
     private String content;
     @Schema(description = "질문 등록 날짜", example = "2023-04-06 01:05")
     private String createdDate;
-
-    @ArraySchema()
+    @Schema(description = "질문 등록 회원 아이디, 삭제된 질문이면 loginId = 알수없음으로 결과 나감", example = "5")
+    private String loginId;
     private List<QuestionPageContentRes> children;
 
     public QuestionPageContentRes(Question question) {
@@ -38,11 +37,13 @@ public class QuestionPageContentRes {
         this.nickname = question.getMember().getName();
         this.content = question.getContent();
         this.createdDate = question.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.loginId = question.getMember().getLoginId();
 
         //삭제된 질문일 경우
         if (question.getStatus() == QuestionStatus.DELETED) {
             nickname = DeletedQuestionMessage.NICKNAME;
             content = DeletedQuestionMessage.CONTENT;
+            loginId = DeletedQuestionMessage.LOGIN_ID;
         }
 
         // 자식 질문을 날짜순으로 오름차순 정렬
