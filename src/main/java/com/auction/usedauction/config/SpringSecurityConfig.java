@@ -41,6 +41,7 @@ public class SpringSecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
+                .requestMatchers("/chat/ws/**").permitAll()
                 .requestMatchers("/api/member/signup").permitAll()
                 .requestMatchers("/api/member/login").permitAll()
                 .requestMatchers("/api/member/is-login").permitAll()
