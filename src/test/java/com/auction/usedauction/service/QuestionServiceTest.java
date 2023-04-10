@@ -107,9 +107,9 @@ class QuestionServiceTest {
 
         //when
         // 부모 댓글
-        Long savedQuestionId1 = questionService.registerQuestion(new QuestionRegisterDTO(null, parentContent, savedProductId, seller.getLoginId()));
+        Long savedQuestionId1 = questionService.registerQuestion(new QuestionRegisterDTO(null, parentContent, savedProductId, buyer.getLoginId()));
         //자식 댓글
-        Long savedQuestionId2 = questionService.registerQuestion(new QuestionRegisterDTO(savedQuestionId1, childContent, savedProductId, buyer.getLoginId()));
+        Long savedQuestionId2 = questionService.registerQuestion(new QuestionRegisterDTO(savedQuestionId1, childContent, savedProductId, seller.getLoginId()));
 
         //then
         Question findQuestion1 = questionRepository.findById(savedQuestionId1).orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
@@ -119,13 +119,13 @@ class QuestionServiceTest {
         assertThat(findQuestion1.getParent()).isNull();
         assertThat(findQuestion1.getContent()).isEqualTo(parentContent);
         assertThat(findQuestion1.getLayer()).isEqualTo(0);
-        assertThat(findQuestion1.getMember()).isSameAs(seller);
+        assertThat(findQuestion1.getMember()).isSameAs(buyer);
 
         //자식 댓글
         assertThat(findQuestion2.getParent().getId()).isEqualTo(savedQuestionId1);
         assertThat(findQuestion2.getContent()).isEqualTo(childContent);
         assertThat(findQuestion2.getLayer()).isEqualTo(1);
-        assertThat(findQuestion2.getMember()).isSameAs(buyer);
+        assertThat(findQuestion2.getMember()).isSameAs(seller);
     }
 
     @Test
