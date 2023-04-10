@@ -30,7 +30,7 @@ public class QuestionService {
     public Long registerQuestion(QuestionRegisterDTO registerDTO) {
         // 작성자 존재 여부 확인
         Member findMember = memberRepository.findOneWithAuthoritiesByLoginIdAndStatus(registerDTO.getMemberLoginId(), MemberStatus.EXIST)
-                .orElseThrow(() -> new CustomException(UserErrorCode.INVALID_USER));
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         // 상품 존재 여부 확인
         Product findProduct = productRepository.findByIdAndProductStatusNot(registerDTO.getProductId(), ProductStatus.DELETED)
@@ -41,7 +41,9 @@ public class QuestionService {
     }
 
     @Transactional
-    public Long deleteQuestion(Long questionId,String loginId) {
+    public Long deleteQuestion(Long questionId, String loginId) {
+
+        // 존재하는 질문인지 확인
         Question findQuestion = questionRepository.findByIdAndStatus(questionId, QuestionStatus.EXIST)
                 .orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
 
@@ -58,10 +60,10 @@ public class QuestionService {
         Question question;
 
         if (registerDTO.getParentId() == null) {
-            question = createQuestion(registerDTO.getContent(), findMember, findProduct, null,0);
+            question = createQuestion(registerDTO.getContent(), findMember, findProduct, null, 0);
         } else {
             // 부모 조회
-            Question findParent = questionRepository.findByIdAndProduct(registerDTO.getParentId(),findProduct)
+            Question findParent = questionRepository.findByIdAndProduct(registerDTO.getParentId(), findProduct)
                     .orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
 
             //작성 댓글이 대댓글인지 확인 (대댓글까지만 작성 가능)
@@ -69,11 +71,11 @@ public class QuestionService {
                 throw new CustomException(QuestionErrorCode.INVALID_LAYER_QUESTION);
             }
 
-            //대댓글 작성자가 판매자인지 확인
-            if (!findProduct.getMember().getId().equals(findProduct.getId())) {
+            //대댓글 작성자가 판매자가 아닌 경우
+            if (!findProduct.getMember().getLoginId().equals(registerDTO.getMemberLoginId())) {
                 throw new CustomException(QuestionErrorCode.QUESTION_WRITE_SELLER_ONLY);
             }
-            question = createQuestion(registerDTO.getContent(), findMember, findProduct, findParent,1);
+            question = createQuestion(registerDTO.getContent(), findMember, findProduct, findParent, findParent.getLayer() + 1);
         }
         questionRepository.save(question);
         return question.getId();
@@ -81,7 +83,7 @@ public class QuestionService {
     }
 
 
-    private Question createQuestion(String content, Member member, Product product, Question parent,int layer) {
+    private Question createQuestion(String content, Member member, Product product, Question parent, int layer) {
         return Question.builder().content(content)
                 .member(member)
                 .product(product)
