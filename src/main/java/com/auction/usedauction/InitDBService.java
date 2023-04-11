@@ -59,7 +59,7 @@ public class InitDBService {
         insertMember();
 
         // 상품 추가
-//        insertProducts();
+        insertProducts();
     }
 
     private void insertMember() {
