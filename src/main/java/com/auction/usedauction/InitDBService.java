@@ -44,7 +44,7 @@ public class InitDBService {
     private final ProductService productService;
     private final ProductRepository productRepository;
     private final EntityManager em;
-    private String filePath = "src/main/resources/files/";
+    private String filePath = "./src/main/resources/files/";
 
     @Transactional
     public void initDb() {
