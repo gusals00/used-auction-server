@@ -2,6 +2,7 @@ package com.auction.usedauction.service.dto;
 
 import com.auction.usedauction.util.UploadFileDTO;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProductRegisterDTO {
 
     private String name;
