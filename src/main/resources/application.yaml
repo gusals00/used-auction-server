@@ -82,4 +82,4 @@ springdoc:
 OPENVIDU_URL: url
 OPENVIDU_SECRET: url
 
-INIT_FILE_PATH: = /src/main/resources/files/
+INIT_FILE_PATH: src/main/resources/files/

@@ -88,6 +88,7 @@ public class InitDBService {
 
 
         //member1 상품 저장
+
         insertProduct("이것이 코딩 테스트다", "책 정보입니다", bookCategory.getId(), now.plusDays(5), 10000, 2000,
                 "1_1.jpg", Arrays.asList("1_2.jpg","1_3.jpg","1_4.jpg"), member1.getLoginId(),3);
 
