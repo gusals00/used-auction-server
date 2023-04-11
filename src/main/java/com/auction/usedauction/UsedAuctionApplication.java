@@ -35,5 +35,7 @@ public class UsedAuctionApplication {
 	public void setTimeZone() { // LocalDateTime 한국 시간 기준으로
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
 		log.info("LocalDateTime.now()={}",LocalDateTime.now());
+		java.security.Security.setProperty("networkaddress.cache.ttl" , "50");
+
 	}
 }
