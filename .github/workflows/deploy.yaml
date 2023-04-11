@@ -47,7 +47,7 @@ jobs:
           cloud.aws.s3.bucket: ${{ env.S3_BUCKET_NAME }}
           OPENVIDU_URL: ${{ secrets.OPENVIDU_URL }}
           OPENVIDU_SECRET: ${{ secrets.OPENVIDU_SECRET }}
-
+          INIT_FILE_PATH: /home/ubuntu/init-img
       # [Gradle Caching]
       - name: Gradle Caching
         uses: actions/cache@v3

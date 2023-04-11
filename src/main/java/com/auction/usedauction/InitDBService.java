@@ -21,6 +21,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +45,9 @@ public class InitDBService {
     private final ProductService productService;
     private final ProductRepository productRepository;
     private final EntityManager em;
-    private String filePath = "./src/main/resources/files/";
+
+    @Value("${INIT_FILE_PATH}")
+    private String filePath;
 
     @Transactional
     public void initDb() {
