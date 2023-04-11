@@ -1,6 +1,7 @@
 package com.auction.usedauction.service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +34,7 @@ public class ProductUpdateReq {
     private Long categoryId;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Future
     @NotNull
     @Schema(description = "경매 종료 날짜", example = "2022-12-11 12:01")
     private LocalDateTime auctionEndDate;
