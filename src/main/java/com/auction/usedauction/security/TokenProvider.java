@@ -1,5 +1,7 @@
 package com.auction.usedauction.security;
 
+import com.auction.usedauction.exception.error_code.ErrorCode;
+import com.auction.usedauction.exception.error_code.SecurityErrorCode;
 import com.auction.usedauction.util.AuthConstants;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -19,6 +21,8 @@ import org.springframework.util.StringUtils;
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.auction.usedauction.exception.error_code.SecurityErrorCode.*;
 
 @Component
 @Slf4j
@@ -70,18 +74,22 @@ public class TokenProvider implements InitializingBean {
     }
 
     // 토큰 검증
-    public boolean isValidToken(String token) {
+    public boolean isValidToken(String token, HttpServletRequest request) {
         try {
             getClaim(token);
             return true;
         }catch(io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
+            setException(request, WRONG_TYPE_TOKEN);
             log.info("잘못된 JWT 서명입니다.");
         }catch(ExpiredJwtException e){
-            log.info("만료된 JWT 토큰입니다.");
+            setException(request, EXPIRED_TOKEN);
+            log.info("만료된 JWT 입니다.");
         }catch(UnsupportedJwtException e){
-            log.info("지원하지 않는 JWT 토큰입니다.");
+            setException(request, UNSUPPORTED_TOKEN);
+            log.info("지원하지 않는 JWT 입니다.");
         }catch(IllegalArgumentException e){
-            log.info("JWT 토큰이 잘못되었습니다.");
+            setException(request, WRONG_TOKEN);
+            log.info("JWT가 잘못되었습니다.");
         }
         return false;
     }
@@ -102,5 +110,9 @@ public class TokenProvider implements InitializingBean {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private void setException(HttpServletRequest request, ErrorCode errorCode) {
+        request.setAttribute("exception", errorCode);
     }
 }
