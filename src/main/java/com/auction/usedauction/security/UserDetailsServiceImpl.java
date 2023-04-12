@@ -1,6 +1,7 @@
 package com.auction.usedauction.security;
 
 import com.auction.usedauction.domain.Member;
+import com.auction.usedauction.domain.MemberStatus;
 import com.auction.usedauction.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-        Member member = memberRepository.findOneWithAuthoritiesByLoginId(loginId)
+        Member member = memberRepository.findOneWithAuthoritiesByLoginIdAndStatus(loginId, MemberStatus.EXIST)
                 .orElseThrow(() -> new NoSuchElementException("사용자가 존재하지 않습니다."));
 
         Collection<? extends GrantedAuthority> authorities = member.getAuthorities().stream()
