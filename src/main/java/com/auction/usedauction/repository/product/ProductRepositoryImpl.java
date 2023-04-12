@@ -5,6 +5,7 @@ import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.ProductStatus;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
+import com.auction.usedauction.web.dto.MyPageSearchConReq;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -73,6 +75,34 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .fetchOne());
     }
 
+    //마이페이지 상품 관리
+    @Override
+    public Page<Product> findMyProductsByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
+        List<Product> content = queryFactory
+                .selectFrom(product)
+                .join(product.member, member)
+                .join(product.category, category).fetchJoin()
+                .where(loginIdEq(loginId),
+                        statusEq(cond.getStatus())
+                )
+                .orderBy(product.createdDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy()
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(product.count())
+                .from(product)
+                .join(product.member, member)
+                .where(loginIdEq(loginId),
+                        statusEq(cond.getStatus())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
 
     private OrderSpecifier orderCond(ProductOrderCond orderCond) {
         if (orderCond == ProductOrderCond.VIEW_ORDER) {
@@ -112,4 +142,25 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     private BooleanExpression memberStatusEq(MemberStatus memberStatus) {
         return memberStatus != null ? product.member.status.eq(memberStatus) : null;
     }
+
+    private BooleanExpression loginIdEq(String loginId) {
+        return loginId != null ? product.member.loginId.eq(loginId) : null;
+    }
+
+    private BooleanExpression statusEq(String status) {
+        if(!StringUtils.hasText(status)) {
+            return product.productStatus.ne(ProductStatus.DELETED);
+        } else if(status.equals("success-bid")) {
+            return product.productStatus.eq(ProductStatus.SUCCESS_BID);
+        } else if(status.equals("fail-bid")) {
+            return product.productStatus.eq(ProductStatus.FAIL_BID);
+        } else if(status.equals("transact   ion-ok")) {
+            return product.productStatus.eq(ProductStatus.TRANSACTION_OK);
+        } else if(status.equals("transaction-fail")) {
+            return product.productStatus.eq(ProductStatus.TRANSACTION_FAIL);
+        } else {
+            return product.productStatus.eq(ProductStatus.BID);
+        }
+    }
+
 }
