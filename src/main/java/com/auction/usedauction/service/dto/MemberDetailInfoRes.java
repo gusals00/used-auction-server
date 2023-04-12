@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class MemberDetailInfoRes {
 
     private String phoneNumber;
 
-    private LocalDateTime createdDate;
+    private String createdDate;
 
     public MemberDetailInfoRes(Member member) {
         this.name = member.getName();
@@ -30,6 +31,6 @@ public class MemberDetailInfoRes {
         this.birth = member.getBirth();
         this.email = member.getEmail();
         this.phoneNumber = member.getPhoneNumber();
-        this.createdDate = member.getCreatedDate();
+        this.createdDate = member.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));;
     }
 }
