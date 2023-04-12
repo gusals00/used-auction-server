@@ -33,7 +33,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String jwt = tokenProvider.resolveToken(request);
 
         // 유효성 검증
-        if(StringUtils.hasText(jwt) && tokenProvider.isValidToken(jwt)) {
+        if(StringUtils.hasText(jwt) && tokenProvider.isValidToken(jwt, request)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
 
             // 스프링 시큐리티 유저를 시큐리티 컨텍스트에 저장

@@ -1,5 +1,7 @@
 package com.auction.usedauction.config;
 
+import com.auction.usedauction.security.JwtAccessDeniedHandler;
+import com.auction.usedauction.security.JwtAuthenticationEntryPoint;
 import com.auction.usedauction.security.JwtAuthorizationFilter;
 import com.auction.usedauction.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +67,11 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
                 .anyRequest().authenticated()
+
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                .accessDeniedHandler(new JwtAccessDeniedHandler())
 
                 .and()
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
