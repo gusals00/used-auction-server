@@ -15,7 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     @EntityGraph(attributePaths = "member")
     Optional<Product> findByIdAndProductStatusIn(Long id, ProductStatus[] productStatus);
 
-    @EntityGraph(attributePaths = "member")
+    @EntityGraph(attributePaths = {"auction", "member"})
     Optional<Product> findByIdAndProductStatus(Long id, ProductStatus productStatus);
 
 }

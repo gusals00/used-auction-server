@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class Product extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name = "auction_id")
     private Auction auction;
 
@@ -105,11 +104,10 @@ public class Product extends BaseTimeEntity {
         this.productStatus = status;
     }
 
-    public void changeProduct(String name,String info, Category category, Auction auction) {
+    public void changeProduct(String name,String info, Category category) {
         this.name =name;
         this.info=info;
         this.category=category;
-        this.auction = auction;
     }
 
     @PrePersist

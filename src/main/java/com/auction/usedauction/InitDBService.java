@@ -13,6 +13,7 @@ import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.ProductService;
+import com.auction.usedauction.service.dto.AuctionRegisterDTO;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
@@ -116,8 +117,9 @@ public class InitDBService {
         UploadFileDTO sigUpload = uploadFile(FileSubPath.PRODUCT_IMG_PATH, sigFileName);
         List<UploadFileDTO> ordinalUpload = uploadFiles(FileSubPath.PRODUCT_IMG_PATH, ordinalFileNames);
 
-        ProductRegisterDTO productRegister = new ProductRegisterDTO(name, info, categoryId, endDate, startPrice, priceUnit, sigUpload, ordinalUpload, loginId);
-        Long savedId = productService.register(productRegister);
+        ProductRegisterDTO productRegister = new ProductRegisterDTO(name, info, categoryId, sigUpload, ordinalUpload, loginId);
+        AuctionRegisterDTO auctionRegister = new AuctionRegisterDTO( endDate, startPrice, priceUnit);
+        Long savedId = productService.register(productRegister,auctionRegister);
         Product findProduct = productRepository.findById(savedId).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         for (int i = 0; i < viewCount; i++) { // 조회수 증가

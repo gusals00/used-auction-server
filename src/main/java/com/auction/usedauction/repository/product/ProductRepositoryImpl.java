@@ -5,7 +5,6 @@ import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.ProductStatus;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
-import com.auction.usedauction.web.dto.MyPageSearchConReq;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -14,11 +13,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.auction.usedauction.domain.QAuction.*;
 import static com.auction.usedauction.domain.QCategory.*;
 import static com.auction.usedauction.domain.QMember.*;
 import static com.auction.usedauction.domain.QProduct.*;
@@ -34,12 +34,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     public Page<Product> findBySearchCond(ProductSearchCondDTO searchCond, Pageable pageable) {
         List<Product> content = queryFactory
                 .selectFrom(product)
-                .join(product.category, category).fetchJoin()
-                .join(product.member, member).fetchJoin()
+                .join(product.category, category)
+                .join(product.member, member)
+                .join(product.auction, auction)
                 .orderBy(orderCond(searchCond.getOrderBy()))
                 .where(productNameContains(searchCond.getProductName()),
                         categoryIdEq(searchCond.getCategoryId()),
-                        productStatusEq(ProductStatus.BID),
+                        productStatusEq(ProductStatus.EXIST),
                         memberStatusEq(MemberStatus.EXIST)
                 )
                 .offset(pageable.getOffset())
@@ -53,7 +54,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .join(product.member, member)
                 .where(productNameContains(searchCond.getProductName()),
                         categoryIdEq(searchCond.getCategoryId()),
-                        productStatusEq(ProductStatus.BID),
+                        productStatusEq(ProductStatus.EXIST),
                         memberStatusEq(MemberStatus.EXIST)
                 );
 
@@ -76,46 +77,49 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     //마이페이지 상품 관리
-    @Override
-    public Page<Product> findMyProductsByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
-        List<Product> content = queryFactory
-                .selectFrom(product)
-                .join(product.member, member)
-                .join(product.category, category).fetchJoin()
-                .where(loginIdEq(loginId),
-                        statusEq(cond.getStatus())
-                )
-                .orderBy(product.createdDate.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy()
-                .fetch();
+//    @Override
+//    public Page<Product> findMyProductsByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
+//        List<Product> content = queryFactory
+//                .selectFrom(product)
+//                .join(product.member, member)
+//                .join(product.category, category).fetchJoin()
+//                .where(loginIdEq(loginId),
+//                        statusEq(cond.getStatus())
+//                )
+//                .orderBy(product.createdDate.desc())
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .orderBy()
+//                .fetch();
+//
+//        JPAQuery<Long> countQuery = queryFactory
+//                .select(product.count())
+//                .from(product)
+//                .join(product.member, member)
+//                .where(loginIdEq(loginId),
+//                        statusEq(cond.getStatus())
+//                )
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize());
+//
+//        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+//    }
 
-        JPAQuery<Long> countQuery = queryFactory
-                .select(product.count())
-                .from(product)
-                .join(product.member, member)
-                .where(loginIdEq(loginId),
-                        statusEq(cond.getStatus())
-                )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
+    private OrderSpecifier[] orderCond(ProductOrderCond orderCond) {
 
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
-    }
-
-    private OrderSpecifier orderCond(ProductOrderCond orderCond) {
+        List<OrderSpecifier> orderByList = new ArrayList<>();
         if (orderCond == ProductOrderCond.VIEW_ORDER) {
-            return product.viewCount.desc();
+            orderByList.add(product.viewCount.desc());
         } else if (orderCond == ProductOrderCond.NEW_PRODUCT_ORDER) {
-            return product.createdDate.desc();
+            orderByList.add(product.createdDate.desc());
         } else if (orderCond == ProductOrderCond.BID_CLOSING_ORDER) {
-            return product.auctionEndDate.asc();
+            orderByList.add(auction.auctionEndDate.asc());
         } else if (orderCond == ProductOrderCond.HIGH_PRICE_ORDER) {
-            return product.nowPrice.desc();
+            orderByList.add(auction.nowPrice.desc());
         } else {
-            return product.nowPrice.asc();
+            orderByList.add(auction.nowPrice.asc());
         }
+        return orderByList.toArray(OrderSpecifier[]::new);
     }
 
     private BooleanExpression productStatusEq(ProductStatus status) {
@@ -147,20 +151,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return loginId != null ? product.member.loginId.eq(loginId) : null;
     }
 
-    private BooleanExpression statusEq(String status) {
-        if(!StringUtils.hasText(status)) {
-            return product.productStatus.ne(ProductStatus.DELETED);
-        } else if(status.equals("success-bid")) {
-            return product.productStatus.eq(ProductStatus.SUCCESS_BID);
-        } else if(status.equals("fail-bid")) {
-            return product.productStatus.eq(ProductStatus.FAIL_BID);
-        } else if(status.equals("transact   ion-ok")) {
-            return product.productStatus.eq(ProductStatus.TRANSACTION_OK);
-        } else if(status.equals("transaction-fail")) {
-            return product.productStatus.eq(ProductStatus.TRANSACTION_FAIL);
-        } else {
-            return product.productStatus.eq(ProductStatus.BID);
-        }
-    }
+//    private BooleanExpression statusEq(String status) {
+//        if(!StringUtils.hasText(status)) {
+//            return product.productStatus.ne(ProductStatus.DELETED);
+//        } else if(status.equals("success-bid")) {
+//            return product.productStatus.eq(ProductStatus.SUCCESS_BID);
+//        } else if(status.equals("fail-bid")) {
+//            return product.productStatus.eq(ProductStatus.FAIL_BID);
+//        } else if(status.equals("transact   ion-ok")) {
+//            return product.productStatus.eq(ProductStatus.TRANSACTION_OK);
+//        } else if(status.equals("transaction-fail")) {
+//            return product.productStatus.eq(ProductStatus.TRANSACTION_FAIL);
+//        } else {
+//            return product.productStatus.eq(ProductStatus.BID);
+//        }
+//    }
 
 }

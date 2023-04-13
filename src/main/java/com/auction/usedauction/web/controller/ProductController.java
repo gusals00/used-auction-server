@@ -100,7 +100,8 @@ public class ProductController {
         List<UploadFileDTO> uploadOrdinalFileDTOS = uploadOrdinalImages(registerReq);
 
         ProductRegisterDTO productRegisterDTO = new ProductRegisterDTO(registerReq, uploadSigFileDTO, uploadOrdinalFileDTOS, user.getUsername());
-        productService.register(productRegisterDTO);
+        AuctionRegisterDTO auctionRegisterDTO = new AuctionRegisterDTO(registerReq.getAuctionEndDate(),registerReq.getStartPrice().intValue(),registerReq.getPriceUnit().intValue());
+        productService.register(productRegisterDTO,auctionRegisterDTO);
         return new ResultRes<>(new MessageRes("상품 등록 성공"));
     }
 

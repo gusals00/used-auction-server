@@ -5,14 +5,17 @@ import com.auction.usedauction.domain.file.File;
 import com.auction.usedauction.domain.file.ProductImage;
 import com.auction.usedauction.domain.file.ProductImageType;
 import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
 import com.auction.usedauction.exception.error_code.ProductErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
+import com.auction.usedauction.repository.AuctionRepository;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
+import com.auction.usedauction.service.dto.AuctionRegisterDTO;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.service.dto.ProductUpdateReq;
 import com.auction.usedauction.util.FileSubPath;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,9 +49,10 @@ public class ProductService {
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final FileRepository fileRepository;
     private final S3FileUploader fileUploader;
+    private final AuctionRepository auctionRepository;
 
     @Transactional
-    public Long register(ProductRegisterDTO productRegisterDTO) {
+    public Long register(ProductRegisterDTO productRegisterDTO, AuctionRegisterDTO auctionRegisterDTO) {
 
         // 판매자 존재 체크
         Member member = memberRepository.findOneWithAuthoritiesByLoginIdAndStatus(productRegisterDTO.getLoginId(), MemberStatus.EXIST)
@@ -62,8 +67,12 @@ public class ProductService {
         //일반 사진 생성
         List<ProductImage> productOrdinalImageList = createProductImageList(productRegisterDTO.getOrdinalProductImg(), ProductImageType.ORDINAL);
 
+        // 경매 저장
+        Auction auction = createAuction(auctionRegisterDTO.getStartPrice(), auctionRegisterDTO.getPriceUnit(), auctionRegisterDTO.getAuctionEndDate());
+        auctionRepository.save(auction);
+
         //상품 저장
-        Product product = createProduct(productRegisterDTO, productSigImage, productOrdinalImageList, member, category);
+        Product product = createProduct(productRegisterDTO, productSigImage, productOrdinalImageList, member, category, auction);
         productRepository.save(product);
 
         log.info("상품 등록 성공 productId={},sellerId={}, sigImgId={}, ordinalImgIds={}",
@@ -71,22 +80,24 @@ public class ProductService {
         return product.getId();
     }
 
+    private Auction createAuction(int startPrice, int priceUnit, LocalDateTime auctionEndDate) {
+        return Auction.builder()
+                .auctionEndDate(auctionEndDate)
+                .startPrice(startPrice)
+                .priceUnit(priceUnit)
+                .build();
+    }
+
     @Transactional
     public Long deleteProduct(Long productId, String loginId) {
-        ProductStatus[] productStatuses = {
-                BID,
-                TRANSACTION_OK,
-                TRANSACTION_FAIL,
-                FAIL_BID};
 
-        // 입찰/거래 완료/낙찰 실패/거래 실패 상태인 상품인지 확인
-        Product findProduct = productRepository.findByIdAndProductStatusIn(productId, productStatuses)
-                .orElseThrow(() -> new CustomException(ProductErrorCode.INVALID_DELETE_PRODUCT_STATUS));
+        // 상품이 존재하는지
+        Product findProduct = productRepository.findByIdAndProductStatus(productId, EXIST)
+                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        //상품이 입찰 상태일 때는 입찰 기록이 없는 경우만 가능
-        if (hasAuctionHistoryWhenBidding(findProduct)) {
-            throw new CustomException(ProductErrorCode.INVALID_DELETE_PRODUCT_HISTORY);
-        }
+        // 경매 상태가 상품을 삭제할 수 있는 상태인지
+        Auction findAuction = findProduct.getAuction();
+        isValidAuctionDeleteStatus(findAuction);
 
         // 상품 제거 권한 있는 판매자인지 + 탈퇴하지 않은 존재하는 판매자인지
         validRightSeller(findProduct, loginId);
@@ -97,16 +108,46 @@ public class ProductService {
         return findProduct.getId();
     }
 
+    // 삭제 가능한 경우인지
+    private void isValidAuctionDeleteStatus(Auction auction) {
+        //상태가 낙찰인 경우는 삭제 불가능(거래성공,거래 실패, 낙찰 실패때는 삭제 가능)
+        if (auction.getStatus() == AuctionStatus.SUCCESS_BID) {
+            throw new CustomException(AuctionErrorCode.INVALID_DELETE_AUCTION_STATUS_SUCCESSFUL_BID);
+        }
+
+        //상품이 입찰 상태일 때는 입찰 기록이 없는 경우만 가능
+        if (hasAuctionHistoryWhenBidding(auction)) {
+            throw new CustomException(AuctionErrorCode.EXIST_AUCTION_HISTORY);
+        }
+    }
+
+    private void isValidAuctionUpdateStatus(Auction auction) {
+        // 경매 상태가 입찰이 아닌 경우에는 상품 변경 불가능
+        if (auction.getStatus() != AuctionStatus.BID) {
+            throw new CustomException(AuctionErrorCode.INVALID_UPDATE_AUCTION_STATUS_BID);
+        }
+
+        //입찰 기록이 없는 경우만 변경 가능
+        if (hasAuctionHistoryWhenBidding(auction)) {
+            throw new CustomException(AuctionErrorCode.EXIST_AUCTION_HISTORY);
+        }
+    }
+
     //상품이 입찰 상태일 때 입찰 기록이 있는지
-    private boolean hasAuctionHistoryWhenBidding(Product product) {
-        return product.getProductStatus() == BID && auctionHistoryRepository.findAllByProduct(product).size() > 0;
+    private boolean hasAuctionHistoryWhenBidding(Auction auction) {
+        return auction.getStatus() == AuctionStatus.BID && auctionHistoryRepository.countByAuction(auction) > 0;
     }
 
     @Transactional
     public Long updateProduct(Long productId, ProductUpdateReq updateReq, String loginId) {
-        // 상품이 입찰 상태인지 확인
-        Product findProduct = productRepository.findByIdAndProductStatus(productId, BID)
-                .orElseThrow(() -> new CustomException(ProductErrorCode.INVALID_UPDATE_PRODUCT_STATUS));
+
+        //상품이 존재하는지 확인
+        Product findProduct = productRepository.findByIdAndProductStatus(productId, EXIST)
+                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        // 경매 상태가 상품을 수정할 수 있는 상태인지 확인
+        Auction auction = findProduct.getAuction();
+        isValidAuctionUpdateStatus(auction);
 
         // 카테고리 존재 확인
         Category category = categoryRepository.findById(updateReq.getCategoryId())
@@ -115,26 +156,22 @@ public class ProductService {
         //수정하려는 판매자가 올바른 판매자인지(상품 등록자가 맞는지 + 상품 등록자 상태가 EXIST 인지)
         validRightSeller(findProduct, loginId);
 
-        //수정 가능한 상품 상태인지(상품이 입찰 상태일 때 입찰 기록이 없는 경우에 상품 변경 가능)
-        if (hasAuctionHistoryWhenBidding(findProduct)) { // 입찰 기록이 있는 경우
-            throw new CustomException(ProductErrorCode.INVALID_UPDATE_PRODUCT_HISTORY);
-        }
 
         //사진수정
-        updateOrdinalImage(findProduct,updateReq.getImgList());
-        updateSigImage(findProduct,updateReq.getSigImg());
+        updateOrdinalImage(findProduct, updateReq.getImgList());
+        updateSigImage(findProduct, updateReq.getSigImg());
 
-        //상품 정보들 수정
-        findProduct.changeProduct(updateReq.getProductName(), updateReq.getInfo(), category, updateReq.getAuctionEndDate(),
-                 updateReq.getStartPrice(), updateReq.getPriceUnit());
+        //상품 및 경매 정보 수정
+        findProduct.changeProduct(updateReq.getProductName(), updateReq.getInfo(), category);
+        auction.changeAuction(updateReq.getStartPrice(), updateReq.getPriceUnit(), updateReq.getAuctionEndDate());
 
         return findProduct.getId();
     }
 
     private void updateOrdinalImage(Product product, List<MultipartFile> multipartFileList) {
         List<ProductImage> ordinalImageList = product.getOrdinalImageList();
-        deleteImageForUpdate(ordinalImageList, multipartFileList,product);
-        insertImageUpdate(ordinalImageList, multipartFileList, ProductImageType.ORDINAL,product);
+        deleteImageForUpdate(ordinalImageList, multipartFileList, product);
+        insertImageUpdate(ordinalImageList, multipartFileList, ProductImageType.ORDINAL, product);
     }
 
     private void updateSigImage(Product product, MultipartFile multipartFile) {
@@ -142,11 +179,11 @@ public class ProductService {
         List<ProductImage> ordinalImageList = new ArrayList<>(Arrays.asList(product.getSigImage()));
         List<MultipartFile> multipartFileList = new ArrayList<>(Arrays.asList(multipartFile));
 
-        deleteImageForUpdate(ordinalImageList, multipartFileList,product);
-        insertImageUpdate(ordinalImageList, multipartFileList, ProductImageType.SIGNATURE,product);
+        deleteImageForUpdate(ordinalImageList, multipartFileList, product);
+        insertImageUpdate(ordinalImageList, multipartFileList, ProductImageType.SIGNATURE, product);
     }
 
-    private void deleteImageForUpdate(List<ProductImage> productImageList, List<MultipartFile> multipartImages,Product product) {
+    private void deleteImageForUpdate(List<ProductImage> productImageList, List<MultipartFile> multipartImages, Product product) {
         String[] inputOriginalNames = multipartImages.stream()
                 .map(MultipartFile::getOriginalFilename)
                 .toArray(String[]::new);
@@ -168,7 +205,7 @@ public class ProductService {
         );
     }
 
-    private void insertImageUpdate(List<ProductImage> productImageList, List<MultipartFile> multipartImages, ProductImageType imageType,Product product) {
+    private void insertImageUpdate(List<ProductImage> productImageList, List<MultipartFile> multipartImages, ProductImageType imageType, Product product) {
         String[] productImageOriginalNames = productImageList.stream()
                 .map(File::getOriginalName)
                 .toArray(String[]::new);
@@ -212,7 +249,7 @@ public class ProductService {
     }
 
     private boolean isRightSeller(Product product, String loginId) {
-        return product.getMember().getLoginId().equals(loginId) && product.getMember().getStatus()== MemberStatus.EXIST;
+        return product.getMember().getLoginId().equals(loginId) && product.getMember().getStatus() == MemberStatus.EXIST;
     }
 
     public String getOrdinalImagesIdsToString(List<ProductImage> images) {
@@ -224,18 +261,15 @@ public class ProductService {
     }
 
     private Product createProduct(ProductRegisterDTO productRegisterDTO, ProductImage productSigImage, List<ProductImage> productOrdinalImageList,
-                                  Member member, Category category) {
+                                  Member member, Category category, Auction auction) {
         return Product.builder()
-                .auctionEndDate(productRegisterDTO.getAuctionEndDate())
-                .nowPrice(productRegisterDTO.getStartPrice())
-                .priceUnit(productRegisterDTO.getPriceUnit())
-                .startPrice(productRegisterDTO.getStartPrice())
                 .info(productRegisterDTO.getInfo())
                 .sigImage(productSigImage)
                 .ordinalImageList(productOrdinalImageList)
                 .category(category)
                 .member(member)
                 .name(productRegisterDTO.getName())
+                .auction(auction)
                 .build();
     }
 
@@ -256,6 +290,7 @@ public class ProductService {
         productImage.changeProduct(product);
         return productImage;
     }
+
     private ProductImage createProductImage(UploadFileDTO uploadImage, ProductImageType imageType) {
         return ProductImage.builder()
                 .originalName(uploadImage.getUploadFileName())
