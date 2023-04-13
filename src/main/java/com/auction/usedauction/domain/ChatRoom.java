@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -26,9 +29,24 @@ public class ChatRoom extends BaseTimeEntity{
     @JoinColumn(name = "product_id")
     private Product product;
 
+    private int userCount;
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessage> chatMessages = new ArrayList<>();
+
     @Builder
-    public ChatRoom(Member member, Product product) {
+    public ChatRoom(Member member, Product product, List<ChatMessage> chatMessages) {
         this.member = member;
         this.product = product;
+        this.chatMessages = chatMessages;
+        this.userCount = 0;
+    }
+
+    public void addUserCount() {
+        userCount++;
+    }
+
+    public void minusUserCount() {
+        userCount--;
     }
 }
