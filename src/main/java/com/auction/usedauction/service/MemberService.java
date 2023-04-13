@@ -100,6 +100,7 @@ public class MemberService {
         return new MemberDetailInfoRes(member);
     }
 
+    @Transactional
     public Long updateInfo(String loginId, UserUpdateReq userUpdateReq) {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
