@@ -32,23 +32,7 @@ public class Product extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ProductStatus productStatus;
 
-    private int nowPrice;
-
-    private int startPrice;
-
-    private int priceUnit;
-
     private int viewCount;
-
-    private LocalDateTime auctionStartDate;
-
-    private LocalDateTime auctionEndDate;
-
-    @Enumerated(EnumType.STRING)
-    private TransStatus sellerTransStatus;
-
-    @Enumerated(EnumType.STRING)
-    private TransStatus buyerTransStatus;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category_id")
@@ -58,12 +42,16 @@ public class Product extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "auction_id")
+    private Auction auction;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> fileList = new ArrayList<>();
 
     @Builder
-    public Product(String name, String info, int nowPrice, int startPrice, int priceUnit, LocalDateTime auctionEndDate,
-                   Category category, Member member, List<ProductImage> ordinalImageList, ProductImage sigImage) {
+    public Product(String name, String info, Auction auction, Category category,
+                   Member member, List<ProductImage> ordinalImageList, ProductImage sigImage) {
 
         if (member != null) {
             member.getProducts().add(this);
@@ -78,12 +66,9 @@ public class Product extends BaseTimeEntity {
 
         this.name = name;
         this.info = info;
-        this.nowPrice = nowPrice;
-        this.startPrice = startPrice;
-        this.priceUnit = priceUnit;
         this.viewCount = 0;
-        this.auctionEndDate = auctionEndDate;
         this.category = category;
+        this.auction = auction;
     }
 
 
@@ -120,34 +105,17 @@ public class Product extends BaseTimeEntity {
         this.productStatus = status;
     }
 
-    public void changeProduct(String name,String info, Category category,LocalDateTime endDate,int startPrice,int priceUnit) {
+    public void changeProduct(String name,String info, Category category, Auction auction) {
         this.name =name;
         this.info=info;
         this.category=category;
-        this.auctionEndDate = endDate;
-        this.startPrice = startPrice;
-        this.priceUnit = priceUnit;
+        this.auction = auction;
     }
 
     @PrePersist
-    private void initProductAndTransStatus() {
-        initTransStatus();
-        initProductStatus();
-        initStartDate();
-    }
-
-    private void initTransStatus() {
-        //판매자, 구매자 거래 확인 상태 초기값을 거래 전(TRANS_BEFORE)으로
-        sellerTransStatus = TransStatus.TRANS_BEFORE;
-        buyerTransStatus = TransStatus.TRANS_BEFORE;
-    }
-
     private void initProductStatus() {
-        // 상품 생성시 바로 입찰상태로
-        this.productStatus = ProductStatus.BID;
+        // 상품 생성시 바로 존재상태로
+        this.productStatus = ProductStatus.EXIST;
     }
 
-    private void initStartDate() {
-        this.auctionStartDate = LocalDateTime.now();
-    }
 }
