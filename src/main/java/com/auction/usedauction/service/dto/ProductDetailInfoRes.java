@@ -1,7 +1,9 @@
 package com.auction.usedauction.service.dto;
 
+import com.auction.usedauction.domain.Auction;
 import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.file.File;
+import com.auction.usedauction.util.AuctionProgressUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +30,7 @@ public class ProductDetailInfoRes {
     private Long memberId;
     @Schema(description = "판매자 로그인 아이디",example = "lovesoe1234")
     private String nickname;
-    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01")
+    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01:00")
     private String auctionEndDate;
     @Schema(description = "현재 가격",example = "10000")
     private int nowPrice;
@@ -38,6 +40,8 @@ public class ProductDetailInfoRes {
     private int priceUnit;
     @Schema(description = "조회수",example = "7")
     private int viewCount;
+    @Schema(description = "경매상태",example = "경매 중")
+    private String status;
     private ImageInfoRes sigImg;
     private List<ImageInfoRes> ordinalImgList;
 
@@ -47,11 +51,14 @@ public class ProductDetailInfoRes {
         this.categoryName = product.getCategory().getName();
         this.memberId = product.getMember().getId();
         this.nickname = product.getMember().getName();
-        this.auctionEndDate = product.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        this.nowPrice = product.getNowPrice();
-        this.startPrice = product.getStartPrice();
-        this.priceUnit = product.getPriceUnit();
         this.viewCount = product.getViewCount();
+
+        Auction auction = product.getAuction();
+        this.auctionEndDate = auction.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.nowPrice = auction.getNowPrice();
+        this.startPrice = auction.getStartPrice();
+        this.priceUnit = auction.getPriceUnit();
+        this.status = AuctionProgressUtil.changeAuctionStatusToName(auction.getStatus());
 
         File sigImage = product.getSigImage();
         this.sigImg = new ImageInfoRes(sigImage.getOriginalName(), sigImage.getFullPath());

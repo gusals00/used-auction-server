@@ -1,7 +1,8 @@
 package com.auction.usedauction.service.dto;
 
+import com.auction.usedauction.domain.Auction;
 import com.auction.usedauction.domain.Product;
-import com.auction.usedauction.domain.ProductStatus;
+import com.auction.usedauction.util.AuctionProgressUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,23 +24,26 @@ public class ProductPageContentRes {
     private Long productId;
     @Schema(description = "현재가",example = "50000")
     private Integer nowPrice;
-    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01")
+    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01:00")
     private String auctionEndDate;
     @Schema(description = "대표이미지 src",example = "https://used.wsdf.wjfiojs.jpg")
     private String sigImgSrc;
-    @Schema(description = "상품 상태 - 경매중, 낙찰 등",example = "BID")
-    private ProductStatus status;
-
+    @Schema(description = "경매 상태",example = "경매 종료")
+    private String status;
 
     public ProductPageContentRes(Product product) {
         this.nickname = product.getMember().getName();
         this.categoryName = product.getCategory().getName();
         this.productName = product.getName();
         this.productId = product.getId();
-        this.nowPrice = product.getNowPrice();
-        this.auctionEndDate = product.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+        Auction auction = product.getAuction();
+        this.nowPrice = auction.getNowPrice();
+        this.auctionEndDate = auction.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.sigImgSrc = product.getSigImage().getFullPath();
-        this.status = product.getProductStatus();
+        this.status = AuctionProgressUtil.changeAuctionStatusToName(auction.getStatus());
+
+
     }
 
 }
