@@ -31,20 +31,20 @@ public class ProductRegisterReq {
     @NotNull
     @Schema(description = "카테고리 ID",example = "1")
     private Long categoryId;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     @Future
     @NotNull
-    @Schema(description = "경매 종료 날짜",defaultValue = "2023-10-03 12:10:00")
+    @Schema(description = "경매 종료 날짜",defaultValue = "2023-10-03 12:10")
     private LocalDateTime auctionEndDate;
 
     @Min(100)
     @NotNull
     @Schema(description = "경매 시작가",example = "1000",minimum = "100")
-    private Long startPrice;
+    private Integer startPrice;
     @Min(1000)
     @NotNull
     @Schema(description = "입찰 단위가",example = "1000",minimum = "1000")
-    private Long priceUnit;
+    private Integer priceUnit;
 
     @Schema(description = "일반 이미지 파일들",nullable = true)
     private List<MultipartFile> imgList;

@@ -30,7 +30,7 @@ public class ProductDetailInfoRes {
     private Long memberId;
     @Schema(description = "판매자 로그인 아이디",example = "lovesoe1234")
     private String nickname;
-    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01:00")
+    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01")
     private String auctionEndDate;
     @Schema(description = "현재 가격",example = "10000")
     private int nowPrice;

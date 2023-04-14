@@ -64,14 +64,14 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     //상품 상세 조회
     @Override
-    public Optional<Product> findProductByIdWithFetchJoin(Long productId) {
+    public Optional<Product> findExistProductByIdAndExistMember(Long productId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(product)
-                .join(product.category, category).fetchJoin()
-                .join(product.member, member).fetchJoin()
+                .join(product.category, category)
+                .join(product.member, member)
                 .where(memberStatusEq(MemberStatus.EXIST),
                         productIdEq(productId),
-                        productStatusNotEq(ProductStatus.DELETED)
+                        productStatusEq(ProductStatus.EXIST)
                 )
                 .fetchOne());
     }

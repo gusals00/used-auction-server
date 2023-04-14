@@ -62,6 +62,7 @@ public class Product extends BaseTimeEntity {
         if (ordinalImageList != null) {
             ordinalImageList.forEach(ordinalImage -> ordinalImage.changeProduct(this));
         }
+        changeAuction(auction);
 
         this.name = name;
         this.info = info;
@@ -70,6 +71,12 @@ public class Product extends BaseTimeEntity {
         this.auction = auction;
     }
 
+    public void changeAuction(Auction auction) {
+        if (auction != null) {
+            this.auction=auction;
+            auction.setProduct(this);
+        }
+    }
 
     public ProductImage getSigImage() {
         for (File file :fileList) {

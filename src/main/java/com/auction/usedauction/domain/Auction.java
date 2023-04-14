@@ -36,10 +36,13 @@ public class Auction {
 
     @Enumerated(EnumType.STRING)
     private AuctionStatus status;
+    @OneToOne(mappedBy = "auction")
+    private Product product;
 
     @Builder
-    public Auction(int startPrice, int priceUnit, LocalDateTime auctionEndDate) {
+    public Auction(int startPrice, int nowPrice, int priceUnit, LocalDateTime auctionEndDate) {
         this.startPrice = startPrice;
+        this.nowPrice = nowPrice;
         this.priceUnit = priceUnit;
         this.auctionEndDate = auctionEndDate;
     }
@@ -48,6 +51,15 @@ public class Auction {
         this.startPrice = startPrice;
         this.priceUnit = priceUnit;
         this.auctionEndDate = auctionEndDate;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+
+    public void changeAuctionStatus(AuctionStatus auctionStatus) {
+        this.status = auctionStatus;
     }
 
     private void initTransStatus() {
@@ -61,7 +73,9 @@ public class Auction {
     }
 
     private void initNowPrice() {
-        nowPrice = startPrice;
+        if (nowPrice == 0) {
+            nowPrice = startPrice;
+        }
     }
 
     @PrePersist
