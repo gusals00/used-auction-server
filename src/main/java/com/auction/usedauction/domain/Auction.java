@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.*;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -36,7 +38,7 @@ public class Auction {
 
     @Enumerated(EnumType.STRING)
     private AuctionStatus status;
-    @OneToOne(mappedBy = "auction")
+    @OneToOne(mappedBy = "auction", fetch = LAZY)
     private Product product;
 
     @Builder

@@ -62,7 +62,9 @@ public class Product extends BaseTimeEntity {
         if (ordinalImageList != null) {
             ordinalImageList.forEach(ordinalImage -> ordinalImage.changeProduct(this));
         }
-        changeAuction(auction);
+        if (auction != null) {
+            changeAuction(auction);
+        }
 
         this.name = name;
         this.info = info;
