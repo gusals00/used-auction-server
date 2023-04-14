@@ -39,7 +39,7 @@ public class ProductQueryService {
 
     @Transactional
     public ProductDetailInfoRes getProductDetail(Long productId) {
-        Product findProduct = productRepository.findProductByIdWithFetchJoin(productId)
+        Product findProduct = productRepository.findExistProductByIdAndExistMember(productId)
                 .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         // 조회수 증가

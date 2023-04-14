@@ -5,10 +5,7 @@ import com.auction.usedauction.domain.file.File;
 import com.auction.usedauction.domain.file.ProductImage;
 import com.auction.usedauction.domain.file.ProductImageType;
 import com.auction.usedauction.exception.CustomException;
-import com.auction.usedauction.exception.error_code.AuctionErrorCode;
-import com.auction.usedauction.exception.error_code.CategoryErrorCode;
-import com.auction.usedauction.exception.error_code.ProductErrorCode;
-import com.auction.usedauction.exception.error_code.UserErrorCode;
+import com.auction.usedauction.exception.error_code.*;
 import com.auction.usedauction.repository.AuctionRepository;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
@@ -110,26 +107,26 @@ public class ProductService {
 
     // 삭제 가능한 경우인지
     private void isValidAuctionDeleteStatus(Auction auction) {
-        //상태가 낙찰인 경우는 삭제 불가능(거래성공,거래 실패, 낙찰 실패때는 삭제 가능)
+        //상태가 낙찰성공인 경우는 삭제 불가능(거래성공,거래 실패, 낙찰 실패때는 삭제 가능)
         if (auction.getStatus() == AuctionStatus.SUCCESS_BID) {
             throw new CustomException(AuctionErrorCode.INVALID_DELETE_AUCTION_STATUS_SUCCESSFUL_BID);
         }
 
         //상품이 입찰 상태일 때는 입찰 기록이 없는 경우만 가능
         if (hasAuctionHistoryWhenBidding(auction)) {
-            throw new CustomException(AuctionErrorCode.EXIST_AUCTION_HISTORY);
+            throw new CustomException(AuctionHistoryErrorCode.EXIST_AUCTION_HISTORY);
         }
     }
 
     private void isValidAuctionUpdateStatus(Auction auction) {
         // 경매 상태가 입찰이 아닌 경우에는 상품 변경 불가능
         if (auction.getStatus() != AuctionStatus.BID) {
-            throw new CustomException(AuctionErrorCode.INVALID_UPDATE_AUCTION_STATUS_BID);
+            throw new CustomException(AuctionErrorCode.INVALID_UPDATE_AUCTION_STATUS);
         }
 
         //입찰 기록이 없는 경우만 변경 가능
         if (hasAuctionHistoryWhenBidding(auction)) {
-            throw new CustomException(AuctionErrorCode.EXIST_AUCTION_HISTORY);
+            throw new CustomException(AuctionHistoryErrorCode.EXIST_AUCTION_HISTORY);
         }
     }
 
