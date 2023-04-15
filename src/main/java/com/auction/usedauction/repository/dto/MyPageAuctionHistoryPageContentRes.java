@@ -1,4 +1,4 @@
-package com.auction.usedauction.service.dto;
+package com.auction.usedauction.repository.dto;
 
 import com.auction.usedauction.domain.AuctionHistoryStatus;
 import com.querydsl.core.annotations.QueryProjection;
