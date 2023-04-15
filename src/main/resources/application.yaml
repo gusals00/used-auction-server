@@ -4,7 +4,6 @@ server:
       cookie:
         same-site: None
         secure: true
-  port: 8081
 
 spring:
   datasource:
