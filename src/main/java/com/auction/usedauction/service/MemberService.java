@@ -4,29 +4,39 @@ import com.auction.usedauction.domain.Authority;
 import com.auction.usedauction.domain.Member;
 import com.auction.usedauction.domain.MemberStatus;
 import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.SecurityErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
+import com.auction.usedauction.security.TokenDTO;
 import com.auction.usedauction.security.TokenProvider;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.service.dto.MemberDetailInfoRes;
+import com.auction.usedauction.util.RedisUtil;
+import com.auction.usedauction.web.dto.LoginCheckRes;
+import com.auction.usedauction.web.dto.LogoutReq;
 import com.auction.usedauction.web.dto.RegisterReq;
 import com.auction.usedauction.web.dto.UserUpdateReq;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.http.HttpRequest;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import static com.auction.usedauction.util.AuthConstants.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MemberService {
 
     private final TokenProvider tokenProvider;
@@ -34,9 +44,10 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final RedisUtil redisUtil;
 
-    // id와 password로 사용자를 인증해서 엑세스토큰을 반환함.
-    public String login(String loginId, String password) {
+    // id와 password로 사용자를 인증해서 토큰을 반환함.
+    public TokenDTO login(String loginId, String password) {
         // id와 password를 통해 UsernamePasswordAuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, password);
 
@@ -47,9 +58,50 @@ public class MemberService {
         // 시큐리티 컨텍스트에 저장
         SecurityContextHolder.getContext().setAuthentication(authenticate);
 
-        // 인증 정보를 통해 엑세스 토큰 생성
-        String token = tokenProvider.createToken(authenticate);
-        return token;
+        // 인증 정보를 통해 토큰 생성
+        TokenDTO tokenDTO = tokenProvider.createTokenDTO(authenticate);
+
+        // refresh 토큰 redis 저장
+        tokenProvider.saveToken(authenticate, tokenDTO.getRefreshToken());
+
+        return tokenDTO;
+    }
+
+    public TokenDTO reissue(TokenDTO tokenDTO) {
+        // access 토큰에서 loginId 가져오기
+        Authentication authentication = tokenProvider.getAuthentication(tokenDTO.getAccessToken());
+
+        // redis에서 refresh 토큰 가져오기
+        String refreshToken = redisUtil.getData("RefreshToken:" + authentication.getName());
+
+        // refresh 토큰 검증
+        if(!refreshToken.equals(tokenDTO.getRefreshToken())) {
+            throw new CustomException(SecurityErrorCode.WRONG_TOKEN);
+        }
+
+        // 새 토큰 생성
+        TokenDTO tokenRes = tokenProvider.createTokenDTO(authentication);
+
+        // redis에 새 토큰 저장
+        tokenProvider.saveToken(authentication, refreshToken);
+
+        return tokenRes;
+    }
+
+    public void logout(User user, LogoutReq logoutReq) {
+        // refresh 토큰 확인
+        if(redisUtil.getData("RefreshToken:" + user.getUsername()) != null) {
+            // refresh 토큰 삭제
+            redisUtil.deleteData("RefreshToken:" + user.getUsername());
+        }
+
+        // access 토큰 유효시간
+        Long expiration = tokenProvider.getExpiration(logoutReq.getAccessToken());
+
+        log.info("expire = {} ", expiration);
+
+        // blacklist 등록
+        redisUtil.setData(logoutReq.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
     }
 
     @Transactional
@@ -98,6 +150,17 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         return new MemberDetailInfoRes(member);
+    }
+
+    public LoginCheckRes getLoginCheck(User user) {
+        if(user == null) {
+            return new LoginCheckRes(false, "", "");
+        } else {
+            String loginId = user.getUsername();
+            String name =  memberRepository.findByLoginId(loginId)
+                    .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND)).getName();
+            return new LoginCheckRes(true, loginId, name);
+        }
     }
 
     @Transactional

@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRes {
+public class LogoutReq {
 
     private String accessToken;
 }
-

@@ -32,13 +32,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = tokenProvider.resolveToken(request);
 
-        // 유효성 검증
-        if(StringUtils.hasText(jwt) && tokenProvider.isValidToken(jwt, request)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+        if(StringUtils.hasText(jwt) && tokenProvider.isValidToken(jwt, request)) { // 유효성 검증
+            if(!tokenProvider.isLogoutToken(request, jwt)) { // 로그아웃 여부 확인
+                Authentication authentication = tokenProvider.getAuthentication(jwt);
 
-            // 스프링 시큐리티 유저를 시큐리티 컨텍스트에 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("SecurityContext에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), request.getRequestURI());
+                // 스프링 시큐리티 유저를 시큐리티 컨텍스트에 저장
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("SecurityContext에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), request.getRequestURI());
+            }
         } else {
             log.info("유효한 JWT 토큰이 없습니다, uri: {}", request.getRequestURI());
         }
