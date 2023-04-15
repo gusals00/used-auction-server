@@ -1,10 +1,12 @@
 package com.auction.usedauction.repository.product;
 
+import com.auction.usedauction.domain.AuctionStatus;
 import com.auction.usedauction.domain.MemberStatus;
 import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.ProductStatus;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
+import com.auction.usedauction.web.dto.MyPageSearchConReq;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,34 +79,34 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .fetchOne());
     }
 
-    //마이페이지 상품 관리
-//    @Override
-//    public Page<Product> findMyProductsByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
-//        List<Product> content = queryFactory
-//                .selectFrom(product)
-//                .join(product.member, member)
-//                .join(product.category, category).fetchJoin()
-//                .where(loginIdEq(loginId),
-//                        statusEq(cond.getStatus())
-//                )
-//                .orderBy(product.createdDate.desc())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .orderBy()
-//                .fetch();
-//
-//        JPAQuery<Long> countQuery = queryFactory
-//                .select(product.count())
-//                .from(product)
-//                .join(product.member, member)
-//                .where(loginIdEq(loginId),
-//                        statusEq(cond.getStatus())
-//                )
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize());
-//
-//        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
-//    }
+    // 마이페이지 상품 관리
+    @Override
+    public Page<Product> findMyProductsByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
+        List<Product> content = queryFactory
+                .selectFrom(product)
+                .join(product.category, category).fetchJoin()
+                .join(product.member, member)
+                .join(product.auction, auction).fetchJoin()
+                .where(loginIdEq(loginId),
+                        statusEq(cond.getStatus()),
+                        productStatusEq(ProductStatus.EXIST)
+                )
+                .orderBy(product.createdDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(product.count())
+                .from(product)
+                .join(product.member, member)
+                .where(loginIdEq(loginId),
+                        statusEq(cond.getStatus()),
+                        productStatusEq(ProductStatus.EXIST)
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
 
     private OrderSpecifier[] orderCond(ProductOrderCond orderCond) {
 
@@ -151,20 +154,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return loginId != null ? product.member.loginId.eq(loginId) : null;
     }
 
-//    private BooleanExpression statusEq(String status) {
-//        if(!StringUtils.hasText(status)) {
-//            return product.productStatus.ne(ProductStatus.DELETED);
-//        } else if(status.equals("success-bid")) {
-//            return product.productStatus.eq(ProductStatus.SUCCESS_BID);
-//        } else if(status.equals("fail-bid")) {
-//            return product.productStatus.eq(ProductStatus.FAIL_BID);
-//        } else if(status.equals("transact   ion-ok")) {
-//            return product.productStatus.eq(ProductStatus.TRANSACTION_OK);
-//        } else if(status.equals("transaction-fail")) {
-//            return product.productStatus.eq(ProductStatus.TRANSACTION_FAIL);
-//        } else {
-//            return product.productStatus.eq(ProductStatus.BID);
-//        }
-//    }
+    private BooleanExpression statusEq(String status) {
+        if(!StringUtils.hasText(status)) {
+            return null;
+        } else if(status.equals("success-bid")) {
+            return auction.status.eq(AuctionStatus.SUCCESS_BID);
+        } else if(status.equals("fail-bid")) {
+            return auction.status.eq(AuctionStatus.FAIL_BID);
+        } else if(status.equals("transaction-ok")) {
+            return auction.status.eq(AuctionStatus.TRANSACTION_OK);
+        } else if(status.equals("transaction-fail")) {
+            return auction.status.eq(AuctionStatus.TRANSACTION_FAIL);
+        } else {
+            return auction.status.eq(AuctionStatus.BID);
+        }
+    }
 
 }
