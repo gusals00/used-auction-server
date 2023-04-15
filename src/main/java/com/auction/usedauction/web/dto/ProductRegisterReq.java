@@ -1,10 +1,7 @@
 package com.auction.usedauction.web.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,10 +19,10 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductRegisterReq {
 
-    @NotEmpty
+    @NotBlank
     @Schema(description = "상품 제목",example = "공학수학 팔아요")
     private String name;
-    @NotEmpty
+    @NotBlank
     @Schema(description = "상품 정보",example = "이책은 새책입니다")
     private String info;
     @NotNull
