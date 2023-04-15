@@ -14,7 +14,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @EntityGraph(attributePaths = "authorities")
     Optional<Member> findOneWithAuthoritiesByLoginIdAndStatus(String loginId, MemberStatus memberStatus);
-
+    Optional<Member> findOneByLoginIdAndStatus(String loginId, MemberStatus memberStatus);
     Optional<Member> findByLoginId(String loginId);
 
     boolean existsByLoginId(String loginId);

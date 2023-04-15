@@ -1,5 +1,6 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.repository.dto.MyPageAuctionHistoryPageContentRes;
 import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.MemberService;
 import com.auction.usedauction.service.dto.*;
