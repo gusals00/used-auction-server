@@ -13,8 +13,8 @@ public enum UserErrorCode implements ErrorCode {
     DUPLICATE_USER(HttpStatus.CONFLICT, "사용자가 이미 존재합니다."),
     WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 
-    EMAIL_AUTH_FAIL(HttpStatus.BAD_REQUEST, "이메일 인증 실패");
-
+    EMAIL_AUTH_FAIL(HttpStatus.BAD_REQUEST, "이메일 인증 실패"),
+    SELLER_NOT_BIDDING(HttpStatus.BAD_REQUEST, "판매자는 입찰할 수 없습니다.");
     private final HttpStatus status;
     private final String message;
 }
