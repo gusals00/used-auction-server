@@ -47,6 +47,7 @@ public class SpringSecurityConfig {
                 .requestMatchers("/api/member/signup").permitAll()
                 .requestMatchers("/api/member/login").permitAll()
                 .requestMatchers("/api/member/is-login").permitAll()
+                .requestMatchers("/api/member/reissue").permitAll()
                 .requestMatchers("/api/email/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products/*").permitAll()

@@ -1,8 +1,10 @@
 package com.auction.usedauction.security;
 
+import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.ErrorCode;
 import com.auction.usedauction.exception.error_code.SecurityErrorCode;
 import com.auction.usedauction.util.AuthConstants;
+import com.auction.usedauction.util.RedisUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,11 +32,16 @@ import static com.auction.usedauction.exception.error_code.SecurityErrorCode.*;
 @RequiredArgsConstructor
 public class TokenProvider implements InitializingBean {
 
+    private final RedisUtil redisUtil;
+
     @Value("${jwt.secret}")
     private String jwtSecretKey;
 
     @Value("${jwt.access-token-validity-in-seconds}")
-    private int tokenValidity;
+    private int accessTokenValidity;
+
+    @Value("${jwt.refresh-token-validity-in-seconds}")
+    private int refreshTokenValidity;
 
     private Key key;
 
@@ -43,14 +51,13 @@ public class TokenProvider implements InitializingBean {
         key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 토큰 생성
     public String createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-        Date validity = new Date(now + tokenValidity * 1000);
+        Date validity = new Date(now + accessTokenValidity * 1000);
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, "JWT")
@@ -59,6 +66,36 @@ public class TokenProvider implements InitializingBean {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
+    }
+
+    // 토큰 생성
+    public TokenDTO createTokenDTO(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        long now = (new Date()).getTime();
+
+        String accessToken = Jwts.builder()
+                .setHeaderParam(Header.TYPE, "JWT")
+                .setSubject(authentication.getName())
+                .claim(AuthConstants.AUTH_HEADER, authorities)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(new Date(now + accessTokenValidity * 1000))
+                .compact();
+
+        String refreshToken = Jwts.builder()
+                .setHeaderParam(Header.TYPE, "JWT")
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(new Date(now + refreshTokenValidity * 1000))
+                .compact();
+
+        return new TokenDTO(accessToken, refreshToken);
+    }
+
+    // refresh 토큰 저장
+    public void saveToken(Authentication authentication, String refreshToken) {
+        redisUtil.setData("RefreshToken:" + authentication.getName(), refreshToken, Duration.ofSeconds(refreshTokenValidity));
     }
 
     public Authentication getAuthentication(String token) {
@@ -76,7 +113,7 @@ public class TokenProvider implements InitializingBean {
     // 토큰 검증
     public boolean isValidToken(String token, HttpServletRequest request) {
         try {
-            getClaim(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         }catch(io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
             setException(request, WRONG_TYPE_TOKEN);
@@ -103,13 +140,38 @@ public class TokenProvider implements InitializingBean {
         return null;
     }
 
-    // 토큰 받아서 Claim 생성
+    // 만료된 토큰이어도 정보를 꺼냄
     private Claims getClaim(String token) {
-        return Jwts.parserBuilder()
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    public Long getExpiration(String token) {
+        Date expiration = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
+                .getBody().
+                getExpiration();
+
+        return (expiration.getTime() - (new Date()).getTime());
+    }
+
+    public boolean isLogoutToken(HttpServletRequest request, String token) {
+        String logoutToken = redisUtil.getData(token);
+        if(StringUtils.hasText(logoutToken)) {
+            setException(request, LOGOUT_TOKEN);
+            throw new CustomException(LOGOUT_TOKEN);
+        }
+
+        return false;
     }
 
     private void setException(HttpServletRequest request, ErrorCode errorCode) {

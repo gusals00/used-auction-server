@@ -1,5 +1,6 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.security.TokenDTO;
 import com.auction.usedauction.util.AuthConstants;
 import com.auction.usedauction.service.MemberService;
 import com.auction.usedauction.web.dto.*;
@@ -8,9 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -25,27 +23,31 @@ public class MemberController {
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<ResultRes<LoginRes>> login(@RequestBody @Valid LoginReq loginReq) {
-        String token = memberService.login(loginReq.getLoginId(), loginReq.getPassword());
+    public ResultRes<TokenDTO> login(@RequestBody @Valid LoginReq loginReq) {
+        TokenDTO token = memberService.login(loginReq.getLoginId(), loginReq.getPassword());
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(AuthConstants.AUTH_HEADER, AuthConstants.TOKEN_TYPE + " " + token);
+        return new ResultRes(token);
+    }
 
-        return new ResponseEntity<>(new ResultRes(new LoginRes(token)), httpHeaders, HttpStatus.OK);
+    @Operation(summary = "토큰 재발급")
+    @PostMapping("/reissue")
+    public ResultRes<TokenDTO> reissue(@RequestBody @Valid TokenDTO tokenDTO) {
+        TokenDTO token = memberService.reissue(tokenDTO);
+        return new ResultRes(token);
+    }
+
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    public ResultRes<MessageRes> logout(@AuthenticationPrincipal User user, @RequestBody LogoutReq logoutReq) {
+        memberService.logout(user, logoutReq);
+
+        return new ResultRes(new MessageRes("로그아웃 성공"));
     }
 
     @Operation(summary = "로그인 체크")
     @GetMapping("/is-login")
     public ResultRes<LoginCheckRes> loginCheck(@AuthenticationPrincipal User user) {
-        boolean isLogin = false;
-        String loginId = "";
-
-        if(user != null) {
-            isLogin = true;
-            loginId = user.getUsername();
-        }
-
-        return new ResultRes(new LoginCheckRes(isLogin, loginId));
+        return new ResultRes(memberService.getLoginCheck(user));
     }
 
     @Operation(summary = "회원가입")
@@ -55,7 +57,6 @@ public class MemberController {
 
         return new ResultRes(new MessageRes("회원가입 성공"));
     }
-
 
     @Operation(summary = "회원탈퇴")
     @DeleteMapping

@@ -9,11 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginCheckRes {
+public class LogoutReq {
 
-    private Boolean status;
-
-    private String loginId;
-
-    private String name;
+    private String accessToken;
 }
