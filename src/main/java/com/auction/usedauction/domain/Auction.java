@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -40,6 +42,9 @@ public class Auction {
     private AuctionStatus status;
     @OneToOne(mappedBy = "auction", fetch = LAZY)
     private Product product;
+
+    @OneToMany(mappedBy = "auction",fetch = LAZY)
+    List<AuctionHistory> auctionHistoryList = new ArrayList<>();
 
     @Builder
     public Auction(int startPrice, int nowPrice, int priceUnit, LocalDateTime auctionEndDate) {
@@ -92,4 +97,9 @@ public class Auction {
         this.auctionStartDate = LocalDateTime.now();
     }
 
+    public void increaseNowPrice(int price) {
+        if (nowPrice < price) {
+            nowPrice = price;
+        }
+    }
 }
