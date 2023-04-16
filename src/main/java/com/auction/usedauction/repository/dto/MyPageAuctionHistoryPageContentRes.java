@@ -30,8 +30,8 @@ public class MyPageAuctionHistoryPageContentRes {
     @Schema(description = "입찰/낙찰 날짜", example = "2023-10-12 12:01")
     private String createdDate;
 
-    @Schema(description = "경매내역 상태", example = "BID")
-    private AuctionHistoryStatus status;
+    @Schema(description = "입찰/낙찰", example = "입찰")
+    private String status;
 
     @QueryProjection
     public MyPageAuctionHistoryPageContentRes(Long productId, String categoryName, String productName, Integer bidPrice, LocalDateTime createdDate, AuctionHistoryStatus status) {
@@ -40,6 +40,6 @@ public class MyPageAuctionHistoryPageContentRes {
         this.productName = productName;
         this.bidPrice = bidPrice;
         this.createdDate = createdDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        this.status = status;
+        this.status = status.getDescription();
     }
 }

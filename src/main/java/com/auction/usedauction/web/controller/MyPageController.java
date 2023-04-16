@@ -44,9 +44,7 @@ public class MyPageController {
      @Operation(summary = "상품 관리")
     @GetMapping("/products")
     public PageListRes<MyPageProductPageContentRes> getMyProducts(@AuthenticationPrincipal User user, @ParameterObject @Valid MyPageSearchConReq searchConReq) {
-         MyPageProductPageRes myProductPage = myPageQueryService.getMyProductPage(searchConReq, user.getUsername());
-
-         return new PageListRes(myProductPage.getMyPageProductPageContents(), myProductPage.getPage());
+         return myPageQueryService.getMyProductPage(searchConReq, user.getUsername());
      }
 
      @Operation(summary = "입찰/낙찰 내역")
@@ -58,4 +56,16 @@ public class MyPageController {
 
          return new PageListRes(page.getContent(), page);
      }
+
+    @Operation(summary = "구매 내역")
+    @GetMapping("buy-history")
+    public PageListRes<MyPageBuySellHistoryContentRes> getMyBuyHistory(@AuthenticationPrincipal User user, @ParameterObject @Valid MyPageSearchConReq searchConReq) {
+        return myPageQueryService.getMyBuyHistoryPage(searchConReq, user.getUsername());
+    }
+
+    @Operation(summary = "판매 내역")
+    @GetMapping("sales-history")
+    public PageListRes<MyPageBuySellHistoryContentRes> getMySalesHistory(@AuthenticationPrincipal User user, @ParameterObject @Valid MyPageSearchConReq searchConReq) {
+        return myPageQueryService.getMySalesHistoryPage(searchConReq, user.getUsername());
+    }
 }
