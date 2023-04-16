@@ -49,4 +49,8 @@ public class AuctionHistory extends BaseTimeEntity {
             auction.getAuctionHistoryList().add(this);
         }
     }
+
+    public void changeStatus(AuctionHistoryStatus auctionStatus) {
+        this.status = auctionStatus;
+    }
 }

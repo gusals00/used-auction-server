@@ -32,6 +32,9 @@ spring:
           ssl:
             enable: true
             trust: smtp.naver.com
+  redis:
+    host: localhost
+    port: 6379
 
   jpa:
     hibernate:
@@ -47,3 +50,8 @@ spring:
   messages:
     basename: errors
 
+jwt:
+  header: Authorization
+  secret: x
+  access-token-validity-in-seconds: 1800 # 30 min
+  refresh-token-validity-in-seconds: 1209600 # 14 days
