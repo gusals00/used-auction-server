@@ -6,7 +6,7 @@ import com.auction.usedauction.domain.file.ProductImage;
 import com.auction.usedauction.domain.file.ProductImageType;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.*;
-import com.auction.usedauction.repository.AuctionRepository;
+import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;

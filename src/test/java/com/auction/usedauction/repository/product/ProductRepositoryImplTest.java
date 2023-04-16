@@ -6,7 +6,7 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
 import com.auction.usedauction.exception.error_code.ProductErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
-import com.auction.usedauction.repository.AuctionRepository;
+import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.AuthorityRepository;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.auction.usedauction.domain.QAuction.auction;
 import static com.auction.usedauction.domain.QAuctionHistory.auctionHistory;
@@ -29,46 +28,11 @@ public class AuctionHistoryQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-//    public Optional<BiddingHistoryCheckDTO> findLatestAuctionHistoryByAuctionId(Long auctionId) {
-//        QMember seller = new QMember("seller");
-//        return Optional.ofNullable(
-//                queryFactory
-//                        .select(new QBiddingHistoryCheckDTO(auctionHistory.id, auction.id, member.loginId,auctionHistory.bidPrice,auction.startPrice,auction.priceUnit,seller.loginId))
-//                        .from(auctionHistory)
-//                        .join(auctionHistory.member, member)
-//                        .rightJoin(auctionHistory.auction, auction)
-//                        .join(auction.product,product)
-//                        .join(product.member, seller)
-//                        .where(auctionIdEq(auctionId),auctionStatusEq(AuctionStatus.BID))
-//                        .orderBy(auctionHistory.bidPrice.desc())
-//                        .fetchOne()
-//        );
-//    }
-
-    public Optional<AuctionHistory> findLatestAuctionHistoryByAuctionId(Long auctionId) {
-        QMember seller = new QMember("seller");
-        return Optional.ofNullable(
-                queryFactory
-                        .select(auctionHistory)
-                        .from(auctionHistory)
-                        .join(auctionHistory.member, member)
-                        .rightJoin(auctionHistory.auction, auction)
-                        .join(auction.product,product)
-                        .join(product.member, seller)
-                        .where(auctionIdEq(auctionId),auctionStatusEq(AuctionStatus.BID),productStatusEq(ProductStatus.EXIST))
-                        .orderBy(auctionHistory.bidPrice.desc())
-                        .fetchOne()
-        );
-    }
-
     private BooleanExpression auctionIdEq(Long auctionId) {
         return auctionId != null ?auction.id.eq(auctionId) : null;
     }
     private BooleanExpression auctionStatusEq(AuctionStatus auctionStatus) {
-        return auctionStatus != null ? auction.status.eq(auctionStatus) : null;
+        return auctionStatus != null ? auctionHistory.auction.status.eq(auctionStatus) : null;
     }
 
-    private BooleanExpression productStatusEq(ProductStatus productStatus) {
-        return productStatus != null ? product.productStatus.eq(productStatus) : null;
-    }
 }
