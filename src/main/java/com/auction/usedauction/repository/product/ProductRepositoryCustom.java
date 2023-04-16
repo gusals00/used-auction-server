@@ -14,4 +14,6 @@ public interface ProductRepositoryCustom {
     Page<Product> findBySearchCond(ProductSearchCondDTO searchCond, Pageable pageable);
     Optional<Product> findExistProductByIdAndExistMember(Long productId);
     Page<Product> findMyProductsByCond(String loginId, MyPageSearchConReq cond, Pageable pageable);
+    Page<Product> findMyBuyHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable);
+    Page<Product> findMySalesHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable);
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum AuctionStatus {
-    BID("입찰중"), // 경매중
+    BID("경매중"), // 경매중
     SUCCESS_BID("낙찰 성공"), // 낙찰 성공
     FAIL_BID("낙찰 실패"), // 낙찰 실패
     TRANSACTION_OK("거래 성공"), // 거래 성공

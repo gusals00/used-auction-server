@@ -1,6 +1,6 @@
 package com.auction.usedauction.service.dto;
 
-import com.auction.usedauction.domain.AuctionStatus;
+
 import com.auction.usedauction.domain.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MyPageProductPageContentRes {
+public class MyPageBuySellHistoryContentRes {
 
     @Schema(description = "상품 ID",example = "1")
     private Long productId;
@@ -23,7 +23,7 @@ public class MyPageProductPageContentRes {
     @Schema(description = "상품 이름",example = "공학수학 책 팔아요")
     private String productName;
 
-    @Schema(description = "현재가",example = "50000")
+    @Schema(description = "낙찰가",example = "50000")
     private Integer nowPrice;
 
     @Schema(description = "상품 생성 날짜", example = "2023-10-12 12:01")
@@ -35,10 +35,10 @@ public class MyPageProductPageContentRes {
     @Schema(description = "대표이미지 src",example = "https://used.wsdf.wjfiojs.jpg")
     private String sigImgSrc;
 
-    @Schema(description = "경매 상태 - 경매중, 낙찰 등",example = "경매중")
+    @Schema(description = "경매 상태 - 거래성공, 거래실패",example = "거래 성공")
     private String status;
 
-    public MyPageProductPageContentRes(Product product) {
+    public MyPageBuySellHistoryContentRes(Product product) {
         this.productId = product.getId();
         this.categoryName = product.getCategory().getName();
         this.productName = product.getName();
