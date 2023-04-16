@@ -13,6 +13,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.auction.usedauction.domain.QAuction.auction;
 import static com.auction.usedauction.domain.QAuctionHistory.auctionHistory;
@@ -54,6 +55,19 @@ public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryReposit
         return PageableExecutionUtils.getPage(contents, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public Optional<String> findLatestBidMemberLoginId(Long auctionId) {
+        return Optional.ofNullable(
+                queryFactory.select(member.loginId)
+                        .from(auctionHistory)
+                        .join(auctionHistory.member, member)
+                        .join(auctionHistory.auction, auction)
+                        .where(auctionIdEq(auctionId))
+                        .orderBy(auctionHistory.bidPrice.desc())
+                        .fetchFirst()
+        );
+    }
+
     private BooleanExpression statusEq(String status) {
         if (!StringUtils.hasText(status)) {
             return null;
@@ -68,6 +82,10 @@ public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryReposit
 
     private BooleanExpression loginIdEq(String loginId) {
         return loginId != null ? auctionHistory.member.loginId.eq(loginId) : null;
+    }
+
+    private BooleanExpression auctionIdEq(Long auctionId) {
+        return auctionId != null ?auction.id.eq(auctionId) : null;
     }
 
 }
