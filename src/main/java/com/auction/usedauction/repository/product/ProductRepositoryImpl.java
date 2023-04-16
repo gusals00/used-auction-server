@@ -43,7 +43,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .where(productNameContains(searchCond.getProductName()),
                         categoryIdEq(searchCond.getCategoryId()),
                         productStatusEq(ProductStatus.EXIST),
-                        memberStatusEq(MemberStatus.EXIST)
+                        memberStatusEq(MemberStatus.EXIST),
+                        auctionStatusEq(AuctionStatus.BID)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -57,7 +58,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .where(productNameContains(searchCond.getProductName()),
                         categoryIdEq(searchCond.getCategoryId()),
                         productStatusEq(ProductStatus.EXIST),
-                        memberStatusEq(MemberStatus.EXIST)
+                        memberStatusEq(MemberStatus.EXIST),
+                        auctionStatusEq(AuctionStatus.BID)
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
@@ -71,9 +73,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .selectFrom(product)
                 .join(product.category, category)
                 .join(product.member, member)
+                .join(product.auction, auction)
                 .where(memberStatusEq(MemberStatus.EXIST),
                         productIdEq(productId),
-                        productStatusEq(ProductStatus.EXIST)
+                        productStatusEq(ProductStatus.EXIST),
+                        auctionStatusEq(AuctionStatus.BID)
                 )
                 .fetchOne());
     }
@@ -170,6 +174,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
+
     private OrderSpecifier[] orderCond(ProductOrderCond orderCond) {
 
         List<OrderSpecifier> orderByList = new ArrayList<>();
@@ -189,6 +194,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private BooleanExpression productStatusEq(ProductStatus status) {
         return status != null ? product.productStatus.eq(status) : null;
+    }
+
+    private BooleanExpression auctionStatusEq(AuctionStatus auctionStatus) {
+        return auctionStatus != null ? auction.status.eq(auctionStatus) : null;
     }
 
     private BooleanExpression auctionHistoryStatusEq(AuctionHistoryStatus status) {
@@ -224,17 +233,17 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private BooleanExpression productControlStatusEq(String status) {
-        if(!StringUtils.hasText(status)) {
+        if (!StringUtils.hasText(status)) {
             return null;
-        } else if(status.equals("success-bid")) {
+        } else if (status.equals("success-bid")) {
             return auction.status.eq(AuctionStatus.SUCCESS_BID);
-        } else if(status.equals("fail-bid")) {
+        } else if (status.equals("fail-bid")) {
             return auction.status.eq(AuctionStatus.FAIL_BID);
-        } else if(status.equals("transaction-ok")) {
+        } else if (status.equals("transaction-ok")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_OK);
-        } else if(status.equals("transaction-fail")) {
+        } else if (status.equals("transaction-fail")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_FAIL);
-        } else if(status.equals("bid")){
+        } else if (status.equals("bid")) {
             return auction.status.eq(AuctionStatus.BID);
         } else {
             return null;
@@ -242,11 +251,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private BooleanExpression historyStatusEq(String status) {
-        if(!StringUtils.hasText(status)) {
+        if (!StringUtils.hasText(status)) {
             return null;
-        } else if(status.equals("transaction-ok")) {
+        } else if (status.equals("transaction-ok")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_OK);
-        } else if(status.equals("transaction-fail")) {
+        } else if (status.equals("transaction-fail")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_FAIL);
         } else {
             return null;
