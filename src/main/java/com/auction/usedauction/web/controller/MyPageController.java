@@ -25,7 +25,6 @@ public class MyPageController {
 
      private final MemberService memberService;
      private final MyPageQueryService myPageQueryService;
-     private final AuctionHistoryQueryRepository auctionHistoryQueryRepository;
 
     @Operation(summary = "회원정보 조회")
      @GetMapping
@@ -50,11 +49,7 @@ public class MyPageController {
      @Operation(summary = "입찰/낙찰 내역")
     @GetMapping("/auction-history")
     public PageListRes<MyPageAuctionHistoryPageContentRes> getMyAuctionHistory(@AuthenticationPrincipal User user, @ParameterObject @Valid MyPageSearchConReq searchConReq) {
-         PageRequest pageRequest = PageRequest.of(searchConReq.getPage(), searchConReq.getSize());
-
-         Page<MyPageAuctionHistoryPageContentRes> page = auctionHistoryQueryRepository.findMyAuctionHistoryByCond(user.getUsername(), searchConReq, pageRequest);
-
-         return new PageListRes(page.getContent(), page);
+        return myPageQueryService.getMyAuctionHistoryPage(searchConReq, user.getUsername());
      }
 
     @Operation(summary = "구매 내역")
