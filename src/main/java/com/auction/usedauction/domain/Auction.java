@@ -103,7 +103,7 @@ public class Auction {
     }
 
     public void increaseNowPrice(int price) {
-        if (nowPrice < price) {
+        if (nowPrice <= price) {
             nowPrice = price;
         }
     }
