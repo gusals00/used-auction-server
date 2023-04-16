@@ -68,7 +68,12 @@ public class Auction {
     public void changeAuctionStatus(AuctionStatus auctionStatus) {
         this.status = auctionStatus;
     }
-
+    public void changeSellerStatus(TransStatus transStatus) {
+        this.sellerTransStatus = transStatus;
+    }
+    public void changeBuyerStatus(TransStatus transStatus) {
+        this.buyerTransStatus = transStatus;
+    }
     private void initTransStatus() {
         //판매자, 구매자 거래 확인 상태 초기값을 거래 전(TRANS_BEFORE)으로
         sellerTransStatus = TransStatus.TRANS_BEFORE;

@@ -1,18 +1,19 @@
 package com.auction.usedauction;
 
-import com.auction.usedauction.domain.Authority;
-import com.auction.usedauction.domain.Category;
-import com.auction.usedauction.domain.Member;
-import com.auction.usedauction.domain.Product;
+import com.auction.usedauction.domain.*;
 import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.AuctionHistoryErrorCode;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
 import com.auction.usedauction.exception.error_code.ProductErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
+import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
+import com.auction.usedauction.service.AuctionHistoryService;
 import com.auction.usedauction.service.ProductService;
+import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import com.auction.usedauction.service.dto.AuctionRegisterDTO;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.util.FileSubPath;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
-@Profile(value = {"local","production"})
+@Profile(value = {"local", "production"})
 public class InitDBService {
 
     private final CategoryRepository categoryRepository;
@@ -47,6 +48,8 @@ public class InitDBService {
     private final MemberRepository memberRepository;
     private final ProductService productService;
     private final ProductRepository productRepository;
+    private final AuctionHistoryService auctionHistoryService;
+    private final AuctionHistoryRepository auctionHistoryRepository;
     private final EntityManager em;
 
     @Value("${INIT_FILE_PATH}")
@@ -91,40 +94,115 @@ public class InitDBService {
 
 
         //member1 상품 저장
+        Product findProduct1 = insertProduct("이것이 코딩 테스트다", "책 정보입니다", bookCategory.getId(), now.minusDays(4), now.minusDays(2), 10000, 2000,
+                "1_1.jpg", Arrays.asList("1_2.jpg", "1_3.jpg", "1_4.jpg"), member1.getLoginId(), 3);
+        // member3이 낙찰됨
+        AuctionHistory auctionHistory1 = bidAuction(findProduct1.getAuction().getId(), 20000, member3.getLoginId(), LocalDateTime.now().minusDays(3));
+        auctionHistory1.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        findProduct1.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
 
-        insertProduct("이것이 코딩 테스트다", "책 정보입니다", bookCategory.getId(), now.plusDays(5), 10000, 2000,
-                "1_1.jpg", Arrays.asList("1_2.jpg","1_3.jpg","1_4.jpg"), member1.getLoginId(),3);
 
-        insertProduct("한화 이글스 티켓", "티켓 정보입니다", ticketCategory.getId(), now.plusDays(3), 100000, 20000,
-                "2_1.jpg", Arrays.asList("2_2.jpg"), member1.getLoginId(),10);
+        Product findProduct2 = insertProduct("한화 이글스 티켓", "티켓 정보입니다", ticketCategory.getId(), now.minusDays(7), now.minusDays(4), 100000, 20000,
+                "2_1.jpg", Arrays.asList("2_2.jpg"), member1.getLoginId(), 10);
+        //member3 입찰
+        bidAuction(findProduct2.getAuction().getId(), 120000, member3.getLoginId(), LocalDateTime.now().minusDays(6));
+        //member2 낙찰
+        AuctionHistory auctionHistory3 = bidAuction(findProduct2.getAuction().getId(), 140000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
+        auctionHistory3.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        findProduct2.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+
 
         //member2 상품 저장
         insertProduct("자바만 잡아도 팝니다", "자바만 잡아도 정보입니다", bookCategory.getId(), now.plusDays(7), 20000, 2000,
-                "3_1.jpg", Arrays.asList("3_2.jpg"), member2.getLoginId(),2);
+                "3_1.jpg", Arrays.asList("3_2.jpg"), member2.getLoginId(), 2);
 
         insertProduct("갤럭시 북 3 팝니다", "갤럭시 북이고 상태 좋습니다", digitalCategory.getId(), now.plusDays(6), 1000000, 100000,
-                "4_1.jpg", Arrays.asList("4_2.jpg"), member2.getLoginId(),15);
+                "4_1.jpg", Arrays.asList("4_2.jpg"), member2.getLoginId(), 15);
 
         //member3 상품 저장
-        insertProduct("객체지향의 사실과 오해", "객체지향의 사실과 오해 새책입니다.", bookCategory.getId(), now.plusDays(2), 15000, 1000,
-                "5_1.jpg", Arrays.asList("5_2.jpg","5_3.jpg"), member3.getLoginId(),11);
-        insertProduct("로지텍 마우스 팝니다", "로지텍 마우스고 상태 좋습니다.", digitalCategory.getId(), now.plusDays(4), 15000, 1000,
-                "6_1.jpg", Arrays.asList("6_2.jpg"), member3.getLoginId(),13);
+        // 경매 중
+        Product findProduct3 = insertProduct("객체지향의 사실과 오해1", "객체지향의 사실과 오해1 새책입니다.", bookCategory.getId(), now.plusDays(2), 15000, 1000,
+                "5_1.jpg", Arrays.asList("5_2.jpg", "5_3.jpg"), member3.getLoginId(), 11);
+        //meber2 입찰
+        bidAuction(findProduct3.getAuction().getId(), 16000, member2.getLoginId(), LocalDateTime.now().plusDays(2));
 
+        // 낙찰 실패
+        Product findProduct4 = insertProduct("객체지향의 사실과 오해2", "객체지향의 사실과 오해2 새책입니다.", bookCategory.getId(), now.minusDays(10), now.minusDays(4), 21000, 1000,
+                "5_1.jpg", Arrays.asList("5_2.jpg", "5_3.jpg"), member3.getLoginId(), 7);
+        findProduct4.getAuction().changeAuctionStatus(AuctionStatus.FAIL_BID);
+
+        // 낙찰 성공
+        Product findProduct5 = insertProduct("로지텍 마우스 팝니다1", "로지텍 마우스1고 상태 좋습니다.", digitalCategory.getId(), now.minusDays(10), now.minusDays(4), 22000, 1000,
+                "6_1.jpg", Arrays.asList("6_2.jpg"), member3.getLoginId(), 12);
+        //member1 입찰
+        bidAuction(findProduct5.getAuction().getId(), 25000, member1.getLoginId(), LocalDateTime.now().minusDays(6));
+        //member2 낙찰
+        AuctionHistory auctionHistory4 = bidAuction(findProduct5.getAuction().getId(), 140000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
+        auctionHistory4.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        findProduct5.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+
+        // 거래 실패
+        Product findProduct6 = insertProduct("로지텍 마우스 팝니다2", "로지텍 마우스2고 상태 좋습니다.", digitalCategory.getId(), now.minusDays(14), now.minusDays(1), 15000, 1000,
+                "6_1.jpg", Arrays.asList("6_2.jpg"), member3.getLoginId(), 15);
+        //member2 낙찰/ 구매자가 거래 불발
+        AuctionHistory auctionHistory5 = bidAuction(findProduct6.getAuction().getId(), 20000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
+        auctionHistory5.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        findProduct6.getAuction().changeAuctionStatus(AuctionStatus.TRANSACTION_FAIL);
+        findProduct6.getAuction().changeBuyerStatus(TransStatus.TRANS_REJECT);
+        findProduct6.getAuction().changeSellerStatus(TransStatus.TRANS_COMPLETE);
+
+        // 거래성공
+        Product findProduct7 = insertProduct("로지텍 마우스 팝니다3", "로지텍 마우스3고 상태 좋습니다.", digitalCategory.getId(),  now.minusDays(7), now.minusDays(1), 15000, 1000,
+                "6_1.jpg", Arrays.asList("6_2.jpg"), member3.getLoginId(), 14);
+        //member2 낙찰/ 거래 완료
+        AuctionHistory auctionHistory6 = bidAuction(findProduct7.getAuction().getId(), 20000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
+        auctionHistory6.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        findProduct7.getAuction().changeAuctionStatus(AuctionStatus.TRANSACTION_OK);
+        findProduct7.getAuction().changeBuyerStatus(TransStatus.TRANS_COMPLETE);
+        findProduct7.getAuction().changeSellerStatus(TransStatus.TRANS_COMPLETE);
     }
 
-    private void insertProduct(String name, String info, Long categoryId, LocalDateTime endDate, int startPrice, int priceUnit, String sigFileName, List<String> ordinalFileNames, String loginId,int viewCount) {
+    private AuctionHistory bidAuction(Long auctionId, int bidPrice, String memberLoginId, LocalDateTime bidDate) {
+        AuctionBidResultDTO auctionBidResultDTO2 = auctionHistoryService.biddingAuction(auctionId, bidPrice, memberLoginId);
+        AuctionHistory auctionHistory = auctionHistoryRepository.findById(auctionBidResultDTO2.getAuctionHistoryId()).orElseThrow(() -> new CustomException(AuctionHistoryErrorCode.AUCTION_HISTORY_NOT_FOUND));
+        auctionHistory.changeCreatedDate(bidDate);
+        return auctionHistory;
+    }
+
+    private AuctionHistory bidAuction(Long auctionId, int bidPrice, String memberLoginId) {
+        AuctionBidResultDTO auctionBidResultDTO2 = auctionHistoryService.biddingAuction(auctionId, bidPrice, memberLoginId);
+        AuctionHistory auctionHistory = auctionHistoryRepository.findById(auctionBidResultDTO2.getAuctionHistoryId()).orElseThrow(() -> new CustomException(AuctionHistoryErrorCode.AUCTION_HISTORY_NOT_FOUND));
+        return auctionHistory;
+    }
+
+    private Product insertProduct(String name, String info, Long categoryId, LocalDateTime endDate, int startPrice, int priceUnit, String sigFileName, List<String> ordinalFileNames, String loginId, int viewCount) {
         UploadFileDTO sigUpload = uploadFile(FileSubPath.PRODUCT_IMG_PATH, sigFileName);
         List<UploadFileDTO> ordinalUpload = uploadFiles(FileSubPath.PRODUCT_IMG_PATH, ordinalFileNames);
 
         ProductRegisterDTO productRegister = new ProductRegisterDTO(name, info, categoryId, sigUpload, ordinalUpload, loginId);
-        AuctionRegisterDTO auctionRegister = new AuctionRegisterDTO( endDate, startPrice, priceUnit);
-        Long savedId = productService.register(productRegister,auctionRegister);
+        AuctionRegisterDTO auctionRegister = new AuctionRegisterDTO(endDate, startPrice, priceUnit);
+        Long savedId = productService.register(productRegister, auctionRegister);
         Product findProduct = productRepository.findById(savedId).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         for (int i = 0; i < viewCount; i++) { // 조회수 증가
             findProduct.increaseViewCount();
         }
+        return findProduct;
+    }
+
+    private Product insertProduct(String name, String info, Long categoryId, LocalDateTime startDate, LocalDateTime endDate, int startPrice, int priceUnit, String sigFileName, List<String> ordinalFileNames, String loginId, int viewCount) {
+        UploadFileDTO sigUpload = uploadFile(FileSubPath.PRODUCT_IMG_PATH, sigFileName);
+        List<UploadFileDTO> ordinalUpload = uploadFiles(FileSubPath.PRODUCT_IMG_PATH, ordinalFileNames);
+
+        ProductRegisterDTO productRegister = new ProductRegisterDTO(name, info, categoryId, sigUpload, ordinalUpload, loginId);
+        AuctionRegisterDTO auctionRegister = new AuctionRegisterDTO(endDate, startPrice, priceUnit);
+        Long savedId = productService.register(productRegister, auctionRegister);
+        Product findProduct = productRepository.findById(savedId).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        findProduct.changeCreatedDate(startDate);
+        for (int i = 0; i < viewCount; i++) { // 조회수 증가
+            findProduct.increaseViewCount();
+        }
+        return findProduct;
     }
 
     private UploadFileDTO uploadFile(String subPath, String fileName) {
