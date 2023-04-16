@@ -15,32 +15,36 @@ import java.util.List;
 public class PageListRes<T> {
 
     private List<T> content; // 데이터
+
     @Schema(description = "전체 페이지 수",example = "10")
-    private int getTotalPages; //전체 페이지 수
+    private int getTotalPages; //전체 페이지
+
     @Schema(description = "현재 페이지",example = "0")
-
     private int getPageNumber; //현재 페이지
+
     @Schema(description = "페이지 크기",example = "10")
-
     private int getSize; //페이지 크기
+
     @Schema(description = "현재 페이지에 나올 데이터 수",example = "10")
-
     private int getNumberOfElements; //현재 페이지에 나올 데이터 수
+
     @Schema(description = "조회된 데이터 존재 여부",example = "10")
-
     private boolean hasContent; //조회된 데이터 존재 여부
+
     @Schema(description = "현재 페이지가 첫 페이지 인지 여부",example = "true")
-
     private boolean isFirst; //현재 페이지가 첫 페이지 인지 여부
+
     @Schema(description = "현재 페이지가 마지막 페이지 인지 여부",example = "false")
-
     private boolean isLast; //현재 페이지가 마지막 페이지 인지 여부
+
     @Schema(description = "다음 페이지 여부",example = "true")
-
     private boolean hasNext; //다음 페이지 여부
-    @Schema(description = "이전 페이지 여부",example = "false")
 
+    @Schema(description = "이전 페이지 여부",example = "false")
     private boolean hasPrevious; //이전 페이지 여부
+
+    @Schema(description = "전체 데이터 수", example = "100")
+    private Long totalElements; // 전체 데이터 수
 
     public PageListRes(List<T> content, Page page) {
         this.content = content;
@@ -53,5 +57,6 @@ public class PageListRes<T> {
         this.isLast = page.isLast();
         this.hasNext = page.hasNext();
         this.hasPrevious = page.hasPrevious();
+        this.totalElements = page.getTotalElements();
     }
 }

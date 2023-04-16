@@ -1,9 +1,6 @@
 package com.auction.usedauction.repository.product;
 
-import com.auction.usedauction.domain.AuctionStatus;
-import com.auction.usedauction.domain.MemberStatus;
-import com.auction.usedauction.domain.Product;
-import com.auction.usedauction.domain.ProductStatus;
+import com.auction.usedauction.domain.*;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
 import com.auction.usedauction.web.dto.MyPageSearchConReq;
@@ -21,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.auction.usedauction.domain.AuctionHistoryStatus.*;
 import static com.auction.usedauction.domain.QAuction.*;
+import static com.auction.usedauction.domain.QAuctionHistory.*;
 import static com.auction.usedauction.domain.QCategory.*;
 import static com.auction.usedauction.domain.QMember.*;
 import static com.auction.usedauction.domain.QProduct.*;
@@ -88,7 +87,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .join(product.member, member)
                 .join(product.auction, auction).fetchJoin()
                 .where(loginIdEq(loginId),
-                        statusEq(cond.getStatus()),
+                        productControlStatusEq(cond.getStatus()),
                         productStatusEq(ProductStatus.EXIST)
                 )
                 .orderBy(product.createdDate.desc())
@@ -101,13 +100,76 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .from(product)
                 .join(product.member, member)
                 .where(loginIdEq(loginId),
-                        statusEq(cond.getStatus()),
+                        productControlStatusEq(cond.getStatus()),
                         productStatusEq(ProductStatus.EXIST)
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    //마이페이지 구매 내역
+    @Override
+    public Page<Product> findMyBuyHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
+        List<Product> content = queryFactory
+                .selectFrom(product)
+                .join(product.category, category).fetchJoin()
+                .join(product.auction, auction).fetchJoin()
+                .join(auction.auctionHistoryList, auctionHistory)
+                .join(auctionHistory.member, member)
+                .where(
+                        auctionHistoryLoginIdEq(loginId),
+                        historyStatusEq(cond.getStatus()),
+                        auctionHistoryStatusEq(SUCCESSFUL_BID)
+                )
+                .orderBy(auction.auctionEndDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(product.count())
+                .from(auctionHistory)
+                .join(auctionHistory.member, member)
+                .where(
+                        auctionHistoryLoginIdEq(loginId),
+                        historyStatusEq(cond.getStatus()),
+                        auctionHistoryStatusEq(SUCCESSFUL_BID)
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    //마이페이지 판매 내역
+    @Override
+    public Page<Product> findMySalesHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
+        List<Product> content = queryFactory
+                .selectFrom(product)
+                .join(product.category, category).fetchJoin()
+                .join(product.auction, auction).fetchJoin()
+                .join(auction.auctionHistoryList, auctionHistory)
+                .join(auctionHistory.member, member)
+                .where(
+                        loginIdEq(loginId),
+                        historyStatusEq(cond.getStatus()),
+                        auctionHistoryStatusEq(SUCCESSFUL_BID)
+                )
+                .orderBy(auction.auctionEndDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(product.count())
+                .from(auctionHistory)
+                .join(auctionHistory.member, member)
+                .where(
+                        loginIdEq(loginId),
+                        historyStatusEq(cond.getStatus()),
+                        auctionHistoryStatusEq(SUCCESSFUL_BID)
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
     private OrderSpecifier[] orderCond(ProductOrderCond orderCond) {
 
         List<OrderSpecifier> orderByList = new ArrayList<>();
@@ -129,6 +191,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return status != null ? product.productStatus.eq(status) : null;
     }
 
+    private BooleanExpression auctionHistoryStatusEq(AuctionHistoryStatus status) {
+        return status != null ? auctionHistory.status.eq(status) : null;
+    }
+
     private BooleanExpression categoryIdEq(Long categoryId) {
         return categoryId != null ? category.id.eq(categoryId) : null;
     }
@@ -136,7 +202,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     private BooleanExpression productNameContains(String productName) {
         return hasText(productName) ? product.name.contains(productName) : null;
     }
-
 
     private BooleanExpression productStatusNotEq(ProductStatus status) {
         return status != null ? product.productStatus.ne(status) : null;
@@ -150,11 +215,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return memberStatus != null ? product.member.status.eq(memberStatus) : null;
     }
 
+    private BooleanExpression auctionHistoryLoginIdEq(String loginId) {
+        return loginId != null ? auctionHistory.member.loginId.eq(loginId) : null;
+    }
+
     private BooleanExpression loginIdEq(String loginId) {
         return loginId != null ? product.member.loginId.eq(loginId) : null;
     }
 
-    private BooleanExpression statusEq(String status) {
+    private BooleanExpression productControlStatusEq(String status) {
         if(!StringUtils.hasText(status)) {
             return null;
         } else if(status.equals("success-bid")) {
@@ -165,9 +234,22 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             return auction.status.eq(AuctionStatus.TRANSACTION_OK);
         } else if(status.equals("transaction-fail")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_FAIL);
-        } else {
+        } else if(status.equals("bid")){
             return auction.status.eq(AuctionStatus.BID);
+        } else {
+            return null;
         }
     }
 
+    private BooleanExpression historyStatusEq(String status) {
+        if(!StringUtils.hasText(status)) {
+            return null;
+        } else if(status.equals("transaction-ok")) {
+            return auction.status.eq(AuctionStatus.TRANSACTION_OK);
+        } else if(status.equals("transaction-fail")) {
+            return auction.status.eq(AuctionStatus.TRANSACTION_FAIL);
+        } else {
+            return null;
+        }
+    }
 }
