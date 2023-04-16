@@ -5,7 +5,8 @@ import com.auction.usedauction.domain.AuctionHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, Long> , AuctionHistoryRepositoryCustom{
+public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, Long>, AuctionHistoryRepositoryCustom {
 
+    List<AuctionHistory> findAllByAuction(Auction auction);
     int countByAuction(Auction auction);
 }

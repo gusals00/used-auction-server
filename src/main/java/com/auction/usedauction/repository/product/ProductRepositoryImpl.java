@@ -251,14 +251,14 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private BooleanExpression historyStatusEq(String status) {
-        if (!StringUtils.hasText(status)) {
-            return null;
-        } else if (status.equals("transaction-ok")) {
+        if(!StringUtils.hasText(status)) {
+            return auction.status.eq(AuctionStatus.TRANSACTION_OK).or(auction.status.eq(AuctionStatus.TRANSACTION_FAIL));
+        } else if(status.equals("transaction-ok")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_OK);
         } else if (status.equals("transaction-fail")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_FAIL);
         } else {
-            return null;
+            return auction.status.eq(AuctionStatus.TRANSACTION_OK).or(auction.status.eq(AuctionStatus.TRANSACTION_FAIL));
         }
     }
 }
