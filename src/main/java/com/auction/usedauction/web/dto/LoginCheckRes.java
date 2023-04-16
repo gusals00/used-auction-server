@@ -14,4 +14,6 @@ public class LoginCheckRes {
     private Boolean status;
 
     private String loginId;
+
+    private String name;
 }

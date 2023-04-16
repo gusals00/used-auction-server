@@ -38,6 +38,7 @@ jobs:
           spring.mail.username: ${{ secrets.MAIL_USERNAME }}
           spring.mail.password: ${{ secrets.MAIL_PASSWORD }}
           jwt.secret: ${{ secrets.JWT_SECRET }}
+          spring.redis.host: ${{ secrets.REDIS_HOST }}
 #          spring.jpa.hibernate.ddl-auto: update
           spring.profiles.active: production
           cloud.aws.credentials.access-key : ${{ secrets.AWS_ACCESS_KEY_ID }}
