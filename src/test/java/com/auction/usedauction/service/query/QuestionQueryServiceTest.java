@@ -5,7 +5,6 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
 import com.auction.usedauction.exception.error_code.QuestionErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
-import com.auction.usedauction.repository.AuthorityRepository;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.QuestionRepository;
@@ -19,7 +18,6 @@ import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFileDTO;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +44,6 @@ class QuestionQueryServiceTest {
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
-    private AuthorityRepository authorityRepository;
-    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private S3FileUploader fileUploader;
@@ -57,28 +53,6 @@ class QuestionQueryServiceTest {
     private QuestionService questionService;
     @Autowired
     private QuestionRepository questionRepository;
-
-    @BeforeEach
-    public void beforeEach() {
-        Authority authority = createAuthority("ROLE_USER");
-        authorityRepository.save(authority);
-
-        Member member1 = createMember("호창", "990428", "addd@naver.com", "20180584", "1234", "010-5444-8888", authority);
-        Member member2 = createMember("광민", "990228", "addd333@naver.com", "20180012", "133234", "010-5944-8288", authority);
-        Member member3 = createMember("대현", "990228", "addd333@naver.com", "20180004", "1323234", "010-5944-8288", authority);
-
-        memberRepository.saveAll(Arrays.asList(member1, member2, member3));
-
-        List<Category> categoryList = new ArrayList<>(Arrays.asList(
-                createCategory("디지털기기"), createCategory("생활가전"), createCategory("가구/인테리어"),
-                createCategory("생활/주방"), createCategory("유아동"), createCategory("유아도서"),
-                createCategory("여성의류"), createCategory("여성잡화"), createCategory("도서"),
-                createCategory("가공식품"), createCategory("반려동물용품"), createCategory("식품"),
-                createCategory("기타"), createCategory("남성패션/잡화"), createCategory("뷰티/미용"),
-                createCategory("티켓/교환권"), createCategory("스포츠/레저"), createCategory("취미/게임/음반")
-        ));
-        categoryRepository.saveAll(categoryList);
-    }
 
     @Test
     @DisplayName("질문 조회 성공, 페이징 동작 / 자식 질문이 잘 정렬 되었는지")
