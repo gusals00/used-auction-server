@@ -13,9 +13,11 @@ import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
 import com.auction.usedauction.service.ProductService;
+import com.auction.usedauction.service.QuestionService;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import com.auction.usedauction.service.dto.AuctionRegisterDTO;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
+import com.auction.usedauction.service.dto.QuestionRegisterDTO;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFileDTO;
@@ -51,6 +53,7 @@ public class InitDBService {
     private final AuctionHistoryService auctionHistoryService;
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final EntityManager em;
+    private final QuestionService questionService;
 
     @Value("${INIT_FILE_PATH}")
     private String filePath;
@@ -66,6 +69,27 @@ public class InitDBService {
 
         // 상품 추가
         insertProducts();
+
+        //질문 추가
+        insertQuestions();
+    }
+
+    private void insertQuestions() {
+        Member member1 = memberRepository.findByLoginId("hyeonmin").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member member2 = memberRepository.findByLoginId("11").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member member3 = memberRepository.findByLoginId("20180004").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        Product findProduct1 = productRepository.findByName("갤럭시 북 3 팝니다").orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        Long parentId1 = questionService.registerQuestion(new QuestionRegisterDTO(null, "구매한지 얼마나 되었나요?", findProduct1.getId(), member3.getLoginId()));
+        questionService.registerQuestion(new QuestionRegisterDTO(parentId1, "한 일주일 정도 된거 같아요", findProduct1.getId(), member2.getLoginId()));
+        questionService.registerQuestion(new QuestionRegisterDTO(parentId1, "그리고 한번도 사용한 적 없어요", findProduct1.getId(), member2.getLoginId()));
+
+        Long parentId2 = questionService.registerQuestion(new QuestionRegisterDTO(null, "갤럭시 북 2는 없나요?", findProduct1.getId(), member1.getLoginId()));
+        questionService.registerQuestion(new QuestionRegisterDTO(parentId2, "중고로 있긴 한데... 좀 오래되서요", findProduct1.getId(), member2.getLoginId()));
+        questionService.registerQuestion(new QuestionRegisterDTO(parentId2, "만약 사실 의향 있으시면 채팅으로 연락 주세요", findProduct1.getId(), member2.getLoginId()));
+
+
+
     }
 
     private void insertMember() {
@@ -85,7 +109,7 @@ public class InitDBService {
         Member member2 = memberRepository.findByLoginId("11").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Member member3 = memberRepository.findByLoginId("20180004").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().withSecond(0);
 
         //카테고리 조회
         Category bookCategory = categoryRepository.findCategoryByName("도서").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
