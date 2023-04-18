@@ -1,10 +1,8 @@
 package com.auction.usedauction.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,6 +29,9 @@ public class Auction {
     private LocalDateTime auctionStartDate;
 
     private LocalDateTime auctionEndDate;
+
+//    @org.springframework.data.annotation.Version
+//    private long version=0;
 
     @Enumerated(EnumType.STRING)
     private TransStatus sellerTransStatus;
