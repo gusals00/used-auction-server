@@ -8,6 +8,7 @@ import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
+import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
+import static com.auction.usedauction.util.MemberBanConstants.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -25,6 +28,7 @@ public class AuctionHistoryService {
     private final AuctionRepository auctionRepository;
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final MemberRepository memberRepository;
+    private final AuctionHistoryQueryRepository auctionHistoryQueryRepository;
 
     @Transactional
     public AuctionBidResultDTO biddingAuction(Long auctionId, int bidPrice, String loginId) {
@@ -34,7 +38,8 @@ public class AuctionHistoryService {
                 .orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING));
 
         //판매자는 입찰 불가능
-        if (findAuction.getProduct().getMember().getLoginId().equals(loginId)) {
+        Product product = findAuction.getProduct();
+        if (isProductSeller(product, loginId)) {
             throw new CustomException(AuctionHistoryErrorCode.NOT_BID_SELLER);
         }
 
@@ -52,7 +57,7 @@ public class AuctionHistoryService {
                 throw new CustomException(AuctionHistoryErrorCode.NO_HIGHER_THAN_NOW_PRICE);
             }
             // 입찰 단위가 맞는지
-            validPriceUnit(bidPrice,findAuction);
+            validPriceUnit(bidPrice, findAuction);
 
         } else {// 첫 입찰이 아닌 경우
             // 현재 금액 < 입찰 금액
@@ -60,7 +65,7 @@ public class AuctionHistoryService {
                 throw new CustomException(AuctionHistoryErrorCode.NO_HIGHER_THAN_NOW_PRICE);
             }
             // 입찰 단위가 맞는지
-            validPriceUnit(bidPrice,findAuction);
+            validPriceUnit(bidPrice, findAuction);
 
             // 최근 입찰자와 현재 입찰자가 다른지
             if (latestMemberLoginId.get().equals(loginId)) {
@@ -74,6 +79,21 @@ public class AuctionHistoryService {
         AuctionHistory auctionHistory = auctionHistoryRepository.save(createAuctionHistory(findAuction, bidPrice, member));
 
         return new AuctionBidResultDTO(bidPrice, findAuction.getProduct().getId(), auctionHistory.getId());
+    }
+
+    @Transactional
+    // 특정 횟수 이상 거래 거절시
+    public Long banMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Long rejectCountByMemberId = auctionHistoryRepository.findRejectCountByMemberId(memberId);
+
+        if (rejectCountByMemberId >= MEMBER_BAN_MIN_COUNT) {
+            member.changeStatus(MemberStatus.DELETED);
+        }
+
+        log.info("ban memberId:{}, curCount={}, ban_min_count={}", memberId, rejectCountByMemberId, MEMBER_BAN_MIN_COUNT);
+        return memberId;
     }
 
     private void validPriceUnit(int bidPrice, Auction auction) {
@@ -90,5 +110,7 @@ public class AuctionHistoryService {
                 .build();
     }
 
-
+    private boolean isProductSeller(Product product, String loginId) {
+        return product.getMember().getLoginId().equals(loginId);
+    }
 }

@@ -13,4 +13,5 @@ public class AuctionBidResultDTO {
     private Long productId;
     private Long auctionHistoryId;
 
+
 }

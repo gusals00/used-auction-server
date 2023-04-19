@@ -2,6 +2,8 @@ package com.auction.usedauction.repository.auction_history;
 
 import com.auction.usedauction.domain.AuctionHistory;
 import com.auction.usedauction.domain.AuctionHistoryStatus;
+import com.auction.usedauction.domain.AuctionStatus;
+import com.auction.usedauction.domain.QMember;
 import com.auction.usedauction.web.dto.MyPageSearchConReq;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -66,6 +68,33 @@ public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryReposit
                         .orderBy(auctionHistory.bidPrice.desc())
                         .fetchFirst()
         );
+    }
+
+    // 회원별 거래 실패 횟수 조회
+    public Long findRejectCountByMemberId(Long memberId) {
+        QMember buyer = new QMember("buyer");
+        QMember seller = new QMember("seller");
+
+        return queryFactory.select(auctionHistory.count().longValue())
+                .from(auctionHistory)
+                .join(auctionHistory.member, buyer)
+                .join(auctionHistory.auction, auction)
+                .join(auction.product, product)
+                .join(product.member, seller)
+                .where(sellerOrBuyerIdEq(memberId, buyer, seller), auctionStatusEq(AuctionStatus.TRANSACTION_FAIL))
+                .fetchOne();
+    }
+
+    private BooleanExpression sellerOrBuyerIdEq(Long memberId, QMember buyer, QMember seller) {
+        return memberIdEq(memberId, buyer).or(memberIdEq(memberId, seller));
+    }
+
+    private BooleanExpression memberIdEq(Long memberId, QMember member) {
+        return memberId != null ? member.id.eq(memberId) : null;
+    }
+
+    private BooleanExpression auctionStatusEq(AuctionStatus auctionStatus) {
+        return auctionStatus != null ? auctionHistory.auction.status.eq(auctionStatus) : null;
     }
 
     private BooleanExpression statusEq(String status) {
