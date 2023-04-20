@@ -31,7 +31,7 @@ public class AuctionHistoryService {
     private final MemberRepository memberRepository;
     private final AuctionHistoryQueryRepository auctionHistoryQueryRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public AuctionBidResultDTO biddingAuction(Long auctionId, int bidPrice, String loginId) {
 
         // 경매중 인지 확인
