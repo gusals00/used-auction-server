@@ -13,6 +13,7 @@ import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -30,7 +31,7 @@ public class AuctionHistoryService {
     private final MemberRepository memberRepository;
     private final AuctionHistoryQueryRepository auctionHistoryQueryRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public AuctionBidResultDTO biddingAuction(Long auctionId, int bidPrice, String loginId) {
 
         // 경매중 인지 확인

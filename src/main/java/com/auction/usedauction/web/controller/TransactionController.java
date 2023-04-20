@@ -46,7 +46,7 @@ public class TransactionController {
     @Operation(summary = "거래 확정 요청 메서드")
     public ResultRes<MessageRes> changeSellerTransStatus(@Valid @RequestBody MemberTransReq memberTransReq, @AuthenticationPrincipal User user) {
         log.info("거래 확정 api 호출 auctionId={}, changeToStatus={}, loginId={}", memberTransReq.getAuctionId(), memberTransReq.getStatus(), user.getUsername());
-        auctionService.memberTransCheck(memberTransReq.getAuctionId(), user.getUsername(), memberTransReq.getStatus());
+        auctionService.memberTransConfirm(memberTransReq.getAuctionId(), user.getUsername(), memberTransReq.getStatus());
 
         // 특정경매가 거래 실패일 경우
         boolean isTransFail = auctionRepository.existsAuctionByIdAndStatus(memberTransReq.getAuctionId(), AuctionStatus.TRANSACTION_FAIL);
