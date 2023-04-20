@@ -14,6 +14,6 @@ public class InitTest {
 
     @PostConstruct
     public void init() {
-        initTestService.initTest();
+//        initTestService.initTest();
     }
 }
