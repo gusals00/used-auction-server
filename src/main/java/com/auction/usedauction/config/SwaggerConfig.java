@@ -23,8 +23,8 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("중고거래플랫폼")
-                .description("창의융합종합설계2 - 중고개래플랫폼 API")
+                .title("중고경매플랫폼")
+                .description("창의융합종합설계2 - 중고경매플랫폼 API")
                 .version("1.0");
 
     }
