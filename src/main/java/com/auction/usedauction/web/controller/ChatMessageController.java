@@ -4,6 +4,8 @@ import com.auction.usedauction.service.ChatMessageService;
 import com.auction.usedauction.service.dto.ChatMessageRes;
 import com.auction.usedauction.service.query.ChatMessageQueryService;
 import com.auction.usedauction.web.dto.ChatMessageReq;
+import com.auction.usedauction.web.dto.ChatMessageWebSocketRes;
+import com.auction.usedauction.web.dto.MessageType;
 import com.auction.usedauction.web.dto.PageListRes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,8 +34,14 @@ public class ChatMessageController {
     private final ChatMessageQueryService chatMessageQueryService;
 
     @MessageMapping("/message")
+    @Operation(summary = "메세지 처리")
     public void message(ChatMessageReq messageReq, Principal principal) {
-        boolean isRead = chatMessageService.saveMessage(messageReq.getChatRoomId(), principal.getName(), messageReq.getMessage());
+        boolean isRead = false;
+        if(messageReq.getType().equals(MessageType.ENTER)) {
+            messageReq.setMessage(messageReq.getSender());
+        } else if(messageReq.getType().equals(MessageType.TALK)){
+            isRead = chatMessageService.saveMessage(messageReq.getChatRoomId(), principal.getName(), messageReq.getMessage());
+        }
 
         template.convertAndSend("/sub/room/" + messageReq.getChatRoomId(), createMessageRes(messageReq, isRead));
     }
@@ -48,7 +56,7 @@ public class ChatMessageController {
         return chatMessageQueryService.getMessageList(pageRequest, roomId, user.getUsername());
     }
 
-    private ChatMessageRes createMessageRes(ChatMessageReq messageReq, boolean isRead) {
-        return new ChatMessageRes(messageReq.getSender(), messageReq.getMessage(), isRead, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+    private ChatMessageWebSocketRes createMessageRes(ChatMessageReq messageReq, boolean isRead) {
+        return new ChatMessageWebSocketRes(messageReq.getType(), messageReq.getSender(), messageReq.getMessage(), isRead, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
     }
 }

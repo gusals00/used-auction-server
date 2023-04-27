@@ -39,12 +39,4 @@ public class ChatMessageRes {
             this.direction = "incoming";
         }
     }
-
-    public ChatMessageRes(String sender, String message, boolean readOrNot, String sentTime) {
-        this.sender = sender;
-        this.direction = "";
-        this.message = message;
-        this.readOrNot = readOrNot;
-        this.sentTime = sentTime;
-    }
 }
