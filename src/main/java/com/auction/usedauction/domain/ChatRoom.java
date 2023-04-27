@@ -43,10 +43,10 @@ public class ChatRoom extends BaseTimeEntity{
     }
 
     public void addUserCount() {
-        userCount++;
+        userCount+=1;
     }
 
     public void minusUserCount() {
-        userCount--;
+        userCount-=1;
     }
 }
