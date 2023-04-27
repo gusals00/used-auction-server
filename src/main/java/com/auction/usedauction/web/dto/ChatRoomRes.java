@@ -1,5 +1,6 @@
 package com.auction.usedauction.web.dto;
 
+import com.auction.usedauction.domain.ChatMessage;
 import com.auction.usedauction.domain.ChatRoom;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,9 @@ public class ChatRoomRes {
     @Schema(description = "최근 메세지", example = "안녕하세요")
     private String recentMessage;
 
+    @Schema(description = "최근 메세지 발신자", example = "현민")
+    private String recentSender;
+
     @Schema(description = "안읽은 메세지 수", example = "10")
     private Long unReadMessages;
 
@@ -35,8 +39,11 @@ public class ChatRoomRes {
         int messageSize = chatRoom.getChatMessages().size();
         if(messageSize == 0) {
             this.recentMessage = "";
+            this.recentSender = "";
         } else {
-            this.recentMessage = chatRoom.getChatMessages().get(messageSize-1).getMessage();
+            ChatMessage chatMessage = chatRoom.getChatMessages().get(messageSize - 1);
+            this.recentMessage = chatMessage.getMessage();
+            this.recentSender = chatMessage.getMember().getName();
         }
     }
 }

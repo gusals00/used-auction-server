@@ -35,10 +35,9 @@ public class ChatRoom extends BaseTimeEntity{
     private List<ChatMessage> chatMessages = new ArrayList<>();
 
     @Builder
-    public ChatRoom(Member member, Product product, List<ChatMessage> chatMessages) {
+    public ChatRoom(Member member, Product product) {
         this.member = member;
         this.product = product;
-        this.chatMessages = chatMessages;
         this.userCount = 0;
     }
 

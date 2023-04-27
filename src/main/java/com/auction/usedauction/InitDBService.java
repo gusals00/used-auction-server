@@ -2,16 +2,16 @@ package com.auction.usedauction;
 
 import com.auction.usedauction.domain.*;
 import com.auction.usedauction.exception.CustomException;
-import com.auction.usedauction.exception.error_code.AuctionHistoryErrorCode;
-import com.auction.usedauction.exception.error_code.CategoryErrorCode;
-import com.auction.usedauction.exception.error_code.ProductErrorCode;
-import com.auction.usedauction.exception.error_code.UserErrorCode;
+import com.auction.usedauction.exception.error_code.*;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
+import com.auction.usedauction.repository.chat.ChatMessageRepository;
+import com.auction.usedauction.repository.chat.ChatRoomRepository;
 import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
+import com.auction.usedauction.service.ChatMessageService;
 import com.auction.usedauction.service.ProductService;
 import com.auction.usedauction.service.QuestionService;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
@@ -54,6 +54,9 @@ public class InitDBService {
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final EntityManager em;
     private final QuestionService questionService;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatMessageService chatMessageService;
 
     @Value("${INIT_FILE_PATH}")
     private String filePath;
@@ -72,6 +75,9 @@ public class InitDBService {
 
         //질문 추가
         insertQuestions();
+
+        //채팅방, 메세지 추가
+        insertChatRoomsAndMessages();
     }
 
     private void insertQuestions() {
@@ -101,6 +107,31 @@ public class InitDBService {
         Member member3 = createMember("대현", "990428", "addd@naver.com", "20180004", "1128", "010-4444-8888", authority);
 
         memberRepository.saveAll(Arrays.asList(member1, member2, member3));
+    }
+
+    private void insertChatRoomsAndMessages() {
+        Member member1 = memberRepository.findByLoginId("hyeonmin").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member member2 = memberRepository.findByLoginId("11").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member member3 = memberRepository.findByLoginId("20180004").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        Product findProduct1 = productRepository.findByName("로지텍 마우스 팝니다1").orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        Product findProduct2 = productRepository.findByName("한화 이글스 티켓").orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        Product findProduct3 = productRepository.findByName("이것이 코딩 테스트다").orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        ChatRoom chatRoom1 = createChatRoom(member1, findProduct1);
+        ChatRoom chatRoom2 = createChatRoom(member2, findProduct2);
+        ChatRoom chatRoom3 = createChatRoom(member3, findProduct3);
+
+        chatRoomRepository.saveAll(Arrays.asList(chatRoom1, chatRoom2, chatRoom3));
+
+        ChatMessage chatMessage1 = createChatMessage("안녕하세요", chatRoom1, member1, true);
+        ChatMessage chatMessage2 = createChatMessage("네 안녕하세요", chatRoom1, findProduct1.getMember(), false);
+        ChatMessage chatMessage3 = createChatMessage("안녕하세요", chatRoom2, member2, true);
+        ChatMessage chatMessage4 = createChatMessage("하이", chatRoom2, findProduct2.getMember(), false);
+        ChatMessage chatMessage5 = createChatMessage("안녕하세요", chatRoom3, member3, true);
+        ChatMessage chatMessage6 = createChatMessage("그래", chatRoom3, findProduct3.getMember(), false);
+
+        chatMessageRepository.saveAll(Arrays.asList(chatMessage1, chatMessage2, chatMessage3, chatMessage4, chatMessage5, chatMessage6));
     }
 
     private void insertProducts() {
@@ -271,6 +302,22 @@ public class InitDBService {
     private Category createCategory(String name) {
         return Category.builder()
                 .name(name)
+                .build();
+    }
+
+    private ChatRoom createChatRoom(Member member, Product product) {
+        return ChatRoom.builder()
+                .member(member)
+                .product(product)
+                .build();
+    }
+
+    private ChatMessage createChatMessage(String message, ChatRoom chatRoom, Member member, boolean read) {
+        return ChatMessage.builder()
+                .message(message)
+                .chatRoom(chatRoom)
+                .member(member)
+                .readOrNot(read)
                 .build();
     }
 
