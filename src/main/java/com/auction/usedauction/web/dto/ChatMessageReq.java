@@ -16,4 +16,6 @@ public class ChatMessageReq {
     private String sender;
 
     private String message;
+
+    private MessageType type;
 }
