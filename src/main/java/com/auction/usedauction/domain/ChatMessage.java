@@ -34,7 +34,11 @@ public class ChatMessage extends BaseTimeEntity{
     public ChatMessage(String message, boolean readOrNot, ChatRoom chatRoom, Member member) {
         this.message = message;
         this.readOrNot = readOrNot;
-        this.chatRoom = chatRoom;
         this.member = member;
+        this.chatRoom = chatRoom;
+
+        if(chatRoom != null) {
+            chatRoom.getChatMessages().add(this);
+        }
     }
 }
