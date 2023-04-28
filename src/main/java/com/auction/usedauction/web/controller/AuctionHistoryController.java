@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +44,12 @@ public class AuctionHistoryController {
 
         log.info("변경된 현재 경매 가격 전달 nowPrice={}, actionHistoryId = {}, actionHistoryId = {}",
                 nowPrice, auctionBidResult.getAuctionHistoryId(), auctionBidResult.getProductId());
-        //sse로 변경 가격 전달
-        sseEmitterService.sendUpdatedBidPrice(new SseUpdatePriceDTO(auctionBidResult.getProductId(), nowPrice));
+        try {
+            //sse로 변경 가격 전달
+            sseEmitterService.sendUpdatedBidPrice(new SseUpdatePriceDTO(auctionBidResult.getProductId(), nowPrice));
+        } catch (TaskRejectedException e) {
+            log.error("입찰 가격 전달 async thread pool 초과 예외 발생", e);
+        }
 
         return new ResultRes<>(new MessageRes(convertedPrice + "원 입찰을 성공했습니다."));
     }
