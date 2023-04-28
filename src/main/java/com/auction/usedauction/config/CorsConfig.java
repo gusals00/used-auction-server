@@ -18,7 +18,10 @@ public class CorsConfig {
         configuration.setAllowedOrigins(
                 Arrays.asList(
                         "https://bkkang1.github.io",
-                        "http://localhost:3001"));
+                        "http://localhost:3001",
+                        "http://localhost:3000",
+                        "http://localhost:8080"
+                        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS", "PATCH"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("*"));

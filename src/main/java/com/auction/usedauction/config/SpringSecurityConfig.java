@@ -70,8 +70,10 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/sessions").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
-                .anyRequest().authenticated()
+                //sse
+                .requestMatchers("/api/sse/**").permitAll()
 
+                .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
