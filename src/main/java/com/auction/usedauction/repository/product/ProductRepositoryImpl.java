@@ -175,6 +175,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public Integer findNowPriceByProductId(Long productId) {
+        return queryFactory.select(auction.nowPrice)
+                .from(product)
+                .join(product.auction,auction)
+                .where(productIdEq(productId),productStatusEq(ProductStatus.EXIST))
+                .fetchOne();
+    }
+
     private OrderSpecifier[] orderCond(ProductOrderCond orderCond) {
 
         List<OrderSpecifier> orderByList = new ArrayList<>();

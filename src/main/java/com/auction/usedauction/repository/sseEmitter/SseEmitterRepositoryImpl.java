@@ -22,8 +22,10 @@ public class SseEmitterRepositoryImpl implements SseEmitterRepository {
 
      (로그인 아이디를 모르는 경우)
         key(emitterId) -> sseType-UUID-productId
+                       -> BID-seffsd.e2233-3
      (로그인 아이디를 아는 경우)
         key(emitterId) -> sseType-loginId-productId
+                       -> BID-hyeonmin-3
     */
 
     @Override
