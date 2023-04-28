@@ -4,6 +4,7 @@ package com.auction.usedauction.web.controller;
 import com.auction.usedauction.service.AuctionHistoryService;
 import com.auction.usedauction.service.SseEmitterService;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
+import com.auction.usedauction.service.dto.SseUpdatePriceDTO;
 import com.auction.usedauction.web.dto.BidReq;
 import com.auction.usedauction.web.dto.MessageRes;
 import com.auction.usedauction.web.dto.ResultRes;
@@ -43,7 +44,7 @@ public class AuctionHistoryController {
         log.info("변경된 현재 경매 가격 전달 nowPrice={}, actionHistoryId = {}, actionHistoryId = {}",
                 nowPrice, auctionBidResult.getAuctionHistoryId(), auctionBidResult.getProductId());
         //sse로 변경 가격 전달
-        sseEmitterService.sendUpdatedBidPriceByProductId(auctionBidResult.getProductId(), nowPrice);
+        sseEmitterService.sendUpdatedBidPrice(new SseUpdatePriceDTO(auctionBidResult.getProductId(), nowPrice));
 
         return new ResultRes<>(new MessageRes(convertedPrice + "원 입찰을 성공했습니다."));
     }
