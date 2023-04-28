@@ -4,6 +4,7 @@ import com.auction.usedauction.repository.dto.SseEmitterDTO;
 import com.auction.usedauction.repository.sseEmitter.SseEmitterRepository;
 import com.auction.usedauction.repository.sseEmitter.SseType;
 import com.auction.usedauction.service.SseEmitterService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Slf4j
 @RequestMapping("/api/sse")
 @RequiredArgsConstructor
-//@Tag(name = "Sse 컨트롤러", description = "Sse 관련 api")
+@Tag(name = "Sse 컨트롤러", description = "Sse 관련 api")
 public class SseController {
 
     private final SseEmitterService sseEmitterService;
     private final SseEmitterRepository sseEmitterRepository;
 
+    @Operation(summary = "입찰 sse 연결 메서드")
     @GetMapping(value = "/bid-connect/{productId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connectBid(@PathVariable Long productId) {
         Long timeout = 1000 * 60 * 5L; //5분
