@@ -24,19 +24,21 @@ public class SseEmitterServiceImpl implements SseEmitterService {
     @Override
     public String connect(SseType sseType, String loginId, Long productId, Long timeout) {
         String sseEmitterId = SseEmitterUtils.createSseEmitterId(sseType, loginId, productId);
-        SseEmitterDTO sseEmitterDTO = emitterRepository.saveEmitter(sseEmitterId, createSseEmitter(timeout));
-        onCompleteAndTimeout(sseEmitterDTO);
-        send(sseEmitterDTO, SseSendName.CONNECT, "연결 성공!");
+        connect(sseEmitterId, timeout);
         return sseEmitterId;
     }
 
     @Override
     public String connect(SseType sseType, Long productId, Long timeout) {
         String sseEmitterId = SseEmitterUtils.createSseEmitterId(sseType, productId);
+        connect(sseEmitterId, timeout);
+        return sseEmitterId;
+    }
+
+    private void connect(String sseEmitterId, Long timeout) {
         SseEmitterDTO sseEmitterDTO = emitterRepository.saveEmitter(sseEmitterId, createSseEmitter(timeout));
         onCompleteAndTimeout(sseEmitterDTO);
         send(sseEmitterDTO, SseSendName.CONNECT, "연결 성공!");
-        return sseEmitterId;
     }
 
     @Override
@@ -47,15 +49,15 @@ public class SseEmitterServiceImpl implements SseEmitterService {
                             .id(sseEmitterDTO.getSseEmitterId())
                             .name(name.toString())
                             .data(new SseDataRes<>(sseEmitterDTO.getSseEmitterId(), data)));
-            log.info("sse emitter send. emitterId = {}, name = {},", sseEmitterDTO.getSseEmitterId(), name);
+            log.info("sse emitter send. emitterId = {}, name = {}", sseEmitterDTO.getSseEmitterId(), name);
         } catch (IOException e) {
-            log.error("sse emitter send error. emitterId = {}, name = {},", sseEmitterDTO.getSseEmitterId(), name);
+            log.error("sse emitter send error. emitterId = {}, name = {}", sseEmitterDTO.getSseEmitterId(), name);
         }
 
     }
 
     @Override
-    public void sendUpdatedBidPriceByProductIdTest(Long productId, int price) {
+    public void sendUpdatedBidPriceByProductId(Long productId, int price) {
         List<SseEmitterDTO> findEmitterList = emitterRepository.findAllByTypeAndProductId(SseType.BID, productId);
         findEmitterList.forEach(
                 sseEmitterDTO -> {

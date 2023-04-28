@@ -12,5 +12,5 @@ public interface SseEmitterService {
 
     void send(SseEmitterDTO sseEmitterDTO, SseSendName name, Object data);
 
-    void sendUpdatedBidPriceByProductIdTest(Long productId,int price);
+    void sendUpdatedBidPriceByProductId(Long productId, int price);
 }

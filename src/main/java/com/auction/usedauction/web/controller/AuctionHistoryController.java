@@ -43,7 +43,7 @@ public class AuctionHistoryController {
         log.info("변경된 현재 경매 가격 전달 nowPrice={}, actionHistoryId = {}, actionHistoryId = {}",
                 nowPrice, auctionBidResult.getAuctionHistoryId(), auctionBidResult.getProductId());
         //sse로 변경 가격 전달
-        sseEmitterService.sendUpdatedBidPriceByProductIdTest(auctionBidResult.getProductId(), nowPrice);
+        sseEmitterService.sendUpdatedBidPriceByProductId(auctionBidResult.getProductId(), nowPrice);
 
         return new ResultRes<>(new MessageRes(convertedPrice + "원 입찰을 성공했습니다."));
     }
