@@ -5,6 +5,10 @@ server:
         same-site: None
         secure: true
 
+    encoding:
+      charset: UTF-8
+      force: true
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -55,7 +59,6 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
-
 # AWS S3
 cloud:
   aws:
