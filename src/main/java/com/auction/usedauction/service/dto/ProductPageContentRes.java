@@ -24,12 +24,14 @@ public class ProductPageContentRes {
     private Long productId;
     @Schema(description = "현재가",example = "50000")
     private Integer nowPrice;
-    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01:00")
+    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01")
     private String auctionEndDate;
     @Schema(description = "대표이미지 src",example = "https://used.wsdf.wjfiojs.jpg")
     private String sigImgSrc;
     @Schema(description = "경매 상태",example = "경매 종료")
     private String status;
+    @Schema(description = "경매 ID",example = "1")
+    private Long auctionId;
 
     public ProductPageContentRes(Product product) {
         this.nickname = product.getMember().getName();
@@ -39,10 +41,10 @@ public class ProductPageContentRes {
 
         Auction auction = product.getAuction();
         this.nowPrice = auction.getNowPrice();
-        this.auctionEndDate = auction.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.auctionEndDate = auction.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.sigImgSrc = product.getSigImage().getFullPath();
         this.status = AuctionProgressUtil.changeAuctionStatusToName(auction.getStatus());
-
+        this.auctionId = product.getAuction().getId();
 
     }
 
