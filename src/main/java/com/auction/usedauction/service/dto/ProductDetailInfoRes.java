@@ -42,6 +42,9 @@ public class ProductDetailInfoRes {
     private int viewCount;
     @Schema(description = "경매상태",example = "경매 중")
     private String status;
+    @Schema(description = "경매 ID",example = "1")
+    private Long auctionId;
+
     private ImageInfoRes sigImg;
     private List<ImageInfoRes> ordinalImgList;
 
@@ -59,6 +62,7 @@ public class ProductDetailInfoRes {
         this.startPrice = auction.getStartPrice();
         this.priceUnit = auction.getPriceUnit();
         this.status = AuctionProgressUtil.changeAuctionStatusToName(auction.getStatus());
+        this.auctionId = auction.getId();
 
         File sigImage = product.getSigImage();
         this.sigImg = new ImageInfoRes(sigImage.getOriginalName(), sigImage.getFullPath());
