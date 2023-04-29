@@ -1,5 +1,6 @@
 package com.auction.usedauction.service;
 
+import com.auction.usedauction.aop.RedissonLock;
 import com.auction.usedauction.domain.*;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
@@ -34,7 +35,9 @@ public class AuctionHistoryService {
     @Value("${spring.redis.redisson_bid_lock}")
     private String lockKey;
     private final RedissonClient redissonClient;
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+//    @Transactional
+//    @RedissonLock(keyName = "${lockKey}")
+    @Transactional
     public AuctionBidResultDTO biddingAuction(Long auctionId, int bidPrice, String loginId) {
 
         RLock lock = redissonClient.getLock(lockKey);
@@ -46,6 +49,7 @@ public class AuctionHistoryService {
                 log.error("fail to acquire lock when bidding",customException);
                 throw customException;
             }
+            log.info("락 획득 완료");
             // 경매중 인지 확인
             Auction findAuction = auctionRepository.findBidAuctionByAuctionIdWithFetchJoin(auctionId)
                     .orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING));
@@ -77,8 +81,11 @@ public class AuctionHistoryService {
             throw new CustomException(AuctionErrorCode.TRY_AGAIN_BID);
         }finally {
             lock.unlock();
+            log.info("락 반환 완료");
+
         }
         return bidResult;
+
     }
 
 

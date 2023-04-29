@@ -24,7 +24,7 @@ public class AuctionRepositoryImpl implements AuctionRepositoryCustom {
                         .join(auction.product, product).fetchJoin()
                         .join(product.member, member).fetchJoin()
                         .where(auctionIdEq(auctionId), auctionStatusEq(AuctionStatus.BID))
-                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+//                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne());
     }
 
