@@ -14,7 +14,8 @@ public enum AuctionErrorCode implements ErrorCode {
     AUCTION_NOT_BIDDING(HttpStatus.BAD_REQUEST, "경매중이 아닙니다"),
     INVALID_AUCTION(HttpStatus.BAD_REQUEST, "올바른 경매가 아닙니다"),
     INVALID_AUCTION_PRICE_UNIT(HttpStatus.BAD_REQUEST, "입찰 단위가 맞지 않습니다."),
-    INVALID_CHANGE_TRANS(HttpStatus.BAD_REQUEST, "상태를 변경할 수 없습니다.");
+    INVALID_CHANGE_TRANS(HttpStatus.BAD_REQUEST, "상태를 변경할 수 없습니다."),
+    TRY_AGAIN_BID(HttpStatus.BAD_REQUEST,"다시 입찰해주세요.");
     private final HttpStatus status;
     private final String message;
 }

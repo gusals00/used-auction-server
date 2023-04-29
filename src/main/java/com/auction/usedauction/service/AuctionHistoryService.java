@@ -11,8 +11,14 @@ import com.auction.usedauction.repository.auction_history.AuctionHistoryReposito
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.auction.usedauction.util.MemberBanConstants.*;
 
@@ -25,35 +31,54 @@ public class AuctionHistoryService {
     private final AuctionRepository auctionRepository;
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final MemberRepository memberRepository;
-
-    @Transactional
+    @Value("${spring.redis.redisson_bid_lock}")
+    private String lockKey;
+    private final RedissonClient redissonClient;
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public AuctionBidResultDTO biddingAuction(Long auctionId, int bidPrice, String loginId) {
 
-        // 경매중 인지 확인
-        Auction findAuction = auctionRepository.findBidAuctionByAuctionIdWithFetchJoin(auctionId)
-                .orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING));
+        RLock lock = redissonClient.getLock(lockKey);
+        AuctionBidResultDTO bidResult = null;
+        try {
+            boolean available = lock.tryLock(3, 2, TimeUnit.SECONDS);
+            if (!available) { // 입찰 중 락 획득 실패
+                CustomException customException = new CustomException(AuctionErrorCode.TRY_AGAIN_BID);
+                log.error("fail to acquire lock when bidding",customException);
+                throw customException;
+            }
+            // 경매중 인지 확인
+            Auction findAuction = auctionRepository.findBidAuctionByAuctionIdWithFetchJoin(auctionId)
+                    .orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING));
 
-        //판매자는 입찰 불가능
-        Product product = findAuction.getProduct();
-        if (isProductSeller(product, loginId)) {
-            throw new CustomException(AuctionHistoryErrorCode.NOT_BID_SELLER);
+            //판매자는 입찰 불가능
+            Product product = findAuction.getProduct();
+            if (isProductSeller(product, loginId)) {
+                throw new CustomException(AuctionHistoryErrorCode.NOT_BID_SELLER);
+            }
+
+            // 입찰자가 존재하는 회원인지
+            Member member = memberRepository.findOneByLoginIdAndStatus(loginId, MemberStatus.EXIST)
+                    .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+            // 최근 입찰자 조회
+            String latestMemberLoginId = auctionHistoryRepository.findLatestBidMemberLoginId(auctionId);
+            // 입찰 가능 여부 확인
+            checkBidAvailable(findAuction, bidPrice, latestMemberLoginId, loginId);
+
+            // 현재 금액 변경
+            findAuction.increaseNowPrice(bidPrice);
+            // 입찰 기록 추가
+            AuctionHistory auctionHistory = auctionHistoryRepository.save(createAuctionHistory(findAuction, bidPrice, member));
+            bidResult = new AuctionBidResultDTO(bidPrice, findAuction.getProduct().getId(), auctionHistory.getId());
+
+        } catch (InterruptedException e) {
+            log.error("Thread interrupted while waiting for lock for bidding ", e);
+            Thread.currentThread().interrupt();
+            throw new CustomException(AuctionErrorCode.TRY_AGAIN_BID);
+        }finally {
+            lock.unlock();
         }
-
-        // 입찰자가 존재하는 회원인지
-        Member member = memberRepository.findOneByLoginIdAndStatus(loginId, MemberStatus.EXIST)
-                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
-
-        // 최근 입찰자 조회
-        String latestMemberLoginId = auctionHistoryRepository.findLatestBidMemberLoginId(auctionId);
-        // 입찰 가능 여부 확인
-        checkBidAvailable(findAuction,bidPrice,latestMemberLoginId,loginId);
-
-        // 현재 금액 변경
-        findAuction.increaseNowPrice(bidPrice);
-        // 입찰 기록 추가
-        AuctionHistory auctionHistory = auctionHistoryRepository.save(createAuctionHistory(findAuction, bidPrice, member));
-
-        return new AuctionBidResultDTO(bidPrice, findAuction.getProduct().getId(), auctionHistory.getId());
+        return bidResult;
     }
 
 
