@@ -1,7 +1,6 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.repository.dto.MyPageAuctionHistoryPageContentRes;
-import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.MemberService;
 import com.auction.usedauction.service.dto.*;
 import com.auction.usedauction.service.query.MyPageQueryService;
@@ -11,8 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
