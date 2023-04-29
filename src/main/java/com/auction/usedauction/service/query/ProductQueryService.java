@@ -7,8 +7,8 @@ import com.auction.usedauction.exception.error_code.ProductErrorCode;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.dto.ProductDetailInfoRes;
-import com.auction.usedauction.service.dto.ProductPageRes;
 import com.auction.usedauction.service.dto.ProductPageContentRes;
+import com.auction.usedauction.web.dto.PageListRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +24,7 @@ public class ProductQueryService {
     private final ProductRepository productRepository;
 
     //상품 리스트 조회
-    public ProductPageRes getProductPage(ProductSearchCondDTO searchCond, Pageable pageable) {
+    public PageListRes<ProductPageContentRes> getProductPage(ProductSearchCondDTO searchCond, Pageable pageable) {
 
         Page<Product> findPage = productRepository.findBySearchCond(searchCond, pageable);
         List<Product> contents = findPage.getContent();
@@ -33,8 +33,7 @@ public class ProductQueryService {
         List<ProductPageContentRes> productListContents = contents.stream()
                 .map(ProductPageContentRes::new)
                 .toList();
-
-        return new ProductPageRes(productListContents,findPage);
+        return new PageListRes<>(productListContents, findPage);
     }
 
     @Transactional

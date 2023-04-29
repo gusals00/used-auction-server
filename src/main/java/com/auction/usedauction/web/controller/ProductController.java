@@ -57,9 +57,7 @@ public class ProductController {
         PageRequest pageRequest = PageRequest.of(searchCondReq.getPage(), searchCondReq.getSize());
         ProductSearchCondDTO searchCond = createProductSearchCond(searchCondReq);
 
-        ProductPageRes productPage = productQueryService.getProductPage(searchCond, pageRequest);
-
-        return new PageListRes<>(productPage.getProductPageContents(), productPage.getPage());
+        return productQueryService.getProductPage(searchCond, pageRequest);
     }
 
     @Operation(summary = "상품 리스트 조회 시 정렬 기준")
