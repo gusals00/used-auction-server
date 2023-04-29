@@ -17,16 +17,16 @@ public class PageListRes<T> {
     private List<T> content; // 데이터
 
     @Schema(description = "전체 페이지 수",example = "10")
-    private int getTotalPages; //전체 페이지
+    private int totalPages; //전체 페이지
 
     @Schema(description = "현재 페이지",example = "0")
-    private int getPageNumber; //현재 페이지
+    private int pageNumber; //현재 페이지
 
     @Schema(description = "페이지 크기",example = "10")
-    private int getSize; //페이지 크기
+    private int size; //페이지 크기
 
     @Schema(description = "현재 페이지에 나올 데이터 수",example = "10")
-    private int getNumberOfElements; //현재 페이지에 나올 데이터 수
+    private int numberOfElements; //현재 페이지에 나올 데이터 수
 
     @Schema(description = "조회된 데이터 존재 여부",example = "10")
     private boolean hasContent; //조회된 데이터 존재 여부
@@ -48,10 +48,10 @@ public class PageListRes<T> {
 
     public PageListRes(List<T> content, Page page) {
         this.content = content;
-        this.getTotalPages = page.getTotalPages();
-        this.getPageNumber = page.getNumber();
-        this.getSize = page.getSize();
-        this.getNumberOfElements = page.getNumberOfElements();
+        this.totalPages = page.getTotalPages();
+        this.pageNumber = page.getNumber();
+        this.size = page.getSize();
+        this.numberOfElements = page.getNumberOfElements();
         this.hasContent = page.hasContent();
         this.isFirst = page.isFirst();
         this.isLast = page.isLast();

@@ -1,20 +1,11 @@
 package com.auction.usedauction.service;
 
-import com.auction.usedauction.domain.AuctionHistory;
-import com.auction.usedauction.domain.Member;
-import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.exception.CustomException;
-import com.auction.usedauction.exception.error_code.ProductErrorCode;
-import com.auction.usedauction.exception.error_code.UserErrorCode;
-import com.auction.usedauction.repository.CategoryRepository;
-import com.auction.usedauction.repository.MemberRepository;
+import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
-import com.auction.usedauction.repository.product.ProductRepository;
-import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
-import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,38 +18,32 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.assertj.core.api.Assertions.*;
+
 
 @SpringBootTest
 @Slf4j
 @Sql(value = {"/sql/concurrencyTest.sql"})
 @Sql(value = {"/sql/concurrencyClean.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Transactional
 public class BidAuctionConcurrencyTest {
 
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private MemberRepository memberRepository;
     @Autowired
     private AuctionRepository auctionRepository;
     @Autowired
     private AuctionHistoryService auctionHistoryService;
     @Autowired
     private AuctionHistoryRepository auctionHistoryRepository;
-    @Autowired
-    private AuctionHistoryQueryRepository auctionHistoryQueryRepository;
 
     @Test
-    @Transactional()
-    void concurrencyTest() throws Exception{
+    @DisplayName("동시에 2명이 같은 상품에 같은 가격으로 입찰하는 경우")
+    void concurrencyTest() throws Exception {
         //given
-        Product product = productRepository.findByName("상품1").orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
-        Long auctionId = product.getAuction().getId();
-        Member member1 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
-        Member member2 = memberRepository.findByLoginId("20180592").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
-        List<Member> buyerList = new ArrayList<>(List.of(member1,member2));
+        List<String> buyerList = new ArrayList<>(List.of("20180012", "20180592"));
 
         int threadCnt = 2;
-        int bidPrice = 16000;
+        int bidPrice = 18000;
+        Long auctionId = 1L;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCnt);
         CountDownLatch latch = new CountDownLatch(threadCnt);
 
@@ -68,35 +53,22 @@ public class BidAuctionConcurrencyTest {
             int index = i;
             executorService.submit(() -> {
                 try {
-                    auctionHistoryService.biddingAuction(auctionId,bidPrice,buyerList.get(index).getLoginId());
+                    auctionHistoryService.biddingAuction(auctionId, bidPrice, buyerList.get(index));
                 } catch (Exception e) {
                     e.printStackTrace();
-                }finally {
+                } finally {
                     latch.countDown();
                 }
             });
         }
         latch.await();
-    }
 
-    private class ParticipateWorker2 implements Runnable {
-        private Long auctionId;
-        private CountDownLatch countDownLatch;
-
-        public ParticipateWorker2(Long auctionId, CountDownLatch countDownLatch) {
-            this.auctionId = auctionId;
-            this.countDownLatch = countDownLatch;
-        }
-
-        @Override
-        public void run() {
-            try {
-                log.info("wwwwwwwwwwww {}", auctionRepository.findById(auctionId).get().getStatus());
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                countDownLatch.countDown();
-            }
-        }
+        //then
+        //현재가와 입찰가 비교
+        int nowPrice = auctionRepository.findById(auctionId).orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_FOUND)).getNowPrice();
+        assertThat(nowPrice).isEqualTo(bidPrice);
+        //입찰내역 확인
+        assertThat(auctionHistoryRepository.findAll().size()).isEqualTo(1);
+        assertThat(auctionHistoryRepository.findAll().get(0).getBidPrice()).isEqualTo(bidPrice);
     }
 }

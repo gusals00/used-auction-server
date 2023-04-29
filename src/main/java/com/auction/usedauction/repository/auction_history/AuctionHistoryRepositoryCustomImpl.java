@@ -15,7 +15,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.auction.usedauction.domain.QAuction.auction;
 import static com.auction.usedauction.domain.QAuctionHistory.auctionHistory;
@@ -24,7 +23,7 @@ import static com.auction.usedauction.domain.QMember.member;
 import static com.auction.usedauction.domain.QProduct.product;
 
 @RequiredArgsConstructor
-public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryRepositoryCustom{
+public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
@@ -58,16 +57,15 @@ public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryReposit
     }
 
     @Override
-    public Optional<String> findLatestBidMemberLoginId(Long auctionId) {
-        return Optional.ofNullable(
+    public String findLatestBidMemberLoginId(Long auctionId) {
+        return
                 queryFactory.select(member.loginId)
                         .from(auctionHistory)
                         .join(auctionHistory.member, member)
                         .join(auctionHistory.auction, auction)
                         .where(auctionIdEq(auctionId))
                         .orderBy(auctionHistory.bidPrice.desc())
-                        .fetchFirst()
-        );
+                        .fetchFirst();
     }
 
     // 회원별 거래 실패 횟수 조회
@@ -114,7 +112,7 @@ public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryReposit
     }
 
     private BooleanExpression auctionIdEq(Long auctionId) {
-        return auctionId != null ?auction.id.eq(auctionId) : null;
+        return auctionId != null ? auction.id.eq(auctionId) : null;
     }
 
 }
