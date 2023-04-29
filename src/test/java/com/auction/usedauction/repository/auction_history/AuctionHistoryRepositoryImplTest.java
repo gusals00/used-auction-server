@@ -10,7 +10,6 @@ import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,34 +38,6 @@ class AuctionHistoryRepositoryImplTest {
     private AuctionRepository auctionRepository;
     @Autowired
     private AuctionHistoryRepository auctionHistoryRepository;
-    @Autowired
-    private AuthorityRepository authorityRepository;
-
-
-//    @BeforeEach
-//    public void beforeEach() {
-//        Authority authority = createAuthority("ROLE_USER");
-//        authorityRepository.save(authority);
-//
-//        Member member1 = createMember("호창", "990428", "addd@naver.com", "20180584", "1234", "010-5444-8888", authority);
-//        Member member2 = createMember("광민", "990228", "addd333@naver.com", "20180012", "133234", "010-5944-8288", authority);
-//        Member member3 = createMember("시철", "990118", "addsdfd333@naver.com", "20180592", "1332234", "010-4944-8288", authority);
-//        Member member4 = createMember("대현", "990228", "addd333@naver.com", "20180004", "1323234", "010-5944-8288", authority);
-//        Member member5 = createMember("성수", "990118", "addsdfd333@naver.com", "20180211", "13322334", "010-4244-8288", authority);
-//
-//
-//        memberRepository.saveAll(Arrays.asList(member1, member2, member3,member4,member5));
-//
-//        List<Category> categoryList = new ArrayList<>(Arrays.asList(
-//                createCategory("디지털기기"), createCategory("생활가전"), createCategory("가구/인테리어"),
-//                createCategory("생활/주방"), createCategory("유아동"), createCategory("유아도서"),
-//                createCategory("여성의류"), createCategory("여성잡화"), createCategory("도서"),
-//                createCategory("가공식품"), createCategory("반려동물용품"), createCategory("식품"),
-//                createCategory("기타"), createCategory("남성패션/잡화"), createCategory("뷰티/미용"),
-//                createCategory("티켓/교환권"), createCategory("스포츠/레저"), createCategory("취미/게임/음반")
-//        ));
-//        categoryRepository.saveAll(categoryList);
-//    }
 
     @Test
     @DisplayName("최근 입찰자 loginId 조회")
@@ -96,12 +67,11 @@ class AuctionHistoryRepositoryImplTest {
 
         auctionHistoryRepository.saveAll(Arrays.asList(auctionHistory1, auctionHistory2, auctionHistory3));
         //when
-        Optional<String> latestBidMemberLoginId1 = auctionHistoryRepository.findLatestBidMemberLoginId(auction1.getId());
-        String latestBidMemberLoginId2 = auctionHistoryRepository.findLatestBidMemberLoginId(auction2.getId())
-                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        String latestBidMemberLoginId1 = auctionHistoryRepository.findLatestBidMemberLoginId(auction1.getId());
+        String latestBidMemberLoginId2 = auctionHistoryRepository.findLatestBidMemberLoginId(auction2.getId());
 
         //then
-        assertThat(latestBidMemberLoginId1.isEmpty()).isTrue();
+        assertThat(latestBidMemberLoginId1).isNull();
         assertThat(latestBidMemberLoginId2).isEqualTo(buyer1.getLoginId());
 
     }

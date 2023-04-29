@@ -8,15 +8,11 @@ import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
-import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 import static com.auction.usedauction.util.MemberBanConstants.*;
 
@@ -29,7 +25,6 @@ public class AuctionHistoryService {
     private final AuctionRepository auctionRepository;
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final MemberRepository memberRepository;
-    private final AuctionHistoryQueryRepository auctionHistoryQueryRepository;
 
     @Transactional
     public AuctionBidResultDTO biddingAuction(Long auctionId, int bidPrice, String loginId) {
@@ -49,30 +44,9 @@ public class AuctionHistoryService {
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         // 최근 입찰자 조회
-        Optional<String> latestMemberLoginId = auctionHistoryRepository.findLatestBidMemberLoginId(auctionId);
-
-        // 첫 입찰일 경우
-        if (latestMemberLoginId.isEmpty()) {
-            // 현재 금액 <= 입찰 금액인지
-            if (findAuction.getNowPrice() > bidPrice) {
-                throw new CustomException(AuctionHistoryErrorCode.NO_HIGHER_THAN_NOW_PRICE);
-            }
-            // 입찰 단위가 맞는지
-            validPriceUnit(bidPrice, findAuction);
-
-        } else {// 첫 입찰이 아닌 경우
-            // 현재 금액 < 입찰 금액
-            if (findAuction.getNowPrice() >= bidPrice) {
-                throw new CustomException(AuctionHistoryErrorCode.NO_HIGHER_THAN_NOW_PRICE);
-            }
-            // 입찰 단위가 맞는지
-            validPriceUnit(bidPrice, findAuction);
-
-            // 최근 입찰자와 현재 입찰자가 다른지
-            if (latestMemberLoginId.get().equals(loginId)) {
-                throw new CustomException(AuctionHistoryErrorCode.NOT_BID_BUYER);
-            }
-        }
+        String latestMemberLoginId = auctionHistoryRepository.findLatestBidMemberLoginId(auctionId);
+        // 입찰 가능 여부 확인
+        checkBidAvailable(findAuction,bidPrice,latestMemberLoginId,loginId);
 
         // 현재 금액 변경
         findAuction.increaseNowPrice(bidPrice);
@@ -81,6 +55,7 @@ public class AuctionHistoryService {
 
         return new AuctionBidResultDTO(bidPrice, findAuction.getProduct().getId(), auctionHistory.getId());
     }
+
 
     @Transactional
     // 특정 횟수 이상 거래 거절시
@@ -95,6 +70,31 @@ public class AuctionHistoryService {
 
         log.info("ban memberId:{}, curCount={}, ban_min_count={}", memberId, rejectCountByMemberId, MEMBER_BAN_MIN_COUNT);
         return memberId;
+    }
+
+    private void checkBidAvailable(Auction auction, int bidPrice, String latestMemberLoginId, String loginId) {
+        // 첫 입찰일 경우
+        if (latestMemberLoginId == null) {
+            // 현재 금액 <= 입찰 금액인지
+            if (auction.getNowPrice() > bidPrice) {
+                throw new CustomException(AuctionHistoryErrorCode.NO_HIGHER_THAN_NOW_PRICE);
+            }
+            // 입찰 단위가 맞는지
+            validPriceUnit(bidPrice, auction);
+
+        } else {// 첫 입찰이 아닌 경우
+            // 현재 금액 < 입찰 금액
+            if (auction.getNowPrice() >= bidPrice) {
+                throw new CustomException(AuctionHistoryErrorCode.NO_HIGHER_THAN_NOW_PRICE);
+            }
+            // 입찰 단위가 맞는지
+            validPriceUnit(bidPrice, auction);
+
+            // 최근 입찰자와 현재 입찰자가 다른지
+            if (latestMemberLoginId.equals(loginId)) {
+                throw new CustomException(AuctionHistoryErrorCode.NOT_BID_BUYER);
+            }
+        }
     }
 
     private void validPriceUnit(int bidPrice, Auction auction) {
