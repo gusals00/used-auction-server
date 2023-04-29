@@ -10,13 +10,11 @@ import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.QuestionRepository;
 import com.auction.usedauction.service.ProductService;
 import com.auction.usedauction.service.QuestionService;
-import com.auction.usedauction.service.dto.AuctionRegisterDTO;
-import com.auction.usedauction.service.dto.ProductRegisterDTO;
-import com.auction.usedauction.service.dto.QuestionPageRes;
-import com.auction.usedauction.service.dto.QuestionRegisterDTO;
+import com.auction.usedauction.service.dto.*;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFileDTO;
+import com.auction.usedauction.web.dto.PageListRes;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -119,30 +117,30 @@ class QuestionQueryServiceTest {
 
         // 페이징 동작
         // savedProductId1
-        QuestionPageRes questionPage1 = questionQueryService.getQuestionPage(PageRequest.of(0, 3), savedProductId1);
-        QuestionPageRes questionPage2 = questionQueryService.getQuestionPage(PageRequest.of(1, 3), savedProductId1);
+        PageListRes<QuestionPageContentRes> questionPage1 = questionQueryService.getQuestionPage(PageRequest.of(0, 3), savedProductId1);
+        PageListRes<QuestionPageContentRes> questionPage2 = questionQueryService.getQuestionPage(PageRequest.of(1, 3), savedProductId1);
         // savedProductId1
-        QuestionPageRes questionPage3 = questionQueryService.getQuestionPage(PageRequest.of(0, 7), savedProductId2);
+        PageListRes<QuestionPageContentRes> questionPage3 = questionQueryService.getQuestionPage(PageRequest.of(0, 7), savedProductId2);
 
 
         //then
         //페이징 동작
         // savedProductId1
-        assertThat(questionPage1.getQuestionPageContents()).extracting("questionId").containsExactly(parentId1, parentId2, parentId3);
-        assertThat(questionPage1.getPage().getNumberOfElements()).isEqualTo(3);
-        assertThat(questionPage2.getQuestionPageContents()).extracting("questionId").containsExactly(parentId4);
-        assertThat(questionPage2.getPage().getNumberOfElements()).isEqualTo(1);
+        assertThat(questionPage1.getContent()).extracting("questionId").containsExactly(parentId1, parentId2, parentId3);
+        assertThat(questionPage1.getGetNumberOfElements()).isEqualTo(3);
+        assertThat(questionPage2.getContent()).extracting("questionId").containsExactly(parentId4);
+        assertThat(questionPage2.getGetNumberOfElements()).isEqualTo(1);
         // savedProductId1
-        assertThat(questionPage3.getQuestionPageContents()).extracting("questionId").containsExactly(parentId6, parentId7, parentId8);
-        assertThat(questionPage3.getPage().getNumberOfElements()).isEqualTo(3);
+        assertThat(questionPage3.getContent()).extracting("questionId").containsExactly(parentId6, parentId7, parentId8);
+        assertThat(questionPage3.getGetNumberOfElements()).isEqualTo(3);
 
         //자식 댓글 정렬 확인
         //parentId1의 자식댓글
-        assertThat(questionPage1.getQuestionPageContents().get(0).getChildren()).extracting("questionId").containsExactly(childId3,childId1,childId2);
-        assertThat(questionPage1.getQuestionPageContents().get(1).getChildren()).isEmpty();
+        assertThat(questionPage1.getContent().get(0).getChildren()).extracting("questionId").containsExactly(childId3,childId1,childId2);
+        assertThat(questionPage1.getContent().get(1).getChildren()).isEmpty();
         //parentId7의 자식댓글
-        assertThat(questionPage3.getQuestionPageContents().get(0).getChildren()).isEmpty();
-        assertThat(questionPage3.getQuestionPageContents().get(1).getChildren()).extracting("questionId").containsExactly(childId4,childId5);
+        assertThat(questionPage3.getContent().get(0).getChildren()).isEmpty();
+        assertThat(questionPage3.getContent().get(1).getChildren()).extracting("questionId").containsExactly(childId4,childId5);
 
 
     }
