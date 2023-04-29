@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -62,8 +63,7 @@ public class InitDBService {
     private String filePath;
 
     @Transactional
-    public void initDb() {
-
+    public void init() {
         //Category 추가
         insertCategory();
 
@@ -93,9 +93,6 @@ public class InitDBService {
         Long parentId2 = questionService.registerQuestion(new QuestionRegisterDTO(null, "갤럭시 북 2는 없나요?", findProduct1.getId(), member1.getLoginId()));
         questionService.registerQuestion(new QuestionRegisterDTO(parentId2, "중고로 있긴 한데... 좀 오래되서요", findProduct1.getId(), member2.getLoginId()));
         questionService.registerQuestion(new QuestionRegisterDTO(parentId2, "만약 사실 의향 있으시면 채팅으로 연락 주세요", findProduct1.getId(), member2.getLoginId()));
-
-
-
     }
 
     private void insertMember() {
@@ -134,27 +131,32 @@ public class InitDBService {
         chatMessageRepository.saveAll(Arrays.asList(chatMessage1, chatMessage2, chatMessage3, chatMessage4, chatMessage5, chatMessage6));
     }
 
-    private void insertProducts() {
+    private void insertProducts(){
         // 회원조회
         Member member1 = memberRepository.findByLoginId("hyeonmin").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Member member2 = memberRepository.findByLoginId("11").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Member member3 = memberRepository.findByLoginId("20180004").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         LocalDateTime now = LocalDateTime.now().withSecond(0);
-
+        log.info("회원 저장 완료");
         //카테고리 조회
         Category bookCategory = categoryRepository.findCategoryByName("도서").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         Category ticketCategory = categoryRepository.findCategoryByName("티켓/교환권").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         Category digitalCategory = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        log.info("카테고리 저장 완료");
 
 
         //member1 상품 저장
         Product findProduct1 = insertProduct("이것이 코딩 테스트다", "책 정보입니다", bookCategory.getId(), now.minusDays(4), now.minusDays(2), 10000, 2000,
                 "1_1.jpg", Arrays.asList("1_2.jpg", "1_3.jpg", "1_4.jpg"), member1.getLoginId(), 3);
+        log.info("이것이 코딩 테스트다 저장 완료");
+        log.info("sleeping-------------");
         // member3이 낙찰됨
         AuctionHistory auctionHistory1 = bidAuction(findProduct1.getAuction().getId(), 20000, member3.getLoginId(), LocalDateTime.now().minusDays(3));
+        log.info("member3이 입찰");
         auctionHistory1.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
         findProduct1.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        log.info("member3이 낙찰");
 
 
         Product findProduct2 = insertProduct("한화 이글스 티켓", "티켓 정보입니다", ticketCategory.getId(), now.minusDays(7), now.minusDays(4), 100000, 20000,
@@ -166,6 +168,7 @@ public class InitDBService {
         auctionHistory3.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
         findProduct2.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
 
+        log.info("member1 상품 저장 완료");
 
         //member2 상품 저장
         insertProduct("자바만 잡아도 팝니다", "자바만 잡아도 정보입니다", bookCategory.getId(), now.plusDays(7), 20000, 2000,
@@ -174,10 +177,13 @@ public class InitDBService {
         insertProduct("갤럭시 북 3 팝니다", "갤럭시 북이고 상태 좋습니다", digitalCategory.getId(), now.plusDays(6), 1000000, 100000,
                 "4_1.jpg", Arrays.asList("4_2.jpg"), member2.getLoginId(), 15);
 
+        log.info("member2 상품 저장 완료");
+
         //member3 상품 저장
         // 경매 중
         Product findProduct3 = insertProduct("객체지향의 사실과 오해1", "객체지향의 사실과 오해1 새책입니다.", bookCategory.getId(), now.plusDays(2), 15000, 1000,
                 "5_1.jpg", Arrays.asList("5_2.jpg", "5_3.jpg"), member3.getLoginId(), 11);
+
         //meber2 입찰
         bidAuction(findProduct3.getAuction().getId(), 16000, member2.getLoginId(), LocalDateTime.now().plusDays(2));
 
@@ -215,6 +221,8 @@ public class InitDBService {
         findProduct7.getAuction().changeAuctionStatus(AuctionStatus.TRANSACTION_OK);
         findProduct7.getAuction().changeBuyerStatus(TransStatus.TRANS_COMPLETE);
         findProduct7.getAuction().changeSellerStatus(TransStatus.TRANS_COMPLETE);
+
+        log.info("member3 상품 저장 완료");
     }
 
     private AuctionHistory bidAuction(Long auctionId, int bidPrice, String memberLoginId, LocalDateTime bidDate) {
@@ -286,8 +294,7 @@ public class InitDBService {
                 .build();
     }
 
-    @Transactional
-    public void insertCategory() {
+    private void insertCategory() {
         List<Category> categoryList = new ArrayList<>(Arrays.asList(
                 createCategory("디지털기기"), createCategory("생활가전"), createCategory("가구/인테리어"),
                 createCategory("생활/주방"), createCategory("유아동"), createCategory("유아도서"),

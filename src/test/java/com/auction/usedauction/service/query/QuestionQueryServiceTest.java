@@ -127,12 +127,12 @@ class QuestionQueryServiceTest {
         //페이징 동작
         // savedProductId1
         assertThat(questionPage1.getContent()).extracting("questionId").containsExactly(parentId1, parentId2, parentId3);
-        assertThat(questionPage1.getGetNumberOfElements()).isEqualTo(3);
+        assertThat(questionPage1.getNumberOfElements()).isEqualTo(3);
         assertThat(questionPage2.getContent()).extracting("questionId").containsExactly(parentId4);
-        assertThat(questionPage2.getGetNumberOfElements()).isEqualTo(1);
+        assertThat(questionPage2.getNumberOfElements()).isEqualTo(1);
         // savedProductId1
         assertThat(questionPage3.getContent()).extracting("questionId").containsExactly(parentId6, parentId7, parentId8);
-        assertThat(questionPage3.getGetNumberOfElements()).isEqualTo(3);
+        assertThat(questionPage3.getNumberOfElements()).isEqualTo(3);
 
         //자식 댓글 정렬 확인
         //parentId1의 자식댓글

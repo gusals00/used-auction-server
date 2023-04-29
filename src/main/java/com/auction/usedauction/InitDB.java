@@ -13,6 +13,6 @@ public class InitDB {
 
     @PostConstruct
     public void init() {
-        initDBService.initDb();
+        initDBService.init();
     }
 }
