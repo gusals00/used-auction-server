@@ -39,6 +39,7 @@ spring:
   redis:
     host: localhost
     port: 6379
+    redisson_bid_lock: bidLock
 
   jpa:
     hibernate:
