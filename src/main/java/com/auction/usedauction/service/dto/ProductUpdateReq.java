@@ -33,7 +33,7 @@ public class ProductUpdateReq {
     @Schema(description = "카테고리 ID", example = "2")
     private Long categoryId;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     @Future
     @NotNull
     @Schema(description = "경매 종료 날짜", example = "2022-12-11 12:01")
