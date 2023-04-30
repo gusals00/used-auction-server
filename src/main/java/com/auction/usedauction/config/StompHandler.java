@@ -33,6 +33,7 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
         if(StompCommand.CONNECT == accessor.getCommand()) {
+            log.info("CONNECT 호출");
             String token = accessor.getFirstNativeHeader("Authorization");
 
             if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
@@ -46,6 +47,7 @@ public class StompHandler implements ChannelInterceptor {
                 throw new CustomException(ACCESS_DENIED);
             }
         } else if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            log.info("SUBSCRIBE 호출");
             Long roomId = Long.valueOf(getRoomId((String) message.getHeaders().get("simpDestination"))); // 채팅방 아이디 가져오기
 
             chatRoomService.enterRoom(roomId, accessor.getUser().getName()); // 채팅방 입장 처리
@@ -55,6 +57,7 @@ public class StompHandler implements ChannelInterceptor {
             accessor.setSessionAttributes(sessionAttributes);
 
         } else if(StompCommand.DISCONNECT == accessor.getCommand()) {
+            log.info("DISCONNECT 호출");
             Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
             Long roomId = (Long) sessionAttributes.get(accessor.getSessionId()); // 채팅방 아이디 가져오기
 
