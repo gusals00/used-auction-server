@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessageReq {
+public class ChatMessageDTO {
 
     private Long chatRoomId;
 
