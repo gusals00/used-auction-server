@@ -31,7 +31,7 @@ public class AuctionHistoryController {
     private final SseEmitterService sseEmitterService;
 
     @PostMapping("/{auctionId}")
-    @Operation(summary = "상품 경매 메서드")
+    @Operation(summary = "상품 경매 입찰 메서드")
     public ResultRes<MessageRes> bidding(@PathVariable Long auctionId,
                                          @RequestBody @Valid BidReq bidReq,
                                          @AuthenticationPrincipal User user,

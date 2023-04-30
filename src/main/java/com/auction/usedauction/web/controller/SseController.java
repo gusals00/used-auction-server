@@ -7,6 +7,7 @@ import com.auction.usedauction.repository.sseEmitter.SseSendName;
 import com.auction.usedauction.repository.sseEmitter.SseType;
 import com.auction.usedauction.service.SseEmitterService;
 import com.auction.usedauction.service.dto.SseSendDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +32,9 @@ public class SseController {
     private final SseEmitterRepository sseEmitterRepository;
     private final ProductRepository productRepository;
 
+    @Operation(summary = "sse 입찰 금액 연결 메서드")
     @GetMapping(value = "/bid-connect/{productId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> connectBid(@PathVariable Long productId) {
+    public ResponseEntity<Void> connectBid(@PathVariable Long productId) {
         Long timeout = 1000 * 60 * 5L; //5분
         // 연결
         String id = sseEmitterService.connect(SseType.BID, productId, timeout);
@@ -43,7 +45,7 @@ public class SseController {
         if (nowPrice != null) {
             sseEmitterService.send(new SseSendDTO(findEmitter, SseSendName.SEND_BID_DATA, nowPrice));
         }
-        return ResponseEntity.ok(findEmitter.getSseEmitter());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/chat-connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
