@@ -3,10 +3,7 @@ package com.auction.usedauction.web.controller;
 import com.auction.usedauction.service.ChatMessageService;
 import com.auction.usedauction.service.dto.ChatMessageRes;
 import com.auction.usedauction.service.query.ChatMessageQueryService;
-import com.auction.usedauction.web.dto.ChatMessageReq;
-import com.auction.usedauction.web.dto.ChatMessageWebSocketRes;
-import com.auction.usedauction.web.dto.MessageType;
-import com.auction.usedauction.web.dto.PageListRes;
+import com.auction.usedauction.web.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
@@ -35,7 +32,7 @@ public class ChatMessageController {
 
     @MessageMapping("/message")
     @Operation(summary = "메세지 처리")
-    public void message(ChatMessageReq messageReq, Principal principal) {
+    public void message(ChatMessageDTO messageReq, Principal principal) {
         boolean isRead = false;
         if(messageReq.getType().equals(MessageType.ENTER)) {
             messageReq.setMessage(messageReq.getSender());
@@ -56,7 +53,7 @@ public class ChatMessageController {
         return chatMessageQueryService.getMessageList(pageRequest, roomId, user.getUsername());
     }
 
-    private ChatMessageWebSocketRes createMessageRes(ChatMessageReq messageReq, boolean isRead) {
+    private ChatMessageWebSocketRes createMessageRes(ChatMessageDTO messageReq, boolean isRead) {
         return new ChatMessageWebSocketRes(messageReq.getType(), messageReq.getSender(), messageReq.getMessage(), isRead, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
     }
 }

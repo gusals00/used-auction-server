@@ -18,4 +18,5 @@ public class ChatMessageDTO {
     private String message;
 
     private MessageType type;
+
 }
