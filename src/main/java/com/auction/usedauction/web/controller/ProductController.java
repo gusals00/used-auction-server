@@ -98,8 +98,8 @@ public class ProductController {
         List<UploadFileDTO> uploadOrdinalFileDTOS = uploadOrdinalImages(registerReq);
 
         ProductRegisterDTO productRegisterDTO = new ProductRegisterDTO(registerReq, uploadSigFileDTO, uploadOrdinalFileDTOS, user.getUsername());
-        AuctionRegisterDTO auctionRegisterDTO = new AuctionRegisterDTO(registerReq.getAuctionEndDate(),registerReq.getStartPrice(),registerReq.getPriceUnit());
-        productService.register(productRegisterDTO,auctionRegisterDTO);
+        AuctionRegisterDTO auctionRegisterDTO = new AuctionRegisterDTO(registerReq.getAuctionEndDate(), registerReq.getStartPrice(), registerReq.getPriceUnit());
+        productService.register(productRegisterDTO, auctionRegisterDTO);
         return new ResultRes<>(new MessageRes("상품 등록 성공"));
     }
 
@@ -151,32 +151,46 @@ public class ProductController {
         log.info("상품 삭제 컨트롤러 호출");
         log.info("삭제하려는 productId = {}", productId);
 
-        productService.deleteProduct(productId,user.getUsername());
+        productService.deleteProduct(productId, user.getUsername());
         return new ResultRes<>(new MessageRes("상품 삭제를 성공했습니다."));
     }
 
     @Operation(summary = "상품 수정 메서드")
-    @PatchMapping("/{productId}")
-    public ResultRes<MessageRes> updateProduct(@PathVariable Long productId, @Valid ProductUpdateReq updateReq,@AuthenticationPrincipal User user) {
+    @PatchMapping("/update/{productId}")
+    public ResultRes<MessageRes> updateProduct(@PathVariable Long productId, @Valid ProductUpdateReq updateReq, @AuthenticationPrincipal User user) {
         log.info("상품 수정 컨트롤러 호출");
-        List<MultipartFile> img = updateReq.getImgList();
 
-        //파일리스트가 비어있는지 확인
-        if (isEmptyMultipartFileList(updateReq.getImgList())) {
+        //일반 사진들, 대표 사진이 비어있는지 확인
+        if (isEmptyMultipartFileList(updateReq.getImgList()) || isEmptyMultipartFile(updateReq.getSigImg())) {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
         }
+
 
         productService.updateProduct(productId, updateReq, user.getUsername());
         return new ResultRes<>(new MessageRes("상품 수정을 성공했습니다."));
     }
 
+    @Operation(summary = "상품 수정 정보 조회 메서드")
+    @GetMapping("/update/{productId}")
+    public ResultRes<ProductUpdateInfoRes> updateProduct(@PathVariable Long productId, @AuthenticationPrincipal User user) {
+        log.info("상품 수정 정보 조회 컨트롤러 호출");
+        return new ResultRes<>(productQueryService.getProductUpdateInfo(productId, user.getUsername()));
+    }
+
     private boolean isEmptyMultipartFileList(List<MultipartFile> fileList) {
-        for (MultipartFile multipartFile : fileList) {
-            if (multipartFile.isEmpty()) {
+        if (fileList == null) {
+            return true;
+        }
+
+        for (MultipartFile file : fileList) {
+            if (isEmptyMultipartFile(file)) {
                 return true;
             }
         }
         return false;
     }
 
+    private boolean isEmptyMultipartFile(MultipartFile file) {
+        return (file == null) || (file.isEmpty());
+    }
 }
