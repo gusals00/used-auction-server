@@ -34,7 +34,7 @@ public class SseController {
 
     @Operation(summary = "sse 입찰 금액 연결 메서드")
     @GetMapping(value = "/bid-connect/{productId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<Void> connectBid(@PathVariable Long productId) {
+    public ResponseEntity<SseEmitter> connectBid(@PathVariable Long productId) {
         Long timeout = 1000 * 60 * 5L; //5분
         // 연결
         String id = sseEmitterService.connect(SseType.BID, productId, timeout);
@@ -45,7 +45,7 @@ public class SseController {
         if (nowPrice != null) {
             sseEmitterService.send(new SseSendDTO(findEmitter, SseSendName.SEND_BID_DATA, nowPrice));
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(findEmitter.getSseEmitter());
     }
 
     @GetMapping(value = "/chat-connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
