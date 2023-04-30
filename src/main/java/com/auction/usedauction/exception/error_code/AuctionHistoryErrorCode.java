@@ -12,6 +12,7 @@ public enum AuctionHistoryErrorCode implements ErrorCode{
     INVALID_PRICE_UNIT(HttpStatus.BAD_REQUEST, "단위 가격이 올바르지 않습니다."),
     NOT_BID_SELLER(HttpStatus.BAD_REQUEST, "판매자는 입찰이 불가능합니다."),
     NOT_BID_BUYER(HttpStatus.BAD_REQUEST, "연속 2번 입찰은 불가능합니다."),
+    HIGHER_THAN_MAX_PRICE(HttpStatus.BAD_REQUEST, "입찰가는 현재 가격의 2배까지만 가능합니다."),
 
     EXIST_AUCTION_HISTORY(HttpStatus.BAD_REQUEST, "입찰 내역이 존재합니다.");
     private final HttpStatus status;
