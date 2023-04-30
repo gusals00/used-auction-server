@@ -196,7 +196,7 @@ class AuctionHistoryServiceTest {
 
         //상품 및 경매 생성
         Auction auction1 = createAuction(now.plusDays(4), 50000, 4000);
-        Auction auction2 = createAuction(now.plusDays(7), 10000, 4000);
+        Auction auction2 = createAuction(now.plusDays(7), 40000, 5000);
 
         Product product1 = createProduct("상품1", "상품1입니다", seller, findCategory1, auction1);
         Product product2 = createProduct("상품2", "상품2입니다", seller, findCategory1, auction2);
@@ -204,18 +204,14 @@ class AuctionHistoryServiceTest {
         auctionRepository.saveAll(Arrays.asList(auction1, auction2));
         productRepository.saveAll(Arrays.asList(product1, product2));
 
-        auctionRepository.save(auction1);
-        productRepository.save(product1);
-
         //when
         //auction1 입찰
         auctionHistoryService.biddingAuction(auction1.getId(), 50000, buyer1.getLoginId());
         //auction2 입찰
         auctionHistoryService.biddingAuction(auction2.getId(), 50000, buyer1.getLoginId());
-        auctionHistoryService.biddingAuction(auction2.getId(), 54000, buyer2.getLoginId());
-        auctionHistoryService.biddingAuction(auction2.getId(), 62000, buyer3.getLoginId());
-        auctionHistoryService.biddingAuction(auction2.getId(), 66000, buyer2.getLoginId());
-
+        auctionHistoryService.biddingAuction(auction2.getId(), 55000, buyer2.getLoginId());
+        auctionHistoryService.biddingAuction(auction2.getId(), 65000, buyer3.getLoginId());
+        auctionHistoryService.biddingAuction(auction2.getId(), 70000, buyer2.getLoginId());
 
         //then
         // 연속 2번 입찰이 불가능한 경우
@@ -223,9 +219,40 @@ class AuctionHistoryServiceTest {
                 .isInstanceOf(CustomException.class)
                 .hasMessage(AuctionHistoryErrorCode.NOT_BID_BUYER.getMessage());
 
-        assertThatThrownBy(() -> auctionHistoryService.biddingAuction(auction2.getId(), 70000, buyer2.getLoginId()))
+        assertThatThrownBy(() -> auctionHistoryService.biddingAuction(auction2.getId(), 90000, buyer2.getLoginId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(AuctionHistoryErrorCode.NOT_BID_BUYER.getMessage());
+    }
+
+    @Test
+    @DisplayName("입찰 실패, 입찰가가 너무 큰 경우(입찰가 > 현재가 * 2인 경우)")
+    void bidFail4() throws Exception {
+
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        Member seller = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer1 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer2 = memberRepository.findByLoginId("20180592").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        Category findCategory1 = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+
+        //상품 및 경매 생성
+        Auction auction2 = createAuction(now.plusDays(7), 40000, 5000);
+
+        Product product2 = createProduct("상품2", "상품2입니다", seller, findCategory1, auction2);
+
+        auctionRepository.save(auction2);
+        productRepository.save(product2);
+
+        //when
+        //auction2 입찰
+        auctionHistoryService.biddingAuction(auction2.getId(), 50000, buyer1.getLoginId());
+
+        //then
+        //입찰가가 너무 큰 경우 (현재 가격 : 50,000 입찰가 : 100,001)
+        assertThatThrownBy(() -> auctionHistoryService.biddingAuction(auction2.getId(), 100001, buyer2.getLoginId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(AuctionHistoryErrorCode.HIGHER_THAN_MAX_PRICE.getMessage());
     }
 
     private Auction createAuction(LocalDateTime endDate, int startPrice, int priceUnit) {

@@ -51,7 +51,8 @@ public class AuctionHistoryService {
 
         // 최근 입찰자 조회
         String latestMemberLoginId = auctionHistoryRepository.findLatestBidMemberLoginId(auctionId);
-        // 입찰 가능 여부 확인
+
+        // 입찰 가능 여부 확인(금액, 가격)
         checkBidAvailable(findAuction, bidPrice, latestMemberLoginId, loginId);
 
         // 현재 금액 변경
@@ -79,6 +80,11 @@ public class AuctionHistoryService {
     }
 
     private void checkBidAvailable(Auction auction, int bidPrice, String latestMemberLoginId, String loginId) {
+        // 너무 큰 입찰가인 경우
+        if (isHigherThanMaxPrice(auction.getNowPrice(), bidPrice)) {
+            throw new CustomException(AuctionHistoryErrorCode.HIGHER_THAN_MAX_PRICE);
+        }
+
         // 첫 입찰일 경우
         if (latestMemberLoginId == null) {
             // 현재 금액 <= 입찰 금액인지
@@ -101,6 +107,12 @@ public class AuctionHistoryService {
                 throw new CustomException(AuctionHistoryErrorCode.NOT_BID_BUYER);
             }
         }
+
+    }
+
+    private boolean isHigherThanMaxPrice(int nowPrice, int bidPrice) {
+        // 입찰가가 현재 금액의 2배보다 크면 입찰 최대 금액 초과한 것
+        return nowPrice * 2 < bidPrice;
     }
 
     private void validPriceUnit(int bidPrice, Auction auction) {

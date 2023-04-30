@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -198,7 +197,7 @@ public class InitDBService {
         //member1 입찰
         bidAuction(findProduct5.getAuction().getId(), 25000, member1.getLoginId(), LocalDateTime.now().minusDays(6));
         //member2 낙찰
-        AuctionHistory auctionHistory4 = bidAuction(findProduct5.getAuction().getId(), 140000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
+        AuctionHistory auctionHistory4 = bidAuction(findProduct5.getAuction().getId(), 40000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
         auctionHistory4.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
         findProduct5.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
 
