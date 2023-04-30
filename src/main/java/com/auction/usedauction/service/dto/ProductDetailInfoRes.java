@@ -5,7 +5,6 @@ import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.file.File;
 import com.auction.usedauction.util.AuctionProgressUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -72,14 +71,6 @@ public class ProductDetailInfoRes {
                 .collect(toList());
     }
 
-    @Setter
-    @Getter
-    @AllArgsConstructor
-    static class ImageInfoRes {
-        @Schema(description = "사진 원본 이름",example = "객체지향.jpg")
-        private String originalName;
-        @Schema(description = "사진 저장 경로",example = "http://sfieuhfe.sfee.jpg")
-        private String path;
-    }
+
 
 }
