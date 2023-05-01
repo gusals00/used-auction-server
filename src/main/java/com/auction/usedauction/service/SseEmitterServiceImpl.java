@@ -84,6 +84,9 @@ public class SseEmitterServiceImpl implements SseEmitterService {
             log.info("sse emitter send. emitterId = {}, name = {}", sseEmitterDTO.getSseEmitterId(), name);
         } catch (IOException e) {
             log.error("sse emitter send error. emitterId = {}, name = {}", sseEmitterDTO.getSseEmitterId(), name);
+            emitterRepository.deleteByEmitterId(sseEmitterDTO.getSseEmitterId());
+            log.info("sse delete. emitterId = {}, name = {}", sseEmitterDTO.getSseEmitterId(), name);
+
         }
     }
 
