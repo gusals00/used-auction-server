@@ -36,8 +36,10 @@ public class MyPageProductPageContentRes {
 
     @Schema(description = "경매 상태 - 경매중, 낙찰 등",example = "경매중")
     private String status;
+
     @Schema(description = "상품 수정 가능한 상태인가", example = "true")
     private boolean isPossibleUpdate;
+
     public MyPageProductPageContentRes(Product product,boolean isPossibleUpdate) {
         this.productId = product.getId();
         this.categoryName = product.getCategory().getName();
