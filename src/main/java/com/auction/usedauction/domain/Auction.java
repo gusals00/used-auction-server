@@ -108,4 +108,8 @@ public class Auction {
             nowPrice = price;
         }
     }
+
+    public void changeAuctionStartDate(LocalDateTime auctionStartDate) {
+        this.auctionStartDate = auctionStartDate;
+    }
 }

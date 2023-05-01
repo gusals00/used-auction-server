@@ -260,6 +260,7 @@ public class InitDBService {
         AuctionRegisterDTO auctionRegister = new AuctionRegisterDTO(endDate, startPrice, priceUnit);
         Long savedId = productService.register(productRegister, auctionRegister);
         Product findProduct = productRepository.findById(savedId).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        findProduct.getAuction().changeAuctionStartDate(startDate);
         findProduct.changeCreatedDate(startDate);
         for (int i = 0; i < viewCount; i++) { // 조회수 증가
             findProduct.increaseViewCount();
