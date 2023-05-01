@@ -51,6 +51,14 @@ public class SseEmitterRepositoryImpl implements SseEmitterRepository {
     }
 
     @Override
+    public List<SseEmitterDTO> findAllByType(SseType sseType) {
+        return emitterMap.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith(sseType.toString() + "-"))
+                .map(entry -> new SseEmitterDTO(entry.getKey(), entry.getValue()))
+                .collect(toList());
+    }
+
+    @Override
     public SseEmitterDTO findByEmitterId(String emitterId) {
         return emitterMap.containsKey(emitterId) ? new SseEmitterDTO(emitterId, emitterMap.get(emitterId)) : null;
     }

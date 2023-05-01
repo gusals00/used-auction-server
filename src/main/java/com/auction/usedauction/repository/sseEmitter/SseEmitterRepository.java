@@ -13,6 +13,8 @@ public interface SseEmitterRepository {
     List<SseEmitterDTO> findAllByTypeAndProductId(SseType sseType, Long productId);
     //SseType + loginId로 EmitterList 조회
     List<SseEmitterDTO> findAllByTypeAndLoginId(SseType sseType, String loginId);
+    //SseType 으로 EmitterList 조회
+    List<SseEmitterDTO> findAllByType(SseType sseType);
     //SseEmitterId로 조회
     SseEmitterDTO findByEmitterId(String emitterId);
     //EmitterId로 Emitter 삭제

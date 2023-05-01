@@ -5,6 +5,7 @@ import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.repository.sseEmitter.SseEmitterRepository;
 import com.auction.usedauction.repository.sseEmitter.SseSendName;
 import com.auction.usedauction.repository.sseEmitter.SseType;
+import com.auction.usedauction.service.ChatRoomService;
 import com.auction.usedauction.service.SseEmitterService;
 import com.auction.usedauction.service.dto.SseSendDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,9 +19,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.List;
-
-
 @RestController
 @Slf4j
 @RequestMapping("/api/sse")
@@ -31,6 +29,7 @@ public class SseController {
     private final SseEmitterService sseEmitterService;
     private final SseEmitterRepository sseEmitterRepository;
     private final ProductRepository productRepository;
+    private final ChatRoomService chatRoomService;
 
     @Operation(summary = "sse 입찰 금액 연결 메서드")
     @GetMapping(value = "/bid-connect/{productId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -48,6 +47,7 @@ public class SseController {
         return ResponseEntity.ok(findEmitter.getSseEmitter());
     }
 
+    @Operation(summary = "sse 채팅방 리스트 연결 메서드")
     @GetMapping(value = "/chat-connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connectChatList(@AuthenticationPrincipal User user) {
         Long timeout = 1000 * 60 * 10L; //10분
@@ -55,11 +55,9 @@ public class SseController {
         String id = sseEmitterService.connect(SseType.CHAT_LIST, user.getUsername(), timeout);
         SseEmitterDTO findEmitter = sseEmitterRepository.findByEmitterId(id);
 
-        // 채팅방 리스트 전송 추가해 현민아...
-        List<SseEmitterDTO> findEmitters = sseEmitterRepository.findAllByTypeAndLoginId(SseType.CHAT_LIST, user.getUsername());
+        // redis에 현재 사용자의 입장중인 방 목록 저장
+        chatRoomService.addJoinedRoomListToRedis(user.getUsername());
 
         return ResponseEntity.ok(findEmitter.getSseEmitter());
     }
-
-
 }

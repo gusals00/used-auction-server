@@ -1,6 +1,7 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.service.ChatRoomService;
+import com.auction.usedauction.service.SseEmitterService;
 import com.auction.usedauction.service.query.ChatRoomQueryService;
 import com.auction.usedauction.web.dto.ChatRoomRes;
 import com.auction.usedauction.web.dto.MessageRes;
@@ -22,11 +23,17 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final ChatRoomQueryService chatRoomQueryService;
+    private final SseEmitterService sseEmitterService;
 
     @PostMapping("/{productId}")
     @Operation(summary = "채팅방 생성 메서드")
     public ResultRes<MessageRes> createRoom(@PathVariable Long productId, @AuthenticationPrincipal User user) {
-        chatRoomService.createRoom(productId, user.getUsername());
+        Long roomId = chatRoomService.createRoom(productId, user.getUsername());
+
+        sseEmitterService.sendNewRoomData(roomId);
+
+        chatRoomService.addNewRoomToRedis(user.getUsername(), roomId);
+
         return new ResultRes(new MessageRes("채팅방 생성 성공"));
     }
 

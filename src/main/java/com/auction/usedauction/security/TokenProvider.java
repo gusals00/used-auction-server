@@ -2,7 +2,6 @@ package com.auction.usedauction.security;
 
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.ErrorCode;
-import com.auction.usedauction.exception.error_code.SecurityErrorCode;
 import com.auction.usedauction.util.AuthConstants;
 import com.auction.usedauction.util.RedisUtil;
 import io.jsonwebtoken.*;
@@ -26,6 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.auction.usedauction.exception.error_code.SecurityErrorCode.*;
+import static com.auction.usedauction.util.RedisConstants.*;
 
 @Component
 @Slf4j
@@ -95,7 +95,7 @@ public class TokenProvider implements InitializingBean {
 
     // refresh 토큰 저장
     public void saveToken(Authentication authentication, String refreshToken) {
-        redisUtil.setData("RefreshToken:" + authentication.getName(), refreshToken, Duration.ofSeconds(refreshTokenValidity));
+        redisUtil.setData(REFRESH_TOKEN + authentication.getName(), refreshToken, Duration.ofSeconds(refreshTokenValidity));
     }
 
     public Authentication getAuthentication(String token) {

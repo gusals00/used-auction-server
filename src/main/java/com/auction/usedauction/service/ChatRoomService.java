@@ -9,19 +9,31 @@ import com.auction.usedauction.repository.chat.ChatMessageRepository;
 import com.auction.usedauction.repository.chat.ChatRoomRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
+import com.auction.usedauction.util.RedisConstants;
+import com.auction.usedauction.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.auction.usedauction.util.RedisConstants.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
+    private final RedisUtil redisUtil;
+
+    private final Long roomListExpireTime = 600L; // 10분
 
     @Transactional
     public Long createRoom(Long productId, String loginId) {
@@ -59,5 +71,26 @@ public class ChatRoomService {
 
         // 채팅방 접속인원 감소
         chatRoom.minusUserCount();
+    }
+
+    // redis에 입장중인 방 목록 저장
+    public List<String> addJoinedRoomListToRedis(String loginId) {
+        List<String> joinedRoomList = chatRoomRepository.findChatRoomsByMemberLoginId(loginId)
+                .stream()
+                .map(chatRoom -> chatRoom.getId().toString())
+                .toList();
+
+        redisUtil.setList(ROOM_LIST + loginId, joinedRoomList, roomListExpireTime, TimeUnit.SECONDS);
+
+        return joinedRoomList;
+    }
+
+    // redis에 새로 생성된 방 저장
+    public void addNewRoomToRedis(String loginId, Long roomId) {
+        List<String> list = redisUtil.getList(ROOM_LIST + loginId);
+
+        if(list != null) {
+            redisUtil.addList(ROOM_LIST + loginId, roomId.toString());
+        }
     }
 }
