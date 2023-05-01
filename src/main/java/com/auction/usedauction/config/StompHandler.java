@@ -61,9 +61,16 @@ public class StompHandler implements ChannelInterceptor {
             Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
             Long roomId = (Long) sessionAttributes.get(accessor.getSessionId()); // 채팅방 아이디 가져오기
 
-            chatRoomService.leaveRoom(roomId); // 채팅방 퇴장 처리
-        }
+            Object check = sessionAttributes.get("check");
 
+            if(check == null) {
+                log.info("채팅방 퇴장 처리");
+                chatRoomService.leaveRoom(roomId); // 채팅방 퇴장 처리
+
+                sessionAttributes.put("check", roomId); // 중복 퇴장 방지
+                accessor.setSessionAttributes(sessionAttributes);
+            }
+        }
         return message;
     }
 
