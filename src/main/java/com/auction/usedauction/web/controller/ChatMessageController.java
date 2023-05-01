@@ -1,6 +1,8 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.service.ChatMessageService;
+import com.auction.usedauction.service.ChatRoomService;
+import com.auction.usedauction.service.SseEmitterService;
 import com.auction.usedauction.service.dto.ChatMessageRes;
 import com.auction.usedauction.service.query.ChatMessageQueryService;
 import com.auction.usedauction.web.dto.*;
@@ -29,18 +31,25 @@ public class ChatMessageController {
     private final SimpMessageSendingOperations template;
     private final ChatMessageService chatMessageService;
     private final ChatMessageQueryService chatMessageQueryService;
+    private final SseEmitterService sseEmitterService;
 
     @MessageMapping("/message")
     @Operation(summary = "메세지 처리")
-    public void message(ChatMessageDTO messageReq, Principal principal) {
+    public void message(ChatMessageDTO messageDTO, Principal principal) {
         boolean isRead = false;
-        if(messageReq.getType().equals(MessageType.ENTER)) {
-            messageReq.setMessage(messageReq.getSender());
-        } else if(messageReq.getType().equals(MessageType.TALK)){
-            isRead = chatMessageService.saveMessage(messageReq.getChatRoomId(), principal.getName(), messageReq.getMessage());
+        if(messageDTO.getType().equals(MessageType.ENTER)) { // 입장 메세지
+            messageDTO.setMessage(messageDTO.getSender());
+
+            sseEmitterService.sendRoomEnterData(messageDTO.getChatRoomId(), principal.getName()); // 입장한 채팅방에 안읽은 메세지 존재하면 데이터 전송
+
+        } else if(messageDTO.getType().equals(MessageType.TALK)){ // 대화 메세지
+            isRead = chatMessageService.saveMessage(messageDTO.getChatRoomId(), principal.getName(), messageDTO.getMessage()); // 메시지 저장
+
+            sseEmitterService.sendUpdatedRoomData(messageDTO, principal.getName(), isRead); // sse 채팅방 데이터 전송
         }
 
-        template.convertAndSend("/sub/room/" + messageReq.getChatRoomId(), createMessageRes(messageReq, isRead));
+        // 메시지 전송
+        template.convertAndSend("/sub/room/" + messageDTO.getChatRoomId(), createMessageRes(messageDTO, isRead));
     }
 
     @GetMapping("/chats/{roomId}")
