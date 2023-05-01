@@ -36,14 +36,11 @@ public class ProductUpdateInfoRes {
     @Schema(description = "입찰 단위가", example = "10000")
     private int priceUnit;
 
-    @Schema(description = "수정 가능한 상태인가", example = "true")
-    private boolean isPossibleUpdate;
-
     @Schema(description = "대표 사진")
     private ImageInfoRes sigImg;
     private List<ImageInfoRes> ordinalImgList;
 
-    public ProductUpdateInfoRes(Product product, boolean isPossibleUpdate) {
+    public ProductUpdateInfoRes(Product product) {
         this.productName = product.getName();
         this.info = product.getInfo();
         this.categoryId = product.getCategory().getId();
@@ -51,7 +48,6 @@ public class ProductUpdateInfoRes {
         this.auctionEndDate = auction.getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.startPrice = auction.getStartPrice();
         this.priceUnit = auction.getPriceUnit();
-        this.isPossibleUpdate = isPossibleUpdate;
 
         File sigImage = product.getSigImage();
         this.sigImg = new ImageInfoRes(sigImage.getOriginalName(), sigImage.getFullPath());
