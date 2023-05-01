@@ -1,6 +1,5 @@
 package com.auction.usedauction.service.dto;
 
-import com.auction.usedauction.domain.AuctionStatus;
 import com.auction.usedauction.domain.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -37,8 +36,9 @@ public class MyPageProductPageContentRes {
 
     @Schema(description = "경매 상태 - 경매중, 낙찰 등",example = "경매중")
     private String status;
-
-    public MyPageProductPageContentRes(Product product) {
+    @Schema(description = "상품 수정 가능한 상태인가", example = "true")
+    private boolean isPossibleUpdate;
+    public MyPageProductPageContentRes(Product product,boolean isPossibleUpdate) {
         this.productId = product.getId();
         this.categoryName = product.getCategory().getName();
         this.productName = product.getName();
@@ -47,5 +47,6 @@ public class MyPageProductPageContentRes {
         this.auctionEndDate = product.getAuction().getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.sigImgSrc = product.getSigImage().getFullPath();
         this.status = product.getAuction().getStatus().getDescription();
+        this.isPossibleUpdate = isPossibleUpdate;
     }
 }
