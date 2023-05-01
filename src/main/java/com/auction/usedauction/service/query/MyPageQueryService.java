@@ -1,6 +1,8 @@
 package com.auction.usedauction.service.query;
 
+import com.auction.usedauction.domain.Auction;
 import com.auction.usedauction.domain.AuctionHistory;
+import com.auction.usedauction.domain.AuctionStatus;
 import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.dto.MyPageAuctionHistoryPageContentRes;
@@ -30,8 +32,9 @@ public class MyPageQueryService {
 
         Page<Product> findPage = productRepository.findMyProductsByCond(loginId, myPageSearchConReq, pageRequest);
 
+        // 경매 상태가 상품을 수정할 수 있는 상태인지 추가함 (isPossibleUpdate)
         List<MyPageProductPageContentRes> myPageProductPageContents = findPage.getContent().stream()
-                .map(MyPageProductPageContentRes::new)
+                .map(product -> new MyPageProductPageContentRes(product, isPossibleUpdate(product.getAuction())))
                 .toList();
 
         return new PageListRes(myPageProductPageContents, findPage);
@@ -79,5 +82,14 @@ public class MyPageQueryService {
     private PageRequest getPageRequest(MyPageSearchConReq myPageSearchConReq) {
         PageRequest pageRequest = PageRequest.of(myPageSearchConReq.getPage(), myPageSearchConReq.getSize());
         return pageRequest;
+    }
+
+    private boolean isPossibleUpdate(Auction auction) {
+        // 경매 상태가 입찰이 아닌 경우 or 입찰 기록이 있는 경우
+        return (auction.getStatus() == AuctionStatus.BID) && !hasAuctionHistoryWhenBidding(auction);
+    }
+
+    private boolean hasAuctionHistoryWhenBidding(Auction auction) {
+        return auction.getStatus() == AuctionStatus.BID && auctionHistoryRepository.countByAuction(auction) > 0;
     }
 }
