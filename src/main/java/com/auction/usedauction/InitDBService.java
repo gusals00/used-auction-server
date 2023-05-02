@@ -5,13 +5,14 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.*;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
+import com.auction.usedauction.repository.auction_end.AuctionEndRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.chat.ChatMessageRepository;
 import com.auction.usedauction.repository.chat.ChatRoomRepository;
 import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
+import com.auction.usedauction.repository.query.AuctionQueryRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
-import com.auction.usedauction.service.ChatMessageService;
 import com.auction.usedauction.service.ProductService;
 import com.auction.usedauction.service.QuestionService;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
@@ -56,7 +57,8 @@ public class InitDBService {
     private final QuestionService questionService;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final ChatMessageService chatMessageService;
+    private final AuctionEndRepository auctionEndRepository;
+    private final AuctionQueryRepository auctionQueryRepository;
 
     @Value("${INIT_FILE_PATH}")
     private String filePath;
@@ -77,6 +79,15 @@ public class InitDBService {
 
         //채팅방, 메세지 추가
         insertChatRoomsAndMessages();
+
+    }
+
+    public void initScheduler() {
+        log.info("로딩 시점에 당일 경매 종료되는 경매 저장");
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startDate = now.minusDays(1).withHour(23).withMinute(56).withSecond(0);
+        LocalDateTime endDate = startDate.plusDays(1).withMinute(59).withSecond(59);
+        auctionEndRepository.add(auctionQueryRepository.findIdAndEndDateByDate(startDate, endDate));
     }
 
     private void insertQuestions() {

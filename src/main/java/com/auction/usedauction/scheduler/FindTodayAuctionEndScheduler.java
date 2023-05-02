@@ -17,8 +17,9 @@ import java.time.LocalDateTime;
 @Profile(value = {"local","production"})
 public class FindTodayAuctionEndScheduler {
 
-    private AuctionQueryRepository auctionQueryRepository;
-    private AuctionEndRepository auctionEndRepository;
+    private final AuctionQueryRepository auctionQueryRepository;
+    private final AuctionEndRepository auctionEndRepository;
+
     @Async
     @Scheduled(cron = "20 55 23 * * *")
     // 23:58분일 때마다

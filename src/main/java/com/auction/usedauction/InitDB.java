@@ -14,5 +14,6 @@ public class InitDB {
     @PostConstruct
     public void init() {
         initDBService.init();
+        initDBService.initScheduler();
     }
 }

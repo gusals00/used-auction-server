@@ -2,6 +2,7 @@ package com.auction.usedauction.repository.auction_end;
 
 import com.auction.usedauction.repository.dto.AuctionIdAndAuctionEndDateDTO;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @NoArgsConstructor
+@Component
 public class AuctionEndRepositoryImpl implements AuctionEndRepository {
 
     // key -> auctionId, value : auctionEndDate
@@ -24,9 +26,9 @@ public class AuctionEndRepositoryImpl implements AuctionEndRepository {
 
     @Override
     public void add(List<AuctionIdAndAuctionEndDateDTO> idAndAuctionEndDateDTOList) {
-        idAndAuctionEndDateDTOList.stream().forEach(
-                idAndAuctionEndDate -> add(idAndAuctionEndDate.getAuctionId(), idAndAuctionEndDate.getEndDate())
-        );
+        for (AuctionIdAndAuctionEndDateDTO idAndAuctionEndDate : idAndAuctionEndDateDTOList) {
+            add(idAndAuctionEndDate.getAuctionId(), idAndAuctionEndDate.getEndDate());
+        }
     }
 
     @Override
