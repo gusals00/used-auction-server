@@ -25,7 +25,6 @@ public interface AuctionRepository extends JpaRepository<Auction, Long>, Auction
     int updateAuctionStatus(@Param("status") AuctionStatus auctionStatus, @Param("auction_ids") List<Long> auctionIdList);
 
     // 경매 상태, 시간 기준으로 auctionId, 입찰 수 리턴
-    @Modifying(clearAutomatically = true)
     @Query(value =
             "select a.auction_id as auctionId, count(ah.bid_price) as count" +
                     " from auction a" +

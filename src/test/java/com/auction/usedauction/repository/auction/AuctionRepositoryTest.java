@@ -6,7 +6,6 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.exception.error_code.CategoryErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
-import com.auction.usedauction.repository.AuthorityRepository;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
@@ -173,18 +172,6 @@ class AuctionRepositoryTest {
                 .build();
     }
 
-    private Authority createAuthority(String name) {
-        return Authority.builder()
-                .authorityName(name)
-                .build();
-    }
-
-    private Category createCategory(String name) {
-        return Category.builder()
-                .name(name)
-                .build();
-    }
-
     private Product createProduct(String productName, String info, Member member, Category category, Auction auction) {
         return Product.builder()
                 .info(info)
@@ -194,17 +181,4 @@ class AuctionRepositoryTest {
                 .auction(auction)
                 .build();
     }
-
-    private Member createMember(String name, String birth, String email, String loginId, String password, String phoneNumber, Authority authorities) {
-        return Member.builder()
-                .name(name)
-                .birth(birth)
-                .email(email)
-                .loginId(loginId)
-                .password(password)
-                .phoneNumber(phoneNumber)
-                .authorities(Collections.singleton(authorities))
-                .build();
-    }
-
 }
