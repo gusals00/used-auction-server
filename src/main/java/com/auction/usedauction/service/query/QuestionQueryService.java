@@ -27,7 +27,5 @@ public class QuestionQueryService {
                 .toList();
 
         return new PageListRes<>(questionListContents,questionPage);
-
-//        return new QuestionPageRes(questionListContents,questionPage);
     }
 }
