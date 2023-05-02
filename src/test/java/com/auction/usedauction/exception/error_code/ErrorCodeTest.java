@@ -4,7 +4,6 @@ package com.auction.usedauction.exception.error_code;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.ErrorRes;
 
-import com.auction.usedauction.web.dto.ResultRes;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,25 +53,25 @@ class ErrorCodeTest {
         CustomException userNotFoundCustomException = new CustomException(userNotFound);
 
         //when
-        ResponseEntity<ResultRes<ErrorRes>> fileErrorResponseEntity = ErrorRes.error(fileNotFoundCustomException);
-        ResponseEntity<ResultRes<ErrorRes>> s3ErrorResponseEntity = ErrorRes.error(s3FileCustomException);
-        ResponseEntity<ResultRes<ErrorRes>> userrrorResponseEntity = ErrorRes.error(userNotFoundCustomException);
+        ResponseEntity<ErrorRes> fileErrorResponseEntity = ErrorRes.error(fileNotFoundCustomException);
+        ResponseEntity<ErrorRes> s3ErrorResponseEntity = ErrorRes.error(s3FileCustomException);
+        ResponseEntity<ErrorRes> userrrorResponseEntity = ErrorRes.error(userNotFoundCustomException);
 
         //then
         // FileErrorCode.FILE_NOT_FOUND -> ResponseEntity 생성시
-        Assertions.assertThat(fileErrorResponseEntity.getBody().getResult().getCode()).isEqualTo(fileNotFound.name());
-        Assertions.assertThat(fileErrorResponseEntity.getBody().getResult().getStatus()).isEqualTo(fileNotFound.getStatus());
-        Assertions.assertThat(fileErrorResponseEntity.getBody().getResult().getMsg()).isEqualTo(fileNotFound.getMessage());
+        Assertions.assertThat(fileErrorResponseEntity.getBody().getCode()).isEqualTo(fileNotFound.name());
+        Assertions.assertThat(fileErrorResponseEntity.getBody().getStatus()).isEqualTo(fileNotFound.getStatus());
+        Assertions.assertThat(fileErrorResponseEntity.getBody().getMsg()).isEqualTo(fileNotFound.getMessage());
 
         // FileErrorCode.S3_FILE_NOT_FOUND -> ResponseEntity 생성시
-        Assertions.assertThat(s3ErrorResponseEntity.getBody().getResult().getCode()).isEqualTo(s3FileNotFound.name());
-        Assertions.assertThat(s3ErrorResponseEntity.getBody().getResult().getStatus()).isEqualTo(s3FileNotFound.getStatus());
-        Assertions.assertThat(s3ErrorResponseEntity.getBody().getResult().getMsg()).isEqualTo(s3FileNotFound.getMessage());
+        Assertions.assertThat(s3ErrorResponseEntity.getBody().getCode()).isEqualTo(s3FileNotFound.name());
+        Assertions.assertThat(s3ErrorResponseEntity.getBody().getStatus()).isEqualTo(s3FileNotFound.getStatus());
+        Assertions.assertThat(s3ErrorResponseEntity.getBody().getMsg()).isEqualTo(s3FileNotFound.getMessage());
 
         // UserErrorCode.USER_NOT_FOUND -> ResponseEntity 생성시
-        Assertions.assertThat(userrrorResponseEntity.getBody().getResult().getCode()).isEqualTo(userNotFound.name());
-        Assertions.assertThat(userrrorResponseEntity.getBody().getResult().getStatus()).isEqualTo(userNotFound.getStatus());
-        Assertions.assertThat(userrrorResponseEntity.getBody().getResult().getMsg()).isEqualTo(userNotFound.getMessage());
+        Assertions.assertThat(userrrorResponseEntity.getBody().getCode()).isEqualTo(userNotFound.name());
+        Assertions.assertThat(userrrorResponseEntity.getBody().getStatus()).isEqualTo(userNotFound.getStatus());
+        Assertions.assertThat(userrrorResponseEntity.getBody().getMsg()).isEqualTo(userNotFound.getMessage());
 
     }
 
