@@ -1,10 +1,13 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.exception.ErrorRes;
+import com.auction.usedauction.exception.error_code.SecurityErrorCode;
 import com.auction.usedauction.repository.dto.SseEmitterDTO;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.repository.sseEmitter.SseEmitterRepository;
 import com.auction.usedauction.repository.sseEmitter.SseSendName;
 import com.auction.usedauction.repository.sseEmitter.SseType;
+import com.auction.usedauction.security.TokenProvider;
 import com.auction.usedauction.service.ChatRoomService;
 import com.auction.usedauction.service.SseEmitterService;
 import com.auction.usedauction.service.dto.SseSendDTO;
@@ -14,10 +17,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import static com.auction.usedauction.exception.error_code.SecurityErrorCode.*;
 
 @RestController
 @Slf4j
@@ -30,6 +35,7 @@ public class SseController {
     private final SseEmitterRepository sseEmitterRepository;
     private final ProductRepository productRepository;
     private final ChatRoomService chatRoomService;
+    private final TokenProvider tokenProvider;
 
     @Operation(summary = "sse 입찰 금액 연결 메서드")
     @GetMapping(value = "/bid-connect/{productId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -49,15 +55,23 @@ public class SseController {
 
     @Operation(summary = "sse 채팅방 리스트 연결 메서드")
     @GetMapping(value = "/chat-connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> connectChatList(@AuthenticationPrincipal User user) {
-        Long timeout = 1000 * 60 * 10L; //10분
-        // 연결
-        String id = sseEmitterService.connect(SseType.CHAT_LIST, user.getUsername(), timeout);
-        SseEmitterDTO findEmitter = sseEmitterRepository.findByEmitterId(id);
+    public ResponseEntity connectChatList(@RequestParam String bearerToken) {
 
-        // redis에 현재 사용자의 입장중인 방 목록 저장
-        chatRoomService.addJoinedRoomListToRedis(user.getUsername());
+        String token = tokenProvider.resolveToken(bearerToken);
+        if(StringUtils.hasText(token) && tokenProvider.isValidTokenSse(token)) {
+            Authentication authentication = tokenProvider.getAuthentication(token);
 
-        return ResponseEntity.ok(findEmitter.getSseEmitter());
+            Long timeout = 1000 * 60 * 10L; //10분
+            // 연결
+            String id = sseEmitterService.connect(SseType.CHAT_LIST, authentication.getName(), timeout);
+            SseEmitterDTO findEmitter = sseEmitterRepository.findByEmitterId(id);
+
+            // redis에 현재 사용자의 입장중인 방 목록 저장
+            chatRoomService.addJoinedRoomListToRedis(authentication.getName());
+
+            return ResponseEntity.ok(findEmitter.getSseEmitter());
+        }
+
+        return ErrorRes.error(UNAUTHORIZED, UNAUTHORIZED.getMessage());
     }
 }

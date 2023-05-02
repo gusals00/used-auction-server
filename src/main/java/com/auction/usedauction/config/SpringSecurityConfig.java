@@ -71,7 +71,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
                 //sse
-                .requestMatchers("/api/sse/bid-connect/**").permitAll()
+                .requestMatchers("/api/sse/**").permitAll()
 
                 .anyRequest().authenticated()
                 .and()

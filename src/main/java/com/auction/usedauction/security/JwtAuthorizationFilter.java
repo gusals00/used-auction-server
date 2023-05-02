@@ -1,5 +1,6 @@
 package com.auction.usedauction.security;
 
+import com.auction.usedauction.util.AuthConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +31,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = tokenProvider.resolveToken(request);
+        String bearerToken = request.getHeader(AuthConstants.AUTH_HEADER);
+        String jwt = tokenProvider.resolveToken(bearerToken);
 
         if(StringUtils.hasText(jwt) && tokenProvider.isValidToken(jwt, request)) { // 유효성 검증
             if(!tokenProvider.isLogoutToken(request, jwt)) { // 로그아웃 여부 확인

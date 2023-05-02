@@ -2,6 +2,7 @@ package com.auction.usedauction.security;
 
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.ErrorCode;
+import com.auction.usedauction.exception.error_code.SecurityErrorCode;
 import com.auction.usedauction.util.AuthConstants;
 import com.auction.usedauction.util.RedisUtil;
 import io.jsonwebtoken.*;
@@ -148,9 +149,24 @@ public class TokenProvider implements InitializingBean {
         return false;
     }
 
+    // sse 토큰 검증
+    public boolean isValidTokenSse(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        }catch(io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
+            throw new CustomException(WRONG_TYPE_TOKEN);
+        }catch(ExpiredJwtException e){
+            throw new CustomException(EXPIRED_TOKEN);
+        }catch(UnsupportedJwtException e){
+            throw new CustomException(UNSUPPORTED_TOKEN);
+        }catch(IllegalArgumentException e){
+            throw new CustomException(WRONG_TOKEN);
+        }
+    }
+
     // 토큰 정보 추출
-    public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AuthConstants.AUTH_HEADER);
+    public String resolveToken(String bearerToken) {
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring(7);
         }
