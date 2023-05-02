@@ -2,7 +2,6 @@ package com.auction.usedauction.exception;
 
 import com.auction.usedauction.exception.error_code.BindingErrorCode;
 import com.auction.usedauction.util.ValidatorMessageUtils;
-import com.auction.usedauction.web.dto.ResultRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,7 @@ public class ControllerAdvice {
     private final ValidatorMessageUtils validatorMessageUtils;
 
     @ExceptionHandler(value = CustomException.class)
-    public ResponseEntity<ResultRes<ErrorRes>> handleCustomException(CustomException e) {
+    public ResponseEntity<ErrorRes> handleCustomException(CustomException e) {
         log.error("[exception] class={}, code ={}, status = {}, message = {}",
                 e.getErrorCode().getClass().getName(), e.getErrorCode().name(), e.getErrorCode().getStatus(), e.getErrorCode().getMessage(), e);
         return ErrorRes.error(e);
@@ -29,7 +28,7 @@ public class ControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<ResultRes<ErrorRes>> BindException(BindException ex) {
+    public ResponseEntity<ErrorRes> BindException(BindException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         log.error("[binding error]{}",bindingResult.toString());
 
