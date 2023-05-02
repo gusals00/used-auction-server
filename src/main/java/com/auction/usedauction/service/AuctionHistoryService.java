@@ -125,8 +125,8 @@ public class AuctionHistoryService {
     // 경매 종료시 경매 상태, 경매내역 상태 변경
     @Transactional
     public void changeAuctionStatusToAuctionEndStatuses(LocalDateTime localDateTime) {
-        // 입찰이 종료된 경매 id, 입찰수 조회
-        List<AuctionIdAndBidCountDTO> idAndBIdCounts = auctionHistoryQueryRepository.findIdAndBidCountListByStatusAndEndDate(AuctionStatus.BID, localDateTime);
+        // 입찰 종료힐 경매 id, 입찰수 조회
+        List<AuctionIdAndBidCountDTO> idAndBIdCounts = auctionRepository.findIdAndBidCountListByStatusAndEndDate(AuctionStatus.BID,localDateTime);
 
         // 경매 상태를 FAIL_BID(낙찰 실패) 로 변경
         List<Long> failBidIds = getFailBidIds(idAndBIdCounts);
