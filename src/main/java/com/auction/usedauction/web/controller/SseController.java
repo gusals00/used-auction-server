@@ -1,7 +1,6 @@
 package com.auction.usedauction.web.controller;
 
-import com.auction.usedauction.exception.ErrorRes;
-import com.auction.usedauction.exception.error_code.SecurityErrorCode;
+import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.repository.dto.SseEmitterDTO;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.repository.sseEmitter.SseEmitterRepository;
@@ -55,8 +54,7 @@ public class SseController {
 
     @Operation(summary = "sse 채팅방 리스트 연결 메서드")
     @GetMapping(value = "/chat-connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity connectChatList(@RequestParam String token) {
-
+    public ResponseEntity<SseEmitter> connectChatList(@RequestParam String token) {
         if(StringUtils.hasText(token) && tokenProvider.isValidTokenSse(token)) {
             Authentication authentication = tokenProvider.getAuthentication(token);
 
@@ -69,8 +67,8 @@ public class SseController {
             chatRoomService.addJoinedRoomListToRedis(authentication.getName());
 
             return ResponseEntity.ok(findEmitter.getSseEmitter());
+        } else {
+            throw new CustomException(ACCESS_DENIED);
         }
-
-        return ErrorRes.error(UNAUTHORIZED, UNAUTHORIZED.getMessage());
     }
 }
