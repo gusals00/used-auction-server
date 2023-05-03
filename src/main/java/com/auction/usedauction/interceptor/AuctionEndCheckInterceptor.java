@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -38,17 +37,4 @@ public class AuctionEndCheckInterceptor implements HandlerInterceptor {
         }
         return true;
     }
-
-//    @Override
-//    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-//        Map pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-//        String pathVariable = (String) pathVariables.get("auctionId");
-//        log.info("REQUEST URL = {}, pathVariable = {}", request.getRequestURL(), pathVariable);
-//        Long auctionId = Long.valueOf(pathVariable);
-//
-//        throw new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING);
-//        setException(request, AuctionErrorCode.AUCTION_NOT_BIDDING);
-//        return false;
-//
-//    }
 }
