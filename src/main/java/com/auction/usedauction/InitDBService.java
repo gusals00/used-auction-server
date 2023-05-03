@@ -82,15 +82,13 @@ public class InitDBService {
     }
 
     public void initScheduler() {
-
         initTodayAuctionEnd();
         endOfAuctionBid();
     }
 
     private void initTodayAuctionEnd() {
-        log.info("로딩 시점에 당일 경매 종료되는 경매 저장");
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startDate = now.minusDays(1).withHour(23).withMinute(56).withSecond(0);
+        log.info("로딩 시점에 내일 경매 종료되는 경매 저장");
+        LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = startDate.plusDays(1).withMinute(59).withSecond(59);
         auctionEndRepository.add(auctionQueryRepository.findIdAndEndDateByDate(startDate, endDate));
     }
@@ -241,6 +239,9 @@ public class InitDBService {
         findProduct7.getAuction().changeAuctionStatus(AuctionStatus.TRANSACTION_OK);
         findProduct7.getAuction().changeBuyerStatus(TransStatus.TRANS_COMPLETE);
         findProduct7.getAuction().changeSellerStatus(TransStatus.TRANS_COMPLETE);
+
+        Product findProduct8 = insertProduct("기초를 탄탄히 세워주는 컴퓨터 사이언스 중고 팝니다", "밑줄 약간 있습니다.", bookCategory.getId(),  now.minusDays(7), now.plusMinutes(5), 20000, 1000,
+                "8_1.jpg", Arrays.asList("8_2.jpg"), member3.getLoginId(), 50);
 
         log.info("member3 상품 저장 완료");
     }

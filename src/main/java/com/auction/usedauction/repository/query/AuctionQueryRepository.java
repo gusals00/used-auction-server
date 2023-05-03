@@ -24,15 +24,11 @@ public class AuctionQueryRepository {
         return queryFactory
                 .select(new QAuctionIdAndAuctionEndDateDTO(auction.id, auction.auctionEndDate))
                 .from(auction)
-                .where(auction.status.eq(AuctionStatus.BID), auction.auctionEndDate.between(startDate, endDate))
+                .where(auctionStatusEq(AuctionStatus.BID), auction.auctionEndDate.between(startDate, endDate))
                 .fetch();
     }
 
     private BooleanExpression auctionStatusEq(AuctionStatus auctionStatus) {
         return auctionStatus != null ? auction.status.eq(auctionStatus) : null;
-    }
-
-    private BooleanExpression afterThanAuctionEndDate(LocalDateTime localDateTime) {
-        return localDateTime != null ? auction.auctionEndDate.before(localDateTime) : null;
     }
 }
