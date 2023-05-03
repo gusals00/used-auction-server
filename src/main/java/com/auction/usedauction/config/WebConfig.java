@@ -17,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuctionEndCheckInterceptor(auctionEndRepository, mappingJackson2HttpMessageConverter))
+        registry.addInterceptor(new AuctionEndCheckInterceptor(auctionEndRepository))
                 .order(1)
                 .addPathPatterns("/api/auctions/**");
 
