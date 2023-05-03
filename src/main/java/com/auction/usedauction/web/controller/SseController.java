@@ -55,9 +55,8 @@ public class SseController {
 
     @Operation(summary = "sse 채팅방 리스트 연결 메서드")
     @GetMapping(value = "/chat-connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity connectChatList(@RequestParam String bearerToken) {
+    public ResponseEntity connectChatList(@RequestParam String token) {
 
-        String token = tokenProvider.resolveToken(bearerToken);
         if(StringUtils.hasText(token) && tokenProvider.isValidTokenSse(token)) {
             Authentication authentication = tokenProvider.getAuthentication(token);
 
