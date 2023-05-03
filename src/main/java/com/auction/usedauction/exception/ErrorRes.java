@@ -41,4 +41,14 @@ public class ErrorRes {
                         .msg(message)
                         .build());
     }
+
+    public static ResponseEntity<ErrorRes> error(ErrorCode errorCode) {
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .body(ErrorRes.builder()
+                        .status(errorCode.getStatus())
+                        .code(errorCode.name())
+                        .msg(errorCode.getMessage())
+                        .build());
+    }
 }

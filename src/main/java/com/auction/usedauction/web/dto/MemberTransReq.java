@@ -18,7 +18,7 @@ public class MemberTransReq {
     @NotNull
     private Long auctionId;
 
-    @Schema(description = "거래 상태, 거래 확정시 거래 상태 기준 참고",example = "TRANS_BEFORE")
+    @Schema(description = "거래 상태, 거래 확정시 거래 상태 기준 참고",example = "TRANS_COMPLETE")
     @NotNull
     private TransStatus status;
 }
