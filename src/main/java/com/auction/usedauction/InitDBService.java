@@ -79,15 +79,25 @@ public class InitDBService {
 
         //채팅방, 메세지 추가
         insertChatRoomsAndMessages();
-
     }
 
     public void initScheduler() {
+
+        initTodayAuctionEnd();
+        endOfAuctionBid();
+    }
+
+    private void initTodayAuctionEnd() {
         log.info("로딩 시점에 당일 경매 종료되는 경매 저장");
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startDate = now.minusDays(1).withHour(23).withMinute(56).withSecond(0);
         LocalDateTime endDate = startDate.plusDays(1).withMinute(59).withSecond(59);
         auctionEndRepository.add(auctionQueryRepository.findIdAndEndDateByDate(startDate, endDate));
+    }
+
+    private void endOfAuctionBid() {
+        //현재 시간 기준으로 경매 종료시 경매 상태를 변경
+        auctionHistoryService.changeAuctionStatusToAuctionEndStatuses(LocalDateTime.now());
     }
 
     private void insertQuestions() {

@@ -18,17 +18,18 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(value = QueryDslConfig.class)
 @Transactional
-class AuctionHistoryRepositoryImplTest {
-    @Autowired
-    private ProductRepository productRepository;
+class AuctionHistoryRepositoryCustomImplTest {
+
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -36,44 +37,51 @@ class AuctionHistoryRepositoryImplTest {
     @Autowired
     private AuctionRepository auctionRepository;
     @Autowired
+    private ProductRepository productRepository;
+    @Autowired
     private AuctionHistoryRepository auctionHistoryRepository;
 
     @Test
-    @DisplayName("최근 입찰자 loginId 조회")
-    void getLatestLoginId() throws Exception {
+    @DisplayName("낙찰 상태로 변경할 경매별 경매내역 id 리스트 조회")
+    void auctionIdAndCount() throws Exception {
         //given
         LocalDateTime now = LocalDateTime.now();
         Member seller = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Member buyer1 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Member buyer2 = memberRepository.findByLoginId("20180592").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer3 = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Category findCategory1 = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
-        Category findCategory2 = categoryRepository.findCategoryByName("생활/주방").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
 
         //상품 및 경매 생성
-        Auction auction1 = createAuction(now.plusDays(4), 14000, 1000);
-        Auction auction2 = createAuction(now.plusDays(1), 10000, 2000);
+        Auction auction1 = createAuction(now.plusDays(4), 50000, 10000);
+        Auction auction2 = createAuction(now.plusDays(7), 10000, 1000);
+        Auction auction3 = createAuction(now.plusDays(1), 10000, 1000);
 
         Product product1 = createProduct("상품1", "상품1입니다", seller, findCategory1, auction1);
-        Product product2 = createProduct("상품2", "상품2입니다", seller, findCategory2, auction2);
+        Product product2 = createProduct("상품2", "상품2입니다", seller, findCategory1, auction2);
+        Product product3 = createProduct("상품3", "상품3입니다", seller, findCategory1, auction3);
 
-        auctionRepository.saveAll(Arrays.asList(auction1, auction2));
-        productRepository.saveAll(Arrays.asList(product1, product2));
+        auctionRepository.saveAll(Arrays.asList(auction1, auction2, auction3));
+        productRepository.saveAll(Arrays.asList(product1, product2, product3));
 
-        // 입찰 내역 추가
-        AuctionHistory auctionHistory1 = createAuctionHistory(auction2, 14000, buyer1);
-        AuctionHistory auctionHistory2 = createAuctionHistory(auction2, 18000, buyer2);
-        AuctionHistory auctionHistory3 = createAuctionHistory(auction2, 22000, buyer1);
+        //auction 1 입찰
+        AuctionHistory auctionHistory1 = createAuctionHistory(auction1, 60000, buyer2);
+        auctionHistoryRepository.saveAll(Arrays.asList(createAuctionHistory(auction1, 50000, buyer1),auctionHistory1));
+        //auction 2 입찰
+        AuctionHistory auctionHistory2 = createAuctionHistory(auction2, 30000, buyer1);
+        auctionHistoryRepository.saveAll(Arrays.asList(createAuctionHistory(auction2, 20000, buyer2), auctionHistory2));
+        //auction 3 입찰
+        AuctionHistory auctionHistory3 = createAuctionHistory(auction3, 40000, buyer3);
+        auctionHistoryRepository.saveAll(Arrays.asList(createAuctionHistory(auction3, 20000, buyer2), createAuctionHistory(auction3, 30000, buyer1), auctionHistory3));
+        auction3.changeAuctionStatus(AuctionStatus.SUCCESS_BID);
 
-        auctionHistoryRepository.saveAll(Arrays.asList(auctionHistory1, auctionHistory2, auctionHistory3));
         //when
-        String latestBidMemberLoginId1 = auctionHistoryRepository.findLatestBidMemberLoginId(auction1.getId());
-        String latestBidMemberLoginId2 = auctionHistoryRepository.findLatestBidMemberLoginId(auction2.getId());
+        List<Long> result = auctionHistoryRepository.findAuctionHistoryIdForChangeStatus(Arrays.asList(auction1.getId(), auction2.getId(), auction3.getId()));
 
         //then
-        assertThat(latestBidMemberLoginId1).isNull();
-        assertThat(latestBidMemberLoginId2).isEqualTo(buyer1.getLoginId());
-
+        assertThat(result).containsExactlyInAnyOrder(auctionHistory1.getId(),auctionHistory2.getId(),auctionHistory3.getId());
     }
+
 
     private AuctionHistory createAuctionHistory(Auction auction, int bidPrice, Member member) {
         return AuctionHistory.builder()
@@ -91,18 +99,6 @@ class AuctionHistoryRepositoryImplTest {
                 .build();
     }
 
-    private Authority createAuthority(String name) {
-        return Authority.builder()
-                .authorityName(name)
-                .build();
-    }
-
-    private Category createCategory(String name) {
-        return Category.builder()
-                .name(name)
-                .build();
-    }
-
     private Product createProduct(String productName, String info, Member member, Category category, Auction auction) {
         return Product.builder()
                 .info(info)
@@ -112,17 +108,4 @@ class AuctionHistoryRepositoryImplTest {
                 .auction(auction)
                 .build();
     }
-
-    private Member createMember(String name, String birth, String email, String loginId, String password, String phoneNumber, Authority authorities) {
-        return Member.builder()
-                .name(name)
-                .birth(birth)
-                .email(email)
-                .loginId(loginId)
-                .password(password)
-                .phoneNumber(phoneNumber)
-                .authorities(Collections.singleton(authorities))
-                .build();
-    }
-
 }

@@ -7,8 +7,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static com.auction.usedauction.domain.QAuction.auction;
@@ -55,24 +53,6 @@ public class AuctionHistoryQueryRepository {
                         .orderBy(auctionHistory.bidPrice.desc())
                         .fetchFirst()
         );
-    }
-
-    // 경매 상태, 시간 기준으로 auctionId, 입찰 수 리턴
-    public List<AuctionIdAndBidCountDTO> findIdAndBidCountListByStatusAndEndDate(AuctionStatus status, LocalDateTime date) {
-        return  queryFactory.select(new QAuctionIdAndBidCountDTO(auctionHistory.id.count(), auction.id))
-                .from(auctionHistory)
-                .rightJoin(auctionHistory.auction, auction)
-                .where(auctionStatusEq(status), afterThanAuctionEndDate(date))
-                .groupBy(auction.id)
-                .fetch();
-    }
-
-    private BooleanExpression auctionStatusEq(AuctionStatus auctionStatus) {
-        return auctionStatus != null ? auction.status.eq(auctionStatus) : null;
-    }
-
-    private BooleanExpression afterThanAuctionEndDate(LocalDateTime localDateTime) {
-        return localDateTime!=null ? auction.auctionEndDate.before(localDateTime) : null;
     }
 
     private BooleanExpression auctionIdEq(Long auctionId) {

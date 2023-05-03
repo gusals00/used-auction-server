@@ -35,7 +35,7 @@ public class AuctionHistory extends BaseTimeEntity {
     public AuctionHistory(int bidPrice, Member member, Auction auction) {
         this.bidPrice = bidPrice;
         this.member = member;
-        this.auction = auction;
+        changeAuction(auction);
     }
 
     @PrePersist
@@ -46,7 +46,7 @@ public class AuctionHistory extends BaseTimeEntity {
     public void changeAuction(Auction auction) {
         if (auction != null) {
             this.auction = auction;
-            auction.getAuctionHistoryList().add(this);
+            auction.getAuctionHistory().add(this);
         }
     }
 

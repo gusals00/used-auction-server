@@ -255,6 +255,61 @@ class AuctionHistoryServiceTest {
                 .hasMessage(AuctionHistoryErrorCode.HIGHER_THAN_MAX_PRICE.getMessage());
     }
 
+    @Test
+    @DisplayName("경매 종료시 경매 상태, 경매내역 상태 변경(scheduler)")
+    void changeAuctionAndHistoryStatus() throws Exception {
+        //given
+        LocalDateTime time = LocalDateTime.now().withHour(1);
+        Member seller = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer1 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer2 = memberRepository.findByLoginId("20180592").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Category findCategory1 = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+
+        //상품 및 경매 생성
+        Auction auction1 = createAuction(time.plusMinutes(1), 50000, 10000);
+        Auction auction2 = createAuction(time.plusMinutes(2), 10000, 1000);
+        Auction auction3 = createAuction(time.plusMinutes(3), 10000, 1000);
+
+        Product product1 = createProduct("상품1", "상품1입니다", seller, findCategory1, auction1);
+        Product product2 = createProduct("상품2", "상품2입니다", seller, findCategory1, auction2);
+        Product product3 = createProduct("상품3", "상품3입니다", seller, findCategory1, auction3);
+
+        auctionRepository.saveAll(Arrays.asList(auction1, auction2, auction3));
+        productRepository.saveAll(Arrays.asList(product1, product2, product3));
+
+        //auction 1 입찰
+        AuctionHistory auctionHistory1 = createAuctionHistory(auction1, 50000, buyer1);
+        AuctionHistory auctionHistory2 = createAuctionHistory(auction1, 60000, buyer2);
+        auctionHistoryRepository.saveAll(Arrays.asList(auctionHistory1, auctionHistory2));
+        //auction 2 입찰
+        AuctionHistory auctionHistory3 = createAuctionHistory(auction2, 20000, buyer2);
+        AuctionHistory auctionHistory4 = createAuctionHistory(auction2, 30000, buyer1);
+        auctionHistoryRepository.saveAll(Arrays.asList(auctionHistory3, auctionHistory4));
+
+        //when
+        // 경매 종료 시간 이후 scheduler 로직 실행
+        auctionHistoryService.changeAuctionStatusToAuctionEndStatuses(time.withHour(23).withMinute(59));
+
+        //then
+        List<Auction> successBidAuctionList = auctionRepository.findAllById(Arrays.asList(auction1.getId(), auction2.getId()));
+        Auction failBidAuction = auctionRepository.findById(auction3.getId()).orElseThrow(()-> new CustomException(AuctionErrorCode.AUCTION_NOT_FOUND));
+        //경매 상태
+        //낙찰성공
+        assertThat(successBidAuctionList).extracting("status").containsOnly(AuctionStatus.SUCCESS_BID);
+        //낙찰실패
+        assertThat(failBidAuction.getStatus()).isEqualTo(AuctionStatus.FAIL_BID);
+
+        //경매 기록 상태
+        List<AuctionHistory> successBidHistoryList = auctionHistoryRepository.findAllById(Arrays.asList(auctionHistory2.getId(), auctionHistory4.getId()));
+        List<AuctionHistory> bidHistoryList = auctionHistoryRepository.findAllById(Arrays.asList(auctionHistory1.getId(), auctionHistory3.getId()));
+        // 낙찰 상태 경매 기록
+        assertThat(successBidHistoryList).extracting("status").containsOnly(AuctionHistoryStatus.SUCCESSFUL_BID);
+        // 입찰 상태 경매 기록
+        assertThat(bidHistoryList).extracting("status").containsOnly(AuctionHistoryStatus.BID);
+
+
+    }
+
     private Auction createAuction(LocalDateTime endDate, int startPrice, int priceUnit) {
         return Auction.builder()
                 .auctionEndDate(endDate)
@@ -263,15 +318,11 @@ class AuctionHistoryServiceTest {
                 .build();
     }
 
-    private Authority createAuthority(String name) {
-        return Authority.builder()
-                .authorityName(name)
-                .build();
-    }
-
-    private Category createCategory(String name) {
-        return Category.builder()
-                .name(name)
+    private AuctionHistory createAuctionHistory(Auction auction, int bidPrice, Member member) {
+        return AuctionHistory.builder()
+                .auction(auction)
+                .bidPrice(bidPrice)
+                .member(member)
                 .build();
     }
 
@@ -284,18 +335,4 @@ class AuctionHistoryServiceTest {
                 .auction(auction)
                 .build();
     }
-
-    private Member createMember(String name, String birth, String email, String loginId, String password, String phoneNumber, Authority authorities) {
-        return Member.builder()
-                .name(name)
-                .birth(birth)
-                .email(email)
-                .loginId(loginId)
-                .password(password)
-                .phoneNumber(phoneNumber)
-                .authorities(Collections.singleton(authorities))
-                .build();
-    }
-
-
 }

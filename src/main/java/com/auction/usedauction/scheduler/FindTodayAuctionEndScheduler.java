@@ -22,14 +22,13 @@ public class FindTodayAuctionEndScheduler {
 
     @Async
     @Scheduled(cron = "20 55 23 * * *")
-    // 23:58분일 때마다
+    // 23:55분일 때마다
     // 다음날 경매 종료인 경매들 저장
     public void putAuctionInfo() {
         log.info("경매 정보 저장 스케쥴러 실행");
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startDate = now.withHour(23).withMinute(56).withSecond(0);
+        LocalDateTime startDate = now.withHour(23).withMinute(55).withSecond(0);
         LocalDateTime endDate = startDate.plusDays(1).withMinute(59).withSecond(59);
         auctionEndRepository.add(auctionQueryRepository.findIdAndEndDateByDate(startDate, endDate));
-
     }
 }

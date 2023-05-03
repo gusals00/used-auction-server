@@ -17,7 +17,18 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
 
     int countByAuction(Auction auction);
 
-    @Modifying
-    @Query(value = "update auction_history ah set ah.status = :status where ah.auction_history_id in (:auction_history_ids)", nativeQuery = true)
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update auction_history ah set ah.status = :#{#status.name()} where ah.auction_history_id in (:auction_history_ids)", nativeQuery = true)
     int updateAuctionHistoryStatus(@Param("status") AuctionHistoryStatus auctionHistoryStatus, @Param("auction_history_ids") List<Long> auctionHistoryIdList);
+
+    // SUCCESSFUL_BID 상태로 변경할 경매내역 id 리스트 조회
+    @Query(value = "select ah.auction_history_id" +
+                    " from (select ah.auction_id as auction_id, max(ah.bid_price) as max_price" +
+                    "      from auction_history ah" +
+                    "      where ah.auction_id in (:auctionIds)" +
+                    "      group by ah.auction_id) ah_max," +
+                    " auction_history ah" +
+                    " where ah_max.auction_id = ah.auction_id and ah.bid_price = ah_max.max_price", nativeQuery = true)
+    List<Long> findAuctionHistoryIdForChangeStatus(@Param("auctionIds") List<Long> auctionIds);
+
 }

@@ -3,6 +3,7 @@ package com.auction.usedauction.repository.query;
 import com.auction.usedauction.domain.AuctionStatus;
 import com.auction.usedauction.repository.dto.AuctionIdAndAuctionEndDateDTO;
 import com.auction.usedauction.repository.dto.QAuctionIdAndAuctionEndDateDTO;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -27,5 +28,11 @@ public class AuctionQueryRepository {
                 .fetch();
     }
 
+    private BooleanExpression auctionStatusEq(AuctionStatus auctionStatus) {
+        return auctionStatus != null ? auction.status.eq(auctionStatus) : null;
+    }
 
+    private BooleanExpression afterThanAuctionEndDate(LocalDateTime localDateTime) {
+        return localDateTime != null ? auction.auctionEndDate.before(localDateTime) : null;
+    }
 }
