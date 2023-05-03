@@ -1,6 +1,6 @@
 package com.auction.usedauction.repository.auction;
 
-import com.auction.usedauction.config.DataJpaTestConfig;
+import com.auction.usedauction.config.QueryDslConfig;
 import com.auction.usedauction.domain.*;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = DataJpaTestConfig.class)
+@Import(value = QueryDslConfig.class)
 @Transactional
 class AuctionRepositoryTest {
 
