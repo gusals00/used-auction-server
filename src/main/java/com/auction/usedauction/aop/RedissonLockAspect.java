@@ -1,7 +1,7 @@
 package com.auction.usedauction.aop;
 
 import com.auction.usedauction.exception.CustomException;
-import com.auction.usedauction.exception.error_code.AuctionErrorCode;
+import com.auction.usedauction.exception.error_code.LockErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -30,7 +30,7 @@ public class RedissonLockAspect {
             log.info("redisson Lock 획득 시도");
             boolean available = lock.tryLock(redissonLock.waitTime(), redissonLock.leaseTime(), redissonLock.timeUnit());
             if (!available) { // 락 획득 실패
-                CustomException customException = new CustomException(AuctionErrorCode.TRY_AGAIN_BID);
+                CustomException customException = new CustomException(LockErrorCode.TRY_AGAIN_LOCK);
                 log.error("redisson Lock 획득 실패",customException);
                 throw customException;
             }
@@ -40,7 +40,7 @@ public class RedissonLockAspect {
         } catch (InterruptedException e) {
             log.error("Thread interrupted while waiting for lock ", e);
             Thread.currentThread().interrupt();
-            throw new CustomException(AuctionErrorCode.TRY_AGAIN_BID);
+            throw new CustomException(LockErrorCode.TRY_AGAIN_LOCK);
 
         }finally {
             log.info("redisson Lock 해제 시도");
