@@ -83,7 +83,7 @@ public class MemberService {
         TokenDTO tokenRes = tokenProvider.createTokenDTO(authentication);
 
         // redis에 새 토큰 저장
-        tokenProvider.saveToken(authentication, refreshToken);
+        tokenProvider.saveToken(authentication, tokenRes.getRefreshToken());
 
         return tokenRes;
     }
