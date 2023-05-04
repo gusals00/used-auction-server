@@ -1,6 +1,5 @@
 package com.auction.usedauction.web.controller;
 
-import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.repository.dto.SseEmitterDTO;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.repository.sseEmitter.SseEmitterRepository;
@@ -16,12 +15,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.util.StringUtils;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import static com.auction.usedauction.exception.error_code.SecurityErrorCode.*;
 
 @RestController
 @Slf4j
@@ -54,21 +51,15 @@ public class SseController {
 
     @Operation(summary = "sse 채팅방 리스트 연결 메서드")
     @GetMapping(value = "/chat-connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> connectChatList(@RequestParam String token) {
-        if(StringUtils.hasText(token) && tokenProvider.isValidTokenSse(token)) {
-            Authentication authentication = tokenProvider.getAuthentication(token);
-
-            Long timeout = 1000 * 60 * 10L; //10분
+    public ResponseEntity<SseEmitter> connectChatList(@AuthenticationPrincipal User user) {
+            Long timeout = 1000 * 60 * 3L; //3분
             // 연결
-            String id = sseEmitterService.connect(SseType.CHAT_LIST, authentication.getName(), timeout);
+            String id = sseEmitterService.connect(SseType.CHAT_LIST, user.getUsername(), timeout);
             SseEmitterDTO findEmitter = sseEmitterRepository.findByEmitterId(id);
 
             // redis에 현재 사용자의 입장중인 방 목록 저장
-            chatRoomService.addJoinedRoomListToRedis(authentication.getName());
+            chatRoomService.addJoinedRoomListToRedis(user.getUsername());
 
             return ResponseEntity.ok(findEmitter.getSseEmitter());
-        } else {
-            throw new CustomException(ACCESS_DENIED);
-        }
     }
 }
