@@ -45,7 +45,7 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom{
                 .join(chatMessage.member, member)
                 .where(chatMessage.chatRoom.id.eq(roomId),
                         chatMessage.readOrNot.eq(false),
-                        chatMessage.member.loginId.eq(loginId))
+                        chatMessage.member.loginId.ne(loginId))
                 .fetchFirst();
 
         return fetchOne != null;
