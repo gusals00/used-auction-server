@@ -58,7 +58,9 @@ public class ChatRoomService {
                 .orElseThrow(() -> new CustomException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
 
         // 채팅방 접속인원 증가
-        chatRoom.addUserCount();
+        if(chatRoom.getUserCount() < 2) {
+            chatRoom.addUserCount();
+        }
 
         // 메세지 읽음표시로 바꾸기
         chatMessageRepository.updateMessages(loginId, roomId);
