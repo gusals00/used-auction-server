@@ -87,7 +87,7 @@ public class ProductController {
 
         // 현재 시간 기준 2일 뒤부터 경매 종료 날짜 가능
         LocalDateTime minPossibleEndTime = LocalDateTime.now().plusDays(2);
-        if (minPossibleEndTime.isBefore(registerReq.getAuctionEndDate())) {
+        if (!registerReq.getAuctionEndDate().isAfter(minPossibleEndTime)) {
             throw new CustomException(BindingErrorCode.POSSIBLE_REGISTER_END_TIME);
         }
 
@@ -128,7 +128,7 @@ public class ProductController {
 
         // 현재 시간 기준 4시간 이후부터 경매 종료 날짜로 수정 가능
         LocalDateTime minPossibleEndTime = LocalDateTime.now().plusHours(4);
-        if (minPossibleEndTime.isBefore(updateReq.getAuctionEndDate())) {
+        if (!updateReq.getAuctionEndDate().isAfter(minPossibleEndTime)) {
             throw new CustomException(BindingErrorCode.POSSIBLE_UPDATE_END_TIME);
         }
 

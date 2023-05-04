@@ -166,7 +166,12 @@ public class ProductService {
         findProduct.changeProduct(updateReq.getProductName(), updateReq.getInfo(), category);
         auction.changeAuction(updateReq.getStartPrice(), updateReq.getPriceUnit(), updateReq.getAuctionEndDate());
 
-        auctionEndRepository.add(auction.getId(), updateReq.getAuctionEndDate());
+        // 변경된 경매 종료 날짜가 현재시간 ~ 24시간 이내의 날짜일 경우 auctionEndRepository에 저장
+        LocalDateTime endDate = LocalDateTime.now().plusDays(1);
+        if (updateReq.getAuctionEndDate().isBefore(endDate)) {
+            auctionEndRepository.add(auction.getId(), updateReq.getAuctionEndDate());
+            log.info("수정된 경매 종료 날짜가 24시간 이내의 날짜로 변경,  변경 날짜 : {}", updateReq.getAuctionEndDate());
+        }
         return findProduct.getId();
     }
 
