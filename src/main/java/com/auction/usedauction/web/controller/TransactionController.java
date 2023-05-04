@@ -61,6 +61,16 @@ public class TransactionController {
         return new ResultRes<>(new MessageRes("거래 확정되었습니다."));
     }
 
+    @GetMapping("/status")
+    @Operation(summary = "거래 확정시 거래 상태 기준")
+    public ResultRes<List<StatusTypeRes>> getTransStatus() {
+        return new ResultRes<>(Arrays
+                .stream(TransStatus.values())
+                .filter(transStatus -> transStatus != TransStatus.TRANS_BEFORE)
+                .map(StatusTypeRes::new)
+                .collect(toList()));
+    }
+
     private void banUser(Long memberId, MemberType memberType) {
         try {
             auctionHistoryService.banMember(memberId);
@@ -70,16 +80,6 @@ public class TransactionController {
             // 구매자가 존재하지 않습니다 구매자 ID = {}
             log.error(memberType.name + "가 존재하지 않습니다. " + memberType.name + "= {}", memberId);
         }
-    }
-
-    @GetMapping("/status")
-    @Operation(summary = "거래 확정시 거래 상태 기준")
-    public ResultRes<List<StatusTypeRes>> getTransStatus() {
-        return new ResultRes<>(Arrays
-                .stream(TransStatus.values())
-                .filter(transStatus -> transStatus != TransStatus.TRANS_BEFORE)
-                .map(StatusTypeRes::new)
-                .collect(toList()));
     }
 
     @Getter

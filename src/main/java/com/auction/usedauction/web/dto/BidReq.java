@@ -1,6 +1,7 @@
 package com.auction.usedauction.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import lombok.Setter;
 public class BidReq {
 
     @NotNull
+    @Min(1)
     @Schema(description = "경매 ID", example = "1")
     Integer bidPrice;
 }

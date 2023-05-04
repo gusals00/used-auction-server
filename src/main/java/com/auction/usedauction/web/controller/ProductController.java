@@ -71,20 +71,6 @@ public class ProductController {
                 .collect(toList()));
     }
 
-    @Getter
-    @Setter
-    static class OrderByRes {
-        @Schema(description = "정렬 기준(orderBy)", example = "VIEW_ORDER")
-        private String name;
-        @Schema(description = "설명", example = "조회순")
-        private String description;
-
-        public OrderByRes(ProductOrderCond orderCond) {
-            this.name = orderCond.name();
-            this.description = orderCond.getDescription();
-        }
-    }
-
     @Operation(summary = "상품 등록 메서드")
     @PostMapping
     public ResultRes<MessageRes> registerProduct(@Valid ProductRegisterReq registerReq, @AuthenticationPrincipal User user) {
@@ -101,39 +87,6 @@ public class ProductController {
         AuctionRegisterDTO auctionRegisterDTO = new AuctionRegisterDTO(registerReq.getAuctionEndDate(), registerReq.getStartPrice(), registerReq.getPriceUnit());
         productService.register(productRegisterDTO, auctionRegisterDTO);
         return new ResultRes<>(new MessageRes("상품 등록 성공"));
-    }
-
-    private List<UploadFileDTO> uploadOrdinalImages(ProductRegisterReq registerReq) {
-
-        List<UploadFileDTO> uploadOrdinalFileDTOS;
-
-        if (isEmptyImgList(registerReq.getImgList())) {// 일반 사진들이 없으면 대표사진을 일반 사진에 저장
-            List<MultipartFile> imgList = new ArrayList<>();
-            imgList.add(registerReq.getSigImg());
-            uploadOrdinalFileDTOS = fileUploader.uploadFiles(imgList, FileSubPath.PRODUCT_IMG_PATH);
-        } else { // 일반 사진이 있는 경우
-            uploadOrdinalFileDTOS = fileUploader.uploadFiles(registerReq.getImgList(), FileSubPath.PRODUCT_IMG_PATH);
-        }
-
-        return uploadOrdinalFileDTOS;
-    }
-
-    private boolean isEmptyImgList(List<MultipartFile> multipartFileList) {
-        if (multipartFileList == null) { // 리스트가 null인 경우
-            return true;
-        }
-        for (MultipartFile multipartFile : multipartFileList) {
-            if (fileUploader.isEmptyFile(multipartFile)) { // multipartFile이 empty인 경우
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private ProductSearchCondDTO createProductSearchCond(ProductSearchCondReq searchCondReq) {
-        Long categoryId = searchCondReq.getCategoryId() == 0 ? null : searchCondReq.getCategoryId();
-        return new ProductSearchCondDTO(categoryId, searchCondReq.getProductName(), searchCondReq.getOrderBy());
     }
 
     @Operation(summary = "상품 상세 조회 메서드")
@@ -177,6 +130,39 @@ public class ProductController {
         return new ResultRes<>(productQueryService.getProductUpdateInfo(productId, user.getUsername()));
     }
 
+    private List<UploadFileDTO> uploadOrdinalImages(ProductRegisterReq registerReq) {
+
+        List<UploadFileDTO> uploadOrdinalFileDTOS;
+
+        if (isEmptyImgList(registerReq.getImgList())) {// 일반 사진들이 없으면 대표사진을 일반 사진에 저장
+            List<MultipartFile> imgList = new ArrayList<>();
+            imgList.add(registerReq.getSigImg());
+            uploadOrdinalFileDTOS = fileUploader.uploadFiles(imgList, FileSubPath.PRODUCT_IMG_PATH);
+        } else { // 일반 사진이 있는 경우
+            uploadOrdinalFileDTOS = fileUploader.uploadFiles(registerReq.getImgList(), FileSubPath.PRODUCT_IMG_PATH);
+        }
+
+        return uploadOrdinalFileDTOS;
+    }
+
+    private boolean isEmptyImgList(List<MultipartFile> multipartFileList) {
+        if (multipartFileList == null) { // 리스트가 null인 경우
+            return true;
+        }
+        for (MultipartFile multipartFile : multipartFileList) {
+            if (fileUploader.isEmptyFile(multipartFile)) { // multipartFile이 empty인 경우
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private ProductSearchCondDTO createProductSearchCond(ProductSearchCondReq searchCondReq) {
+        Long categoryId = searchCondReq.getCategoryId() == 0 ? null : searchCondReq.getCategoryId();
+        return new ProductSearchCondDTO(categoryId, searchCondReq.getProductName(), searchCondReq.getOrderBy());
+    }
+
     private boolean isEmptyMultipartFileList(List<MultipartFile> fileList) {
         if (fileList == null) {
             return true;
@@ -192,5 +178,19 @@ public class ProductController {
 
     private boolean isEmptyMultipartFile(MultipartFile file) {
         return (file == null) || (file.isEmpty());
+    }
+
+    @Getter
+    @Setter
+    static class OrderByRes {
+        @Schema(description = "정렬 기준(orderBy)", example = "VIEW_ORDER")
+        private String name;
+        @Schema(description = "설명", example = "조회순")
+        private String description;
+
+        public OrderByRes(ProductOrderCond orderCond) {
+            this.name = orderCond.name();
+            this.description = orderCond.getDescription();
+        }
     }
 }

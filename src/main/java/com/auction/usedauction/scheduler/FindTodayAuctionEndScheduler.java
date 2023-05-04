@@ -29,6 +29,7 @@ public class FindTodayAuctionEndScheduler {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startDate = now.withHour(23).withMinute(55).withSecond(0);
         LocalDateTime endDate = startDate.plusDays(1).withMinute(59).withSecond(59);
+        auctionEndRepository.clearAll();
         auctionEndRepository.add(auctionQueryRepository.findIdAndEndDateByDate(startDate, endDate));
     }
 }

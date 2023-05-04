@@ -39,7 +39,7 @@ public class ProductUpdateReq {
     @Schema(description = "경매 종료 날짜", example = "2022-12-11 12:01")
     private LocalDateTime auctionEndDate;
 
-    @Min(100)
+    @Min(1000)
     @NotNull
     @Schema(description = "시작가격", example = "10000")
     private int startPrice;
