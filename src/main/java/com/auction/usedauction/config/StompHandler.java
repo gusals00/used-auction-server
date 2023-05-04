@@ -50,8 +50,6 @@ public class StompHandler implements ChannelInterceptor {
             log.info("SUBSCRIBE 호출");
             Long roomId = Long.valueOf(getRoomId((String) message.getHeaders().get("simpDestination"))); // 채팅방 아이디 가져오기
 
-            chatRoomService.enterRoom(roomId, accessor.getUser().getName()); // 채팅방 입장 처리
-
             Map<String, Object> sessionAttributes = accessor.getSessionAttributes(); // 웹소켓 세션에 채팅방 아이디 저장
             sessionAttributes.put(accessor.getSessionId(), roomId);
             accessor.setSessionAttributes(sessionAttributes);
