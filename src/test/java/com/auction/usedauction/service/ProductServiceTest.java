@@ -37,8 +37,6 @@ class ProductServiceTest {
     @Autowired
     private ProductService productService;
     @Autowired
-    private AuthorityRepository authorityRepository;
-    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private CategoryRepository categoryRepository;
@@ -223,7 +221,7 @@ class ProductServiceTest {
     }
 
     @Test
-    @DisplayName("상품 삭제 실패, 입찰중일 때 입찰 기록이 있는 경우/낙찰 성공 상태인 경우")
+    @DisplayName("상품 삭제 실패, 입찰상태일 때 입찰 기록이 있는 경우/입찰 상태가 아닌 경우")
     void deleteFail2() throws Exception {
         //given
         // 사진 등록
@@ -265,10 +263,10 @@ class ProductServiceTest {
         assertThatThrownBy(() -> productService.deleteProduct(savedId1, findMember.getLoginId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(AuctionHistoryErrorCode.EXIST_AUCTION_HISTORY.getMessage());
-
+        // 입찰 상태가 아닌 경우
         assertThatThrownBy(() -> productService.deleteProduct(savedId2, findMember.getLoginId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(AuctionErrorCode.INVALID_DELETE_AUCTION_STATUS_SUCCESSFUL_BID.getMessage());
+                .hasMessage(AuctionErrorCode.INVALID_DELETE_AUCTION_STATUS.getMessage());
     }
 
     @Test
