@@ -9,6 +9,7 @@ import com.auction.usedauction.exception.error_code.*;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.CategoryRepository;
 import com.auction.usedauction.repository.MemberRepository;
+import com.auction.usedauction.repository.auction_end.AuctionEndRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
@@ -47,6 +48,7 @@ public class ProductService {
     private final FileRepository fileRepository;
     private final S3FileUploader fileUploader;
     private final AuctionRepository auctionRepository;
+    private final AuctionEndRepository auctionEndRepository;
 
     @Transactional
     public Long register(ProductRegisterDTO productRegisterDTO, AuctionRegisterDTO auctionRegisterDTO) {
@@ -105,26 +107,25 @@ public class ProductService {
         return findProduct.getId();
     }
 
-    // 삭제 가능한 경우인지
-    private void isValidAuctionDeleteStatus(Auction auction) {
-        //상태가 낙찰성공인 경우는 삭제 불가능(거래성공,거래 실패, 낙찰 실패때는 삭제 가능)
-        if (auction.getStatus() == AuctionStatus.SUCCESS_BID) {
-            throw new CustomException(AuctionErrorCode.INVALID_DELETE_AUCTION_STATUS_SUCCESSFUL_BID);
+    private void isValidAuctionUpdateStatus(Auction auction) {
+        // 경매 상태가 입찰이 아닌 경우에는 상품 변경/삭제 불가능
+        if (!isAuctionStatusEq(auction, AuctionStatus.BID)) {
+            throw new CustomException(AuctionErrorCode.INVALID_UPDATE_AUCTION_STATUS);
         }
 
-        //상품이 입찰 상태일 때는 입찰 기록이 없는 경우만 가능
+        //입찰 기록이 없는 경우만 가능
         if (hasAuctionHistoryWhenBidding(auction)) {
             throw new CustomException(AuctionHistoryErrorCode.EXIST_AUCTION_HISTORY);
         }
     }
 
-    private void isValidAuctionUpdateStatus(Auction auction) {
-        // 경매 상태가 입찰이 아닌 경우에는 상품 변경 불가능
-        if (auction.getStatus() != AuctionStatus.BID) {
-            throw new CustomException(AuctionErrorCode.INVALID_UPDATE_AUCTION_STATUS);
+    private void isValidAuctionDeleteStatus(Auction auction) {
+        // 경매 상태가 입찰이 아닌 경우에는 상품 변경/삭제 불가능
+        if (!isAuctionStatusEq(auction, AuctionStatus.BID)) {
+            throw new CustomException(AuctionErrorCode.INVALID_DELETE_AUCTION_STATUS);
         }
 
-        //입찰 기록이 없는 경우만 변경 가능
+        //입찰 기록이 없는 경우만 가능
         if (hasAuctionHistoryWhenBidding(auction)) {
             throw new CustomException(AuctionHistoryErrorCode.EXIST_AUCTION_HISTORY);
         }
@@ -133,6 +134,10 @@ public class ProductService {
     //상품이 입찰 상태일 때 입찰 기록이 있는지
     private boolean hasAuctionHistoryWhenBidding(Auction auction) {
         return auction.getStatus() == AuctionStatus.BID && auctionHistoryRepository.countByAuction(auction) > 0;
+    }
+
+    private boolean isAuctionStatusEq(Auction auction, AuctionStatus status) {
+        return auction.getStatus() == status;
     }
 
     @Transactional
@@ -153,7 +158,6 @@ public class ProductService {
         //수정하려는 판매자가 올바른 판매자인지(상품 등록자가 맞는지 + 상품 등록자 상태가 EXIST 인지)
         validRightSeller(findProduct, loginId);
 
-
         //사진수정
         updateOrdinalImage(findProduct, updateReq.getImgList());
         updateSigImage(findProduct, updateReq.getSigImg());
@@ -162,6 +166,12 @@ public class ProductService {
         findProduct.changeProduct(updateReq.getProductName(), updateReq.getInfo(), category);
         auction.changeAuction(updateReq.getStartPrice(), updateReq.getPriceUnit(), updateReq.getAuctionEndDate());
 
+        // 변경된 경매 종료 날짜가 현재시간 ~ 24시간 이내의 날짜일 경우 auctionEndRepository에 저장
+        LocalDateTime endDate = LocalDateTime.now().plusDays(1);
+        if (updateReq.getAuctionEndDate().isBefore(endDate)) {
+            auctionEndRepository.add(auction.getId(), updateReq.getAuctionEndDate());
+            log.info("수정된 경매 종료 날짜가 24시간 이내의 날짜로 변경,  변경 날짜 : {}", updateReq.getAuctionEndDate());
+        }
         return findProduct.getId();
     }
 
