@@ -2,6 +2,7 @@ package com.auction.usedauction.web.controller;
 
 
 import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.BindingErrorCode;
 import com.auction.usedauction.exception.error_code.FileErrorCode;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
@@ -28,6 +29,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -83,6 +85,12 @@ public class ProductController {
         // 일반 사진 s3에 저장
         List<UploadFileDTO> uploadOrdinalFileDTOS = uploadOrdinalImages(registerReq);
 
+        // 현재 시간 기준 2일 뒤부터 경매 종료 날짜 가능
+        LocalDateTime minPossibleEndTime = LocalDateTime.now().plusDays(2);
+        if (minPossibleEndTime.isBefore(registerReq.getAuctionEndDate())) {
+            throw new CustomException(BindingErrorCode.POSSIBLE_REGISTER_END_TIME);
+        }
+
         ProductRegisterDTO productRegisterDTO = new ProductRegisterDTO(registerReq, uploadSigFileDTO, uploadOrdinalFileDTOS, user.getUsername());
         AuctionRegisterDTO auctionRegisterDTO = new AuctionRegisterDTO(registerReq.getAuctionEndDate(), registerReq.getStartPrice(), registerReq.getPriceUnit());
         productService.register(productRegisterDTO, auctionRegisterDTO);
@@ -118,8 +126,14 @@ public class ProductController {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
         }
 
+        // 현재 시간 기준 4시간 이후부터 경매 종료 날짜로 수정 가능
+        LocalDateTime minPossibleEndTime = LocalDateTime.now().plusHours(4);
+        if (minPossibleEndTime.isBefore(updateReq.getAuctionEndDate())) {
+            throw new CustomException(BindingErrorCode.POSSIBLE_UPDATE_END_TIME);
+        }
 
         productService.updateProduct(productId, updateReq, user.getUsername());
+
         return new ResultRes<>(new MessageRes("상품 수정을 성공했습니다."));
     }
 
