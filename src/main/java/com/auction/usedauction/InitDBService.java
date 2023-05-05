@@ -117,11 +117,15 @@ public class InitDBService {
         Authority authority = createAuthority("ROLE_USER");
         em.persist(authority);
 
-        Member member1 = createMember("현민", "990828", "a111@naver.com", "hyeonmin", "password", "010-1233-1233", authority);
-        Member member2 = createMember("병관", "990128", "ab@naver.com", "11", "11", "010-2222-3333", authority);
-        Member member3 = createMember("대현", "990428", "addd@naver.com", "20180004", "1128", "010-4444-8888", authority);
+        Member member1 = createMember("김현민", "990828", "hyeonmin@kumoh.ac.kr", "hyeonmin", "password", "010-1233-1233", authority);
+        Member member2 = createMember("강병관", "990128", "bkKang@kumoh.ac.kr", "11", "11", "010-2222-3333", authority);
+        Member member3 = createMember("강대현", "961128", "daehyeon1128@kumoh.ac.kr", "20180004", "1128", "010-4444-8888", authority);
+        Member member4 = createMember("성호창", "990622", "hoChang@kumoh.ac.kr", "20180584", "tjdghckd11", "010-1444-8848", authority);
+        Member member5 = createMember("여시철", "990428", "sisisi12@kumoh.ac.kr", "20185444", "tlcjf11", "010-4443-4888", authority);
+        Member member6 = createMember("권성수", "990128", "sungsu@kumoh.ac.kr", "20180022", "tjdtn11", "010-4243-4838", authority);
+        Member member7 = createMember("김광민", "990124", "kwnagmin@kumoh.ac.kr", "kwangmin", "rhkdals11", "010-1243-1838", authority);
 
-        memberRepository.saveAll(Arrays.asList(member1, member2, member3));
+        memberRepository.saveAll(Arrays.asList(member1, member2, member3,member4,member5,member6,member7));
     }
 
     private void insertChatRoomsAndMessages() {
@@ -154,6 +158,10 @@ public class InitDBService {
         Member member1 = memberRepository.findByLoginId("hyeonmin").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Member member2 = memberRepository.findByLoginId("11").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Member member3 = memberRepository.findByLoginId("20180004").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member member4 = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member member5 = memberRepository.findByLoginId("20185444").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member member6 = memberRepository.findByLoginId("20180022").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member member7 = memberRepository.findByLoginId("kwangmin").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         LocalDateTime now = LocalDateTime.now().withSecond(0);
         log.info("회원 저장 완료");
@@ -161,6 +169,10 @@ public class InitDBService {
         Category bookCategory = categoryRepository.findCategoryByName("도서").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         Category ticketCategory = categoryRepository.findCategoryByName("티켓/교환권").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         Category digitalCategory = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Category appliancesCategory = categoryRepository.findCategoryByName("생활가전").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Category furnitureCategory = categoryRepository.findCategoryByName("가구/인테리어").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Category gameCategory = categoryRepository.findCategoryByName("취미/게임/음반").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+
         log.info("카테고리 저장 완료");
 
 
@@ -240,10 +252,46 @@ public class InitDBService {
         findProduct7.getAuction().changeBuyerStatus(TransStatus.TRANS_COMPLETE);
         findProduct7.getAuction().changeSellerStatus(TransStatus.TRANS_COMPLETE);
 
-        Product findProduct8 = insertProduct("기초를 탄탄히 세워주는 컴퓨터 사이언스 중고 팝니다", "밑줄 약간 있습니다.", bookCategory.getId(),  now.minusDays(7), now.plusMinutes(5), 20000, 1000,
-                "8_1.jpg", Arrays.asList("8_2.jpg"), member3.getLoginId(), 50);
+        Product findProduct8 = insertProduct("기초를 탄탄히 세워주는 컴퓨터 사이언스 중고 팝니다", "밑줄 약간 있습니다.", bookCategory.getId(),  now.minusDays(7), now.plusDays(10), 20000, 1000,
+                "8_1.jpg", Arrays.asList("8_2.jpg"), member3.getLoginId(), 100);
 
         log.info("member3 상품 저장 완료");
+
+        //member4 상품 저장
+        //경매중
+        Product findProduct9 = insertProduct("다이슨 드라이기 팝니다", "한달 정도 사용했습니다.", appliancesCategory.getId(),  now.minusDays(7), now.plusDays(10), 300000, 10000,
+                "9_2.jpg", Arrays.asList("9_1.jpg"), member4.getLoginId(), 50);
+        Product findProduct10 = insertProduct("보다나 물결고데기 32mm", "2번밖에 사용 안했습니다.", appliancesCategory.getId(),  now.minusDays(7), now.plusDays(10), 50000, 1000,
+                "10_1.png", Arrays.asList("10_2.png","10_3.png","10_4.png"), member4.getLoginId(), 7);
+
+        //member5 상품 저장
+        //경매중
+        Product findProduct11 = insertProduct("데스커 데스크탑 책상 팝니다.", "이사가게 되서 팝니다. 2년 정도 된 상품입니다.", furnitureCategory.getId(),  now.minusDays(7), now.plusDays(10), 200000, 10000,
+                "11_1.jpg", Arrays.asList("11_2.jpg"), member5.getLoginId(), 2);
+        Product findProduct12 = insertProduct("미개봉) 허먼밀러 뉴에어론 라이트플러스, 그라파이트 (+헤드레스트)", "이사가게 되서 팝니다. 미개봉 상품입니다.", furnitureCategory.getId(),  now.minusDays(7), now.plusDays(12), 700000, 10000,
+                "12_1.jpg", Arrays.asList("12_1.jpg"), member5.getLoginId(), 7);
+
+        //member6 상품 저장
+        //경매중
+        Product findProduct13 = insertProduct("쿠첸 6인 밥솥 이유식밥솥 미니밥솥", "새상품 구매해서 아이 후기 이유식때 잠깐썼어요 ^^", furnitureCategory.getId(),  now.minusDays(2).withHour(13), now.plusDays(12), 35000, 3000,
+                "13_1.jpg", Arrays.asList("13_2.jpg","13_3.jpg"), member6.getLoginId(), 11);
+        Product findProduct14 = insertProduct("커피포트", "사용안하고 방치해서 사용감+물때많아요\n 세척해서 가지고사용하실분 가지고가세요", furnitureCategory.getId(),  now.minusDays(7).withMinute(20), now.plusDays(7), 35000, 3000,
+                "14_1.jpg", Arrays.asList("14_2.jpg","14_3.jpg"), member6.getLoginId(), 1);
+
+        //member7 상품 저장
+        //경매중
+        Product findProduct15 = insertProduct("카멜업 보드게임", "7월에 구입해서 3번 놀았습니다\n 그래서 손때 없고 비닐에 보관해서 깨끗합니다", gameCategory.getId(),  now.minusDays(1), now.plusDays(5), 10000, 2000,
+                "15_1.jpg", Arrays.asList("15_2.jpg","15_3.jpg"), member7.getLoginId(), 22);
+        Product findProduct16 = insertProduct("보드게임 시타델 판매합니다.", "시타델 샀는데 집에 보드게임이 너무 많아서 잘 안 해서 네놓아요. 한 두 번정도 했어요. 거의 새것입니다.", gameCategory.getId(),  now.minusDays(1), now.plusDays(5), 12000, 1000,
+                "16_1.jpg", Arrays.asList("16_2.jpg","16_3.jpg"), member7.getLoginId(), 3);
+        Product findProduct17 = insertProduct("(미개봉 새상품)Java의 정석 2nd Edition", "Java의 정석 2nd Edition\n 자바의 기초를 다지기 좋은 책으로,\n 제가 신입사원일 때, 보려고 샀었으나 교육을 받게되어 불용되어 내놓습니다.\n 자바의 기초를 다지실 분께서 가져가서 잘 쓰셨으면 좋겠습니다.\n미개봉품으로 새상품입니다.", bookCategory.getId(),  now.minusDays(1).withHour(2).withMinute(19), now.plusDays(3).withHour(11), 12000, 1000,
+                "17_1.jpg", Arrays.asList("17_2.jpg"), member7.getLoginId(), 17);
+        Product findProduct18 = insertProduct("코드로 배우는 스프링 웹 프로젝트", "코드로 배우는 스프링 웹 프로젝트 책 입니당\n사놓고 안열었어요.....^^;;;;;;", bookCategory.getId(),  now.minusDays(2).withHour(1).withMinute(50), now.plusDays(5).withHour(13), 18000, 2000,
+                "18_1.jpg", Arrays.asList("18_2.jpg","18_3.jpg","18_4.jpg"), member7.getLoginId(), 21);
+        Product findProduct19 = insertProduct("머신 러닝 교과서 with 파이썬, 사이킷런, 텐서플로", "볼려고 구했는데 해 볼시간이 없을 것 같아 판매합니다.\n새책입니다.", bookCategory.getId(),  now.minusDays(4).withHour(10).withMinute(50), now.plusDays(7).withHour(18).withMinute(30), 25000, 4000,
+                "19_1.jpg", Arrays.asList("19_2.jpg","19_3.jpg","19_4.jpg","19_5.jpg"), member7.getLoginId(), 16);
+        Product findProduct20 = insertProduct("리눅스의 바이블. 리눅스 실전가이드 개정3판 팔아요~", "리눅스책의 바이블 리눅스 실전가이드 판매합니다\n공부하려고 샀는데 프론트엔드 일을 하다보니 볼시간이 없네요 ㅎㅎ\n보시다시피 딱 한번 펼쳐본 새책입니다.", bookCategory.getId(),  now.minusDays(4).withHour(17).withMinute(40), now.plusDays(6).withHour(15).withMinute(23), 29000, 1000,
+                "20_1.jpg", Arrays.asList("20_2.jpg","20_3.jpg","20_4.jpg"), member7.getLoginId(), 16);
     }
 
     private AuctionHistory bidAuction(Long auctionId, int bidPrice, String memberLoginId, LocalDateTime bidDate) {
