@@ -3,6 +3,7 @@ package com.auction.usedauction.config;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.security.TokenProvider;
 import com.auction.usedauction.service.ChatRoomService;
+import com.auction.usedauction.service.SseEmitterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -27,6 +28,7 @@ public class StompHandler implements ChannelInterceptor {
 
     private final TokenProvider tokenProvider;
     private final ChatRoomService chatRoomService;
+    private final SseEmitterService sseEmitterService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -49,6 +51,8 @@ public class StompHandler implements ChannelInterceptor {
         } else if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
             log.info("SUBSCRIBE 호출");
             Long roomId = Long.valueOf(getRoomId((String) message.getHeaders().get("simpDestination"))); // 채팅방 아이디 가져오기
+
+            sseEmitterService.sendRoomEnterData(roomId, accessor.getUser().getName()); // 입장한 채팅방에 안읽은 메세지 존재하면 데이터 전송
 
             Map<String, Object> sessionAttributes = accessor.getSessionAttributes(); // 웹소켓 세션에 채팅방 아이디 저장
             sessionAttributes.put(accessor.getSessionId(), roomId);
