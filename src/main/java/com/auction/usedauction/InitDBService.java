@@ -12,6 +12,8 @@ import com.auction.usedauction.repository.chat.ChatRoomRepository;
 import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.repository.query.AuctionQueryRepository;
+import com.auction.usedauction.scheduler.EndOfAuctionBidScheduler;
+import com.auction.usedauction.scheduler.TransCompleteScheduler;
 import com.auction.usedauction.service.AuctionHistoryService;
 import com.auction.usedauction.service.AuctionService;
 import com.auction.usedauction.service.ProductService;
@@ -61,7 +63,8 @@ public class InitDBService {
     private final AuctionEndRepository auctionEndRepository;
     private final AuctionQueryRepository auctionQueryRepository;
     private final AuctionService auctionService;
-
+    private final EndOfAuctionBidScheduler endOfAuctionBidScheduler;
+    private final TransCompleteScheduler transCompleteScheduler;
     @Value("${INIT_FILE_PATH}")
     private String filePath;
 
@@ -84,8 +87,11 @@ public class InitDBService {
     }
 
     public void initScheduler() {
+        //로딩 시점에 내일 경매 종료되는 경매 저장
         initTodayAuctionEnd();
-        endOfAuctionBid();
+        //현재 시간 기준으로 경매 종료시 경매 상태를 변경
+        endOfAuctionBidScheduler.changeAuctionStatusToAuctionEndStatuses();
+        transCompleteScheduler.checkTransCompleteAndBan();
     }
 
     private void initTodayAuctionEnd() {
@@ -93,11 +99,6 @@ public class InitDBService {
         LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = startDate.plusDays(1).withMinute(59).withSecond(59);
         auctionEndRepository.add(auctionQueryRepository.findIdAndEndDateByDate(startDate, endDate));
-    }
-
-    private void endOfAuctionBid() {
-        //현재 시간 기준으로 경매 종료시 경매 상태를 변경
-        auctionHistoryService.changeAuctionStatusToAuctionEndStatuses(LocalDateTime.now());
     }
 
     private void insertQuestions() {

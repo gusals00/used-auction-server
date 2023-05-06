@@ -83,16 +83,6 @@ public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryReposit
                 .fetchOne();
     }
 
-    // SUCCESSFUL_BID 상태로 변경할 경매내역 id 리스트 조회
-//    public List<Long> findAuctionHistoryIdForChangeStatus(List<Long> auctionIds) {
-//        return queryFactory.select(auctionHistory.id)
-//                .from(auctionHistory)
-//                .where(auctionHistory.auction.id.in(auctionIds))
-//                .groupBy(auctionHistory.auction.id)
-//                .having(auctionHistory.bidPrice.eq(auctionHistory.bidPrice.max()))
-//                .fetch();
-//    }
-
     private BooleanExpression sellerOrBuyerIdEq(Long memberId, QMember buyer, QMember seller) {
         return memberIdEq(memberId, buyer).or(memberIdEq(memberId, seller));
     }

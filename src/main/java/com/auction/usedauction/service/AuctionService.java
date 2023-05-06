@@ -15,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.auction.usedauction.domain.TransStatus.*;
 
@@ -52,6 +54,19 @@ public class AuctionService {
 
         // 판매자, 구매자 거래 상태 확인 후 경매 상태 변경
         changeAuctionTrans(auction);
+    }
+
+    @Transactional
+    public List<Long> changeBulkAuctionMemberTransAndAuctionStatus(LocalDateTime criteriaTime) {
+        // 낙찰 후 1주일이 경과되었지만 거래 확정이 되지 않은 경매 id 조회
+        List<Long> findAuctionIds = auctionRepository.findSuccessButNotTransIdByDate(criteriaTime);
+
+        // 판매자,구매자 거래 상태가 TRANS_BEFORE 상태를 TRANS_COMPLETE 변경
+        auctionRepository.updateAuctionBuyerTransStatus(TransStatus.TRANS_BEFORE, TransStatus.TRANS_COMPLETE, findAuctionIds);
+        auctionRepository.updateAuctionSellerTransStatus(TransStatus.TRANS_BEFORE, TransStatus.TRANS_COMPLETE, findAuctionIds);
+        // 거래 상태에 따른 경매 상태 변경
+        auctionRepository.updateAuctionStatusByTransStatusConfirm(findAuctionIds);
+        return findAuctionIds;
     }
 
     private void validAuctionStatus(AuctionStatus status) {
