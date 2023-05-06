@@ -41,8 +41,6 @@ public class ChatMessageController {
         if(messageDTO.getType().equals(MessageType.ENTER)) { // 입장 메세지
             messageDTO.setMessage(messageDTO.getSender());
 
-            sseEmitterService.sendRoomEnterData(messageDTO.getChatRoomId(), principal.getName()); // 입장한 채팅방에 안읽은 메세지 존재하면 데이터 전송
-
             chatRoomService.enterRoom(messageDTO.getChatRoomId(), principal.getName()); // 채팅방 입장 처리
 
         } else if(messageDTO.getType().equals(MessageType.TALK)){ // 대화 메세지
