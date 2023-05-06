@@ -3,6 +3,7 @@ package com.auction.usedauction.repository.auction;
 import com.auction.usedauction.domain.Auction;
 
 import com.auction.usedauction.domain.AuctionStatus;
+import com.auction.usedauction.domain.TransStatus;
 import com.auction.usedauction.repository.dto.AuctionIdAndBidCountDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,6 +24,20 @@ public interface AuctionRepository extends JpaRepository<Auction, Long>, Auction
     @Modifying(clearAutomatically = true)
     @Query(value = "update auction a set a.status = :#{#status.name()} where a.auction_id in (:auction_ids)", nativeQuery = true)
     int updateAuctionStatus(@Param("status") AuctionStatus auctionStatus, @Param("auction_ids") List<Long> auctionIdList);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE auction a SET a.buyer_trans_status = :#{#toStatus.name()} WHERE a.auction_id in(:auction_ids) and a.buyer_trans_status = :#{#fromStatus.name()}", nativeQuery = true)
+    int updateAuctionBuyerTransStatus(@Param("fromStatus") TransStatus targetStatus,@Param("toStatus") TransStatus changeStatus, @Param("auction_ids") List<Long> auctionIdList);
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE auction a SET a.seller_trans_status = :#{#toStatus.name()} WHERE a.auction_id in(:auction_ids) and a.seller_trans_status = :#{#fromStatus.name()}", nativeQuery = true)
+    int updateAuctionSellerTransStatus(@Param("fromStatus") TransStatus targetStatus,@Param("toStatus") TransStatus changeStatus, @Param("auction_ids") List<Long> auctionIdList);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value =
+            "UPDATE auction a " +
+            "SET a.status = IF(a.buyer_trans_status = 'TRANS_COMPLETE' and a.seller_trans_status = 'TRANS_COMPLETE', 'TRANSACTION_OK', 'TRANSACTION_FAIL') " +
+            "WHERE a.auction_id in(:auction_ids) ", nativeQuery = true)
+    int updateAuctionStatusByTransStatusConfirm(@Param("auction_ids") List<Long> auctionIdList);
 
     // 경매 상태, 시간 기준으로 auctionId, 입찰 수 리턴
     @Query(value =

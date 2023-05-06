@@ -3,9 +3,10 @@ package com.auction.usedauction.repository.auction;
 import com.auction.usedauction.domain.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.auction.usedauction.domain.QAuction.*;
@@ -26,6 +27,14 @@ public class AuctionRepositoryImpl implements AuctionRepositoryCustom {
                         .where(auctionIdEq(auctionId), auctionStatusEq(AuctionStatus.BID))
 //                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne());
+    }
+
+    @Override
+    public List<Long> findSuccessButNotTransIdByDate(LocalDateTime date) {
+        return queryFactory.select(auction.id)
+                .from(auction)
+                .where(auctionStatusEq(AuctionStatus.SUCCESS_BID),auction.auctionEndDate.after(date))
+                .fetch();
     }
 
     private BooleanExpression auctionIdEq(Long auctionId) {
