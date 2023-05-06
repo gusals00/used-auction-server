@@ -256,6 +256,69 @@ class AuctionServiceTest {
                 .hasMessage(AuctionErrorCode.AUCTION_NOT_FOUND.getMessage());
     }
 
+    @Test
+    @DisplayName("회원 거래 확정 실패, 변경하려는 상태 파라미터가 올바르지 않은 경우/이미 거래 확정이 종료된 경매인 경우")
+    void transConfirmFail2() throws Exception {
+        //given
+        Member seller = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer1 = memberRepository.findByLoginId("20180211").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer2 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member invalidMember = memberRepository.findByLoginId("20180592").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        Category findCategory1 = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Auction auction1 = createAuction(LocalDateTime.now().plusDays(4), 14000, 1000);
+        Auction auction2 = createAuction(LocalDateTime.now().plusDays(3), 20000, 1000);
+        Auction auction3 = createAuction(LocalDateTime.now().plusDays(3), 20000, 1000);
+
+
+        Product product1 = createProduct("상품 거래1", "상품 거래 입니다1", seller, findCategory1, auction1);
+        Product product2 = createProduct("상품 거래2", "상품 거래 입니다2", seller, findCategory1, auction2);
+        Product product3 = createProduct("상품 거래3", "상품 거래 입니다3", seller, findCategory1, auction3);
+
+
+        auctionRepository.saveAll(Arrays.asList(auction1, auction2,auction3));
+        productRepository.saveAll(Arrays.asList(product1, product2,product3));
+
+        // 입찰 내역 추가
+        AuctionHistory auctionHistory1 = createAuctionHistory(auction1, 15000, buyer1);
+        AuctionHistory auctionHistory2 = createAuctionHistory(auction2, 21000, buyer2);
+        AuctionHistory auctionHistory3 = createAuctionHistory(auction3, 21000, buyer1);
+
+        auctionHistoryRepository.saveAll(Arrays.asList(auctionHistory1, auctionHistory2,auctionHistory3));
+        // 경매에서 낙찰 상태로 변경
+        auction1.changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        auction2.changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        auction3.changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        // 입찰 내역에서 낙찰 상태로 변경
+        auctionHistory1.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        auctionHistory2.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        auctionHistory3.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+
+        //auction2 구매자가 거래 확정
+        auctionService.memberTransConfirm(auction2.getId(), buyer2.getLoginId(), TransStatus.TRANS_REJECT);
+
+        //auction3 구매자,판매자가 거래 확정
+        auctionService.memberTransConfirm(auction3.getId(), buyer1.getLoginId(), TransStatus.TRANS_REJECT);
+        auctionService.memberTransConfirm(auction3.getId(),seller.getLoginId(), TransStatus.TRANS_REJECT);
+
+        //then
+        //변경하려는 상태가 올바르지 않은 경우(파라미터 = TRANS_BEFORE)
+        assertThatThrownBy(() ->  auctionService.memberTransConfirm(auction1.getId(), seller.getLoginId(), TransStatus.TRANS_BEFORE))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(AuctionErrorCode.INVALID_CHANGE_TRANS.getMessage());
+        //구매자가 이미 거래 확정을 한 경우
+        assertThatThrownBy(() ->  auctionService.memberTransConfirm(auction2.getId(), buyer2.getLoginId(), TransStatus.TRANS_REJECT))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(AuctionErrorCode.ALREADY_USER_CHANGE_TRANS.getMessage());
+
+        //auction3 구매자, 판매자가 거래 확정을 하여 거래 확정이 모두 종료된 경우
+        assertThatThrownBy(() ->  auctionService.memberTransConfirm(auction3.getId(), buyer1.getLoginId(), TransStatus.TRANS_REJECT))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(AuctionErrorCode.ALREADY_AUCTION_TRANS_COMPLETE.getMessage());
+        assertThatThrownBy(() ->  auctionService.memberTransConfirm(auction3.getId(), seller.getLoginId(), TransStatus.TRANS_COMPLETE))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(AuctionErrorCode.ALREADY_AUCTION_TRANS_COMPLETE.getMessage());
+    }
     private AuctionHistory createAuctionHistory(Auction auction, int bidPrice, Member member) {
         return AuctionHistory.builder()
                 .auction(auction)

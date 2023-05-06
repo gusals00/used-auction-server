@@ -19,7 +19,7 @@ public interface AuctionRepository extends JpaRepository<Auction, Long>, Auction
     boolean existsAuctionByIdAndStatus(Long actionId, AuctionStatus auctionStatus);
 
     Optional<Auction> findAuctionByIdAndStatus(Long auctionId, AuctionStatus auctionStatus);
-
+    Optional<Auction> findAuctionByIdAndStatusIn(Long auctionId, List<AuctionStatus> status);
     @Modifying(clearAutomatically = true)
     @Query(value = "update auction a set a.status = :#{#status.name()} where a.auction_id in (:auction_ids)", nativeQuery = true)
     int updateAuctionStatus(@Param("status") AuctionStatus auctionStatus, @Param("auction_ids") List<Long> auctionIdList);

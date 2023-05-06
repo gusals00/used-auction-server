@@ -13,6 +13,7 @@ import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.repository.query.AuctionQueryRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
+import com.auction.usedauction.service.AuctionService;
 import com.auction.usedauction.service.ProductService;
 import com.auction.usedauction.service.QuestionService;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
@@ -59,6 +60,7 @@ public class InitDBService {
     private final ChatMessageRepository chatMessageRepository;
     private final AuctionEndRepository auctionEndRepository;
     private final AuctionQueryRepository auctionQueryRepository;
+    private final AuctionService auctionService;
 
     @Value("${INIT_FILE_PATH}")
     private String filePath;
@@ -177,24 +179,24 @@ public class InitDBService {
 
 
         //member1 상품 저장
-        Product findProduct1 = insertProduct("이것이 코딩 테스트다", "책 정보입니다", bookCategory.getId(), now.minusDays(4), now.minusDays(2), 10000, 2000,
+        Product findProduct1 = insertProduct("이것이 코딩 테스트다", "책 정보입니다", bookCategory.getId(), now.minusDays(14), now.minusDays(10), 10000, 2000,
                 "1_1.jpg", Arrays.asList("1_2.jpg", "1_3.jpg", "1_4.jpg"), member1.getLoginId(), 3);
         log.info("이것이 코딩 테스트다 저장 완료");
         log.info("sleeping-------------");
         // member3이 낙찰됨
-        AuctionHistory auctionHistory1 = bidAuction(findProduct1.getAuction().getId(), 20000, member3.getLoginId(), LocalDateTime.now().minusDays(3));
+        AuctionHistory auctionHistory1 = bidAuction(findProduct1.getAuction().getId(), 20000, member3.getLoginId(), LocalDateTime.now().minusDays(12));
         log.info("member3이 입찰");
         auctionHistory1.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
         findProduct1.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
         log.info("member3이 낙찰");
 
 
-        Product findProduct2 = insertProduct("한화 이글스 티켓", "티켓 정보입니다", ticketCategory.getId(), now.minusDays(7), now.minusDays(4), 100000, 20000,
+        Product findProduct2 = insertProduct("한화 이글스 티켓", "티켓 정보입니다", ticketCategory.getId(), now.minusDays(15), now.minusDays(9), 100000, 20000,
                 "2_1.jpg", Arrays.asList("2_2.jpg"), member1.getLoginId(), 10);
         //member3 입찰
-        bidAuction(findProduct2.getAuction().getId(), 120000, member3.getLoginId(), LocalDateTime.now().minusDays(6));
+        bidAuction(findProduct2.getAuction().getId(), 120000, member3.getLoginId(), LocalDateTime.now().minusDays(12));
         //member2 낙찰
-        AuctionHistory auctionHistory3 = bidAuction(findProduct2.getAuction().getId(), 140000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
+        AuctionHistory auctionHistory3 = bidAuction(findProduct2.getAuction().getId(), 140000, member2.getLoginId(), LocalDateTime.now().minusDays(10));
         auctionHistory3.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
         findProduct2.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
 
@@ -218,17 +220,17 @@ public class InitDBService {
         bidAuction(findProduct3.getAuction().getId(), 16000, member2.getLoginId(), LocalDateTime.now().plusDays(2));
 
         // 낙찰 실패
-        Product findProduct4 = insertProduct("객체지향의 사실과 오해2", "객체지향의 사실과 오해2 새책입니다.", bookCategory.getId(), now.minusDays(10), now.minusDays(4), 21000, 1000,
+        Product findProduct4 = insertProduct("객체지향의 사실과 오해2", "객체지향의 사실과 오해2 새책입니다.", bookCategory.getId(), now.minusDays(18), now.minusDays(16), 21000, 1000,
                 "5_1.jpg", Arrays.asList("5_2.jpg", "5_3.jpg"), member3.getLoginId(), 7);
         findProduct4.getAuction().changeAuctionStatus(AuctionStatus.FAIL_BID);
 
         // 낙찰 성공
-        Product findProduct5 = insertProduct("로지텍 마우스 팝니다1", "로지텍 마우스1고 상태 좋습니다.", digitalCategory.getId(), now.minusDays(10), now.minusDays(4), 22000, 1000,
+        Product findProduct5 = insertProduct("로지텍 마우스 팝니다1", "로지텍 마우스1고 상태 좋습니다.", digitalCategory.getId(), now.minusDays(10), now.minusDays(5), 22000, 1000,
                 "6_1.jpg", Arrays.asList("6_2.jpg"), member3.getLoginId(), 12);
         //member1 입찰
-        bidAuction(findProduct5.getAuction().getId(), 25000, member1.getLoginId(), LocalDateTime.now().minusDays(6));
+        bidAuction(findProduct5.getAuction().getId(), 25000, member1.getLoginId(), LocalDateTime.now().minusDays(7));
         //member2 낙찰
-        AuctionHistory auctionHistory4 = bidAuction(findProduct5.getAuction().getId(), 40000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
+        AuctionHistory auctionHistory4 = bidAuction(findProduct5.getAuction().getId(), 40000, member2.getLoginId(), LocalDateTime.now().minusDays(6));
         auctionHistory4.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
         findProduct5.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
 
@@ -238,9 +240,9 @@ public class InitDBService {
         //member2 낙찰/ 구매자가 거래 불발
         AuctionHistory auctionHistory5 = bidAuction(findProduct6.getAuction().getId(), 20000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
         auctionHistory5.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
-        findProduct6.getAuction().changeAuctionStatus(AuctionStatus.TRANSACTION_FAIL);
-        findProduct6.getAuction().changeBuyerStatus(TransStatus.TRANS_REJECT);
-        findProduct6.getAuction().changeSellerStatus(TransStatus.TRANS_COMPLETE);
+        findProduct6.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        auctionService.memberTransConfirm(findProduct6.getAuction().getId(),findProduct6.getMember().getLoginId(),TransStatus.TRANS_COMPLETE);
+        auctionService.memberTransConfirm(findProduct6.getAuction().getId(),member2.getLoginId(),TransStatus.TRANS_REJECT);
 
         // 거래성공
         Product findProduct7 = insertProduct("로지텍 마우스 팝니다3", "로지텍 마우스3고 상태 좋습니다.", digitalCategory.getId(),  now.minusDays(7), now.minusDays(1), 15000, 1000,
@@ -248,9 +250,9 @@ public class InitDBService {
         //member2 낙찰/ 거래 완료
         AuctionHistory auctionHistory6 = bidAuction(findProduct7.getAuction().getId(), 20000, member2.getLoginId(), LocalDateTime.now().minusDays(5));
         auctionHistory6.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
-        findProduct7.getAuction().changeAuctionStatus(AuctionStatus.TRANSACTION_OK);
-        findProduct7.getAuction().changeBuyerStatus(TransStatus.TRANS_COMPLETE);
-        findProduct7.getAuction().changeSellerStatus(TransStatus.TRANS_COMPLETE);
+        findProduct7.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        auctionService.memberTransConfirm(findProduct7.getAuction().getId(),findProduct7.getMember().getLoginId(),TransStatus.TRANS_COMPLETE);
+        auctionService.memberTransConfirm(findProduct7.getAuction().getId(),member2.getLoginId(),TransStatus.TRANS_COMPLETE);
 
         Product findProduct8 = insertProduct("기초를 탄탄히 세워주는 컴퓨터 사이언스 중고 팝니다", "밑줄 약간 있습니다.", bookCategory.getId(),  now.minusDays(7), now.plusDays(10), 20000, 1000,
                 "8_1.jpg", Arrays.asList("8_2.jpg"), member3.getLoginId(), 100);
