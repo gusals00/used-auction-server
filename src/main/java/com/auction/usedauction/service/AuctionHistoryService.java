@@ -10,9 +10,12 @@ import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.dto.AuctionIdAndBidCountDTO;
+import com.auction.usedauction.repository.dto.SellerAndBuyerIdDTO;
 import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import com.auction.usedauction.util.LockKey;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -70,6 +73,30 @@ public class AuctionHistoryService {
 
     }
 
+    @Transactional
+    public void banMemberByAuctionId(Long auctionId) {
+
+        boolean isTransFail = auctionRepository.existsAuctionByIdAndStatus(auctionId, AuctionStatus.TRANSACTION_FAIL);
+        if (isTransFail) {
+            SellerAndBuyerIdDTO sellerAndBuyerId = auctionHistoryQueryRepository.findSellerAndBuyerId(auctionId)
+                    .orElseThrow(() -> new CustomException(AuctionErrorCode.INVALID_AUCTION));
+            // 판매자 구매자를 밴 해야 하는지 확인
+            ban(sellerAndBuyerId.getSellerId(), MemberType.Seller);
+            ban(sellerAndBuyerId.getBuyerId(), MemberType.Buyer);
+
+        }
+    }
+
+    private void ban(Long memberId, MemberType memberType) {
+        try {
+            banMember(memberId);
+        } catch (CustomException e) {
+            e.printStackTrace();
+            // 판매자가 존재하지 않습니다 판매자 ID = {}
+            // 구매자가 존재하지 않습니다 구매자 ID = {}
+            log.error(memberType.name + "가 존재하지 않습니다. " + memberType.name + "= {}", memberId);
+        }
+    }
 
     @Transactional
     // 특정 횟수 이상 거래 거절시
@@ -186,5 +213,14 @@ public class AuctionHistoryService {
 
     private boolean isProductSeller(Product product, String loginId) {
         return product.getMember().getLoginId().equals(loginId);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    enum MemberType {
+        Buyer("판매자"),
+        Seller("구매자");
+
+        private final String name;
     }
 }

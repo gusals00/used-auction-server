@@ -1,12 +1,6 @@
 package com.auction.usedauction.web.controller;
 
-import com.auction.usedauction.domain.AuctionStatus;
 import com.auction.usedauction.domain.TransStatus;
-import com.auction.usedauction.exception.CustomException;
-import com.auction.usedauction.exception.error_code.AuctionErrorCode;
-import com.auction.usedauction.repository.auction.AuctionRepository;
-import com.auction.usedauction.repository.dto.SellerAndBuyerIdDTO;
-import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
 import com.auction.usedauction.service.AuctionService;
 import com.auction.usedauction.web.dto.MemberTransReq;
@@ -16,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -38,8 +31,6 @@ import static java.util.stream.Collectors.toList;
 public class TransactionController {
 
     private final AuctionService auctionService;
-    private final AuctionRepository auctionRepository;
-    private final AuctionHistoryQueryRepository auctionHistoryQueryRepository;
     private final AuctionHistoryService auctionHistoryService;
 
     @PostMapping
@@ -48,16 +39,8 @@ public class TransactionController {
         log.info("거래 확정 api 호출 auctionId={}, changeToStatus={}, loginId={}", memberTransReq.getAuctionId(), memberTransReq.getStatus(), user.getUsername());
         auctionService.memberTransConfirm(memberTransReq.getAuctionId(), user.getUsername(), memberTransReq.getStatus());
 
-        // 특정경매가 거래 실패일 경우
-        boolean isTransFail = auctionRepository.existsAuctionByIdAndStatus(memberTransReq.getAuctionId(), AuctionStatus.TRANSACTION_FAIL);
-        if (isTransFail) {
-            SellerAndBuyerIdDTO sellerAndBuyerId = auctionHistoryQueryRepository.findSellerAndBuyerId(memberTransReq.getAuctionId())
-                    .orElseThrow(() -> new CustomException(AuctionErrorCode.INVALID_AUCTION));
-            // 판매자 구매자를 밴 해야 하는지 확인
-            banUser(sellerAndBuyerId.getSellerId(), MemberType.Seller);
-            banUser(sellerAndBuyerId.getBuyerId(), MemberType.Buyer);
-
-        }
+        // 경매 id로 ban 확인 후 ban
+        auctionHistoryService.banMemberByAuctionId(memberTransReq.getAuctionId());
         return new ResultRes<>(new MessageRes("거래 확정되었습니다."));
     }
 
@@ -69,17 +52,6 @@ public class TransactionController {
                 .filter(transStatus -> transStatus != TransStatus.TRANS_BEFORE)
                 .map(StatusTypeRes::new)
                 .collect(toList()));
-    }
-
-    private void banUser(Long memberId, MemberType memberType) {
-        try {
-            auctionHistoryService.banMember(memberId);
-        } catch (CustomException e) {
-            e.printStackTrace();
-            // 판매자가 존재하지 않습니다 판매자 ID = {}
-            // 구매자가 존재하지 않습니다 구매자 ID = {}
-            log.error(memberType.name + "가 존재하지 않습니다. " + memberType.name + "= {}", memberId);
-        }
     }
 
     @Getter
@@ -94,14 +66,5 @@ public class TransactionController {
             this.name = type.name();
             this.description = type.getDescription();
         }
-    }
-
-    @Getter
-    @AllArgsConstructor
-    enum MemberType {
-        Buyer("판매자"),
-        Seller("구매자");
-
-        private final String name;
     }
 }

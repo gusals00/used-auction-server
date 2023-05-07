@@ -41,6 +41,8 @@ class AuctionHistoryServiceTest {
     private AuctionHistoryRepository auctionHistoryRepository;
     @Autowired
     private AuctionHistoryService auctionHistoryService;
+    @Autowired
+    private AuctionService auctionService;
 
     @Test
     @DisplayName("입찰 성공")
@@ -292,7 +294,7 @@ class AuctionHistoryServiceTest {
 
         //then
         List<Auction> successBidAuctionList = auctionRepository.findAllById(Arrays.asList(auction1.getId(), auction2.getId()));
-        Auction failBidAuction = auctionRepository.findById(auction3.getId()).orElseThrow(()-> new CustomException(AuctionErrorCode.AUCTION_NOT_FOUND));
+        Auction failBidAuction = auctionRepository.findById(auction3.getId()).orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_FOUND));
         //경매 상태
         //낙찰성공
         assertThat(successBidAuctionList).extracting("status").containsOnly(AuctionStatus.SUCCESS_BID);
@@ -308,6 +310,67 @@ class AuctionHistoryServiceTest {
         assertThat(bidHistoryList).extracting("status").containsOnly(AuctionHistoryStatus.BID);
 
 
+    }
+
+    @Test
+    @DisplayName("회원 ban 성공")
+    void ban() throws Exception {
+        //given
+        Member seller = memberRepository.findByLoginId("20180584").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer1 = memberRepository.findByLoginId("20180211").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        Member buyer2 = memberRepository.findByLoginId("20180012").orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        Category findCategory1 = categoryRepository.findCategoryByName("디지털기기").orElseThrow(() -> new CustomException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        Auction auction1 = createAuction(LocalDateTime.now().plusDays(4), 14000, 1000);
+        Auction auction2 = createAuction(LocalDateTime.now().plusDays(3), 20000, 1000);
+        Auction auction3 = createAuction(LocalDateTime.now().plusDays(3), 20000, 1000);
+
+
+        Product product1 = createProduct("상품 거래1", "상품 거래 입니다1", seller, findCategory1, auction1);
+        Product product2 = createProduct("상품 거래2", "상품 거래 입니다2", seller, findCategory1, auction2);
+        Product product3 = createProduct("상품 거래3", "상품 거래 입니다3", seller, findCategory1, auction3);
+
+
+        auctionRepository.saveAll(Arrays.asList(auction1, auction2, auction3));
+        productRepository.saveAll(Arrays.asList(product1, product2, product3));
+
+        // 입찰 내역 추가
+        AuctionHistory auctionHistory1 = createAuctionHistory(auction1, 15000, buyer1);
+        AuctionHistory auctionHistory2 = createAuctionHistory(auction2, 21000, buyer2);
+        AuctionHistory auctionHistory3 = createAuctionHistory(auction3, 21000, buyer1);
+
+        auctionHistoryRepository.saveAll(Arrays.asList(auctionHistory1, auctionHistory2, auctionHistory3));
+        // 경매에서 낙찰 상태로 변경
+        auction1.changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        auction2.changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        auction3.changeAuctionStatus(AuctionStatus.SUCCESS_BID);
+        // 입찰 내역에서 낙찰 상태로 변경
+        auctionHistory1.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        auctionHistory2.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+        auctionHistory3.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
+
+        //auction1 거래 확정
+        auctionService.memberTransConfirm(auction1.getId(), buyer1.getLoginId(), TransStatus.TRANS_REJECT);
+        auctionService.memberTransConfirm(auction1.getId(), seller.getLoginId(), TransStatus.TRANS_COMPLETE);
+
+        //auction2 거래 확정
+        auctionService.memberTransConfirm(auction2.getId(), buyer2.getLoginId(), TransStatus.TRANS_REJECT);
+        auctionService.memberTransConfirm(auction2.getId(), seller.getLoginId(), TransStatus.TRANS_REJECT);
+
+        //auction3 거래 확정
+        auctionService.memberTransConfirm(auction3.getId(), buyer1.getLoginId(), TransStatus.TRANS_COMPLETE);
+        auctionService.memberTransConfirm(auction3.getId(), seller.getLoginId(), TransStatus.TRANS_REJECT);
+
+        auctionHistoryService.banMemberByAuctionId(auction1.getId());
+        auctionHistoryService.banMemberByAuctionId(auction2.getId());
+        auctionHistoryService.banMemberByAuctionId(auction3.getId());
+
+        Member findMember1 = memberRepository.findById(seller.getId()).orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        assertThat(findMember1.getStatus()).isEqualTo(MemberStatus.DELETED);
+        Member findMember2 = memberRepository.findById(buyer1.getId()).orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        assertThat(findMember2.getStatus()).isEqualTo(MemberStatus.EXIST);
+        Member findMember3 = memberRepository.findById(buyer2.getId()).orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        assertThat(findMember3.getStatus()).isEqualTo(MemberStatus.EXIST);
     }
 
     private Auction createAuction(LocalDateTime endDate, int startPrice, int priceUnit) {
