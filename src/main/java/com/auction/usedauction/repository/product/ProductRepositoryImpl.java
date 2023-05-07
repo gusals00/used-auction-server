@@ -75,8 +75,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .join(product.auction, auction)
                 .where(memberStatusEq(MemberStatus.EXIST),
                         productIdEq(productId),
-                        productStatusEq(ProductStatus.EXIST),
-                        auctionStatusEq(AuctionStatus.BID)
+                        productStatusEq(ProductStatus.EXIST)
                 )
                 .fetchOne());
     }
