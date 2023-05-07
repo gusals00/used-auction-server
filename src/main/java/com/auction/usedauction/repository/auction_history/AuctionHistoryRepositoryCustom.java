@@ -11,4 +11,5 @@ public interface AuctionHistoryRepositoryCustom {
     Page<AuctionHistory> findMyAuctionHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable);
     String findLatestBidMemberLoginId(Long auctionId);
     Long findRejectCountByMemberId(Long memberId);
+    Page<AuctionHistory> findMyBuyHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable);
 }

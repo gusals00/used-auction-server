@@ -44,9 +44,6 @@ public class Auction {
     @OneToOne(mappedBy = "auction", fetch = LAZY)
     private Product product;
 
-    @OneToMany(mappedBy ="auction")
-    private List<AuctionHistory> auctionHistory = new ArrayList<>();
-
     @OneToMany(mappedBy = "auction",fetch = LAZY)
     List<AuctionHistory> auctionHistoryList = new ArrayList<>();
 
