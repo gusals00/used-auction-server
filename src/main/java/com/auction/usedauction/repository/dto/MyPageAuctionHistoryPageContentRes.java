@@ -27,7 +27,7 @@ public class MyPageAuctionHistoryPageContentRes {
     private String sigImgSrc;
 
     @Schema(description = "입찰/낙찰 가격", example = "50000")
-    private Integer bidPrice;
+    private Integer nowPrice;
 
     @Schema(description = "입찰/낙찰 날짜", example = "2023-10-12 12:01")
     private String createdDate;
@@ -44,7 +44,7 @@ public class MyPageAuctionHistoryPageContentRes {
         this.productId = auctionHistory.getAuction().getProduct().getId();
         this.categoryName = auctionHistory.getAuction().getProduct().getCategory().getName();
         this.productName =  auctionHistory.getAuction().getProduct().getName();
-        this.bidPrice = auctionHistory.getBidPrice();
+        this.nowPrice = auctionHistory.getBidPrice();
         this.createdDate = auctionHistory.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.auctionEndDate = auctionHistory.getAuction().getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.status = auctionHistory.getStatus().getDescription();
