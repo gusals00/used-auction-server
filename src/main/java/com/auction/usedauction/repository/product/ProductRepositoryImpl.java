@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.auction.usedauction.domain.AuctionHistoryStatus.*;
 import static com.auction.usedauction.domain.QAuction.*;
 import static com.auction.usedauction.domain.QAuctionHistory.*;
 import static com.auction.usedauction.domain.QCategory.*;
@@ -111,38 +110,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    //마이페이지 구매 내역
-    @Override
-    public Page<Product> findMyBuyHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
-        List<Product> content = queryFactory
-                .selectFrom(product)
-                .join(product.category, category).fetchJoin()
-                .join(product.auction, auction).fetchJoin()
-                .join(auction.auctionHistoryList, auctionHistory)
-                .join(auctionHistory.member, member)
-                .where(
-                        auctionHistoryLoginIdEq(loginId),
-                        historyStatusEq(cond.getStatus()),
-                        auctionHistoryStatusEq(SUCCESSFUL_BID)
-                )
-                .orderBy(auction.auctionEndDate.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        JPAQuery<Long> countQuery = queryFactory
-                .select(product.count())
-                .from(auctionHistory)
-                .join(auctionHistory.member, member)
-                .where(
-                        auctionHistoryLoginIdEq(loginId),
-                        historyStatusEq(cond.getStatus()),
-                        auctionHistoryStatusEq(SUCCESSFUL_BID)
-                );
-
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
-    }
-
     //마이페이지 판매 내역
     @Override
     public Page<Product> findMySalesHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
@@ -150,12 +117,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .selectFrom(product)
                 .join(product.category, category).fetchJoin()
                 .join(product.auction, auction).fetchJoin()
-                .join(auction.auctionHistoryList, auctionHistory)
-                .join(auctionHistory.member, member)
                 .where(
                         loginIdEq(loginId),
-                        historyStatusEq(cond.getStatus()),
-                        auctionHistoryStatusEq(SUCCESSFUL_BID)
+                        historyStatusEq(cond.getStatus())
                 )
                 .orderBy(auction.auctionEndDate.desc())
                 .offset(pageable.getOffset())
@@ -164,12 +128,12 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         JPAQuery<Long> countQuery = queryFactory
                 .select(product.count())
-                .from(auctionHistory)
-                .join(auctionHistory.member, member)
+                .from(product)
+                .join(product.auction, auction)
+                .join(product.member, member)
                 .where(
                         loginIdEq(loginId),
-                        historyStatusEq(cond.getStatus()),
-                        auctionHistoryStatusEq(SUCCESSFUL_BID)
+                        historyStatusEq(cond.getStatus())
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);

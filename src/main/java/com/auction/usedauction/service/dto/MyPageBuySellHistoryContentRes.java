@@ -1,6 +1,7 @@
 package com.auction.usedauction.service.dto;
 
 
+import com.auction.usedauction.domain.AuctionHistory;
 import com.auction.usedauction.domain.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -47,5 +48,16 @@ public class MyPageBuySellHistoryContentRes {
         this.auctionEndDate = product.getAuction().getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.sigImgSrc = product.getSigImage().getFullPath();
         this.status = product.getAuction().getStatus().getDescription();
+    }
+
+    public MyPageBuySellHistoryContentRes(AuctionHistory auctionHistory) {
+        this.productId = auctionHistory.getAuction().getProduct().getId();
+        this.categoryName = auctionHistory.getAuction().getProduct().getCategory().getName();
+        this.productName = auctionHistory.getAuction().getProduct().getName();
+        this.nowPrice = auctionHistory.getAuction().getNowPrice();
+        this.createdDate = auctionHistory.getAuction().getProduct().getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.auctionEndDate = auctionHistory.getAuction().getAuctionEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.sigImgSrc = auctionHistory.getAuction().getProduct().getSigImage().getFullPath();
+        this.status = auctionHistory.getAuction().getProduct().getAuction().getStatus().getDescription();
     }
 }

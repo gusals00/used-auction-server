@@ -44,7 +44,7 @@ public class MyPageQueryService {
     public PageListRes<MyPageBuySellHistoryContentRes> getMyBuyHistoryPage(MyPageSearchConReq myPageSearchConReq, String loginId) {
         PageRequest pageRequest = getPageRequest(myPageSearchConReq);
 
-        Page<Product> findPage = productRepository.findMyBuyHistoryByCond(loginId, myPageSearchConReq, pageRequest);
+        Page<AuctionHistory> findPage = auctionHistoryRepository.findMyBuyHistoryByCond(loginId, myPageSearchConReq, pageRequest);
 
         List<MyPageBuySellHistoryContentRes> myPageBuyHistoryContents = findPage.getContent().stream()
                 .map(MyPageBuySellHistoryContentRes::new)
