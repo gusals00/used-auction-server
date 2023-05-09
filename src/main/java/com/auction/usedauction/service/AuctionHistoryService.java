@@ -65,10 +65,11 @@ public class AuctionHistoryService {
         // 입찰 가능 여부 확인(금액, 가격)
         checkBidAvailable(findAuction, bidPrice, latestMemberLoginId, loginId);
 
-        // 현재 금액 변경
-        findAuction.increaseNowPrice(bidPrice);
         // 입찰 기록 추가
         AuctionHistory auctionHistory = auctionHistoryRepository.save(createAuctionHistory(findAuction, bidPrice, member));
+        // 현재 금액 변경
+        findAuction.increaseNowPrice(bidPrice);
+
         return new AuctionBidResultDTO(bidPrice, findAuction.getProduct().getId(), auctionHistory.getId());
 
     }
