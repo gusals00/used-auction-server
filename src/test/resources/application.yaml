@@ -63,6 +63,6 @@ jwt:
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.orm.jdbc.bind: trace
-logging:
-  level:
-    root: trace
+#logging:
+#  level:
+#    root: trace

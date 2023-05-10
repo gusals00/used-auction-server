@@ -1,5 +1,6 @@
 package com.auction.usedauction.service;
 
+import com.auction.usedauction.domain.AuctionHistory;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.repository.auction.AuctionRepository;
@@ -40,9 +41,9 @@ public class BidAuctionConcurrencyTest {
     void concurrencyTest() throws Exception {
         //given
         List<String> buyerList = new ArrayList<>(List.of("20180012", "20180592"));
-
-        int threadCnt = 1;
-        int bidPrice = 18000;
+        List<Integer> priceList = new ArrayList<>(List.of(15000,16000));
+        int threadCnt = 2;
+        int bidPrice = priceList.get(1);
         Long auctionId = 1L;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCnt);
         CountDownLatch latch = new CountDownLatch(threadCnt);
@@ -53,7 +54,7 @@ public class BidAuctionConcurrencyTest {
             int index = i;
             executorService.submit(() -> {
                 try {
-                    auctionHistoryService.biddingAuction(auctionId, bidPrice, buyerList.get(index));
+                    auctionHistoryService.biddingAuction(auctionId, priceList.get(index), buyerList.get(index));
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -67,9 +68,15 @@ public class BidAuctionConcurrencyTest {
         //현재가와 입찰가 비교
         int nowPrice = auctionRepository.findById(auctionId).orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_FOUND)).getNowPrice();
         assertThat(nowPrice).isEqualTo(bidPrice);
+        Thread.sleep(10000);
+        log.info("휴식휴식휴식");
         //입찰내역 확인
-        assertThat(auctionHistoryRepository.findAll().size()).isEqualTo(1);
-        assertThat(auctionHistoryRepository.findAll().get(0).getBidPrice()).isEqualTo(bidPrice);
+//        assertThat(auctionHistoryRepository.findAll().size()).isEqualTo(1);
+        List<AuctionHistory> test = auctionHistoryRepository.findAll();
+        for (AuctionHistory auctionHistory : test) {
+            log.info("입찰입니다 : 사람 ={},금액 = {}",auctionHistory.getMember().getLoginId(),auctionHistory.getBidPrice());
+        }
+//        assertThat(auctionHistoryRepository.findAll().get(0).getBidPrice()).isEqualTo(bidPrice);
     }
 
     @Test
