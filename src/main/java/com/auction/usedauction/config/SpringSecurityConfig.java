@@ -67,9 +67,11 @@ public class SpringSecurityConfig {
                 .requestMatchers("/v3/api-docs").permitAll()
 
                 //openvidu
+                .requestMatchers(HttpMethod.POST,"/api/sessions/get-token-sub").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/sessions/remove-user-sub").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions").permitAll()
-                .requestMatchers(HttpMethod.POST,"/api/sessions/*").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
+
                 //sse
                 .requestMatchers("/api/sse/bid-connect/*").permitAll()
 
