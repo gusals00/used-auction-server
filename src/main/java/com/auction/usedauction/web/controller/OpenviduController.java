@@ -62,6 +62,7 @@ public class OpenviduController {
      * @return The Session ID
      */
     @PostMapping
+    @Operation(summary = "openvidu tutorial 세션 생성")
     public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
@@ -75,6 +76,7 @@ public class OpenviduController {
      * @return The Token associated to the Connection
      */
     @PostMapping("/{sessionId}/connections")
+    @Operation(summary = "openvidu tutorial 토큰 생성")
     public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
                                                    @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
@@ -176,7 +178,7 @@ public class OpenviduController {
 
     @PostMapping("/remove-user-pub")
     @Operation(summary = "Publisher 방송 종료")
-    public ResultRes removeUserPublisher(@RequestBody OpenviduRemoveUserReq openviduRemoveUserReq, @AuthenticationPrincipal User user) {
+    public ResultRes<MessageRes> removeUserPublisher(@RequestBody OpenviduRemoveUserReq openviduRemoveUserReq, @AuthenticationPrincipal User user) {
 
         Long productId = openviduRemoveUserReq.getProductId();
         String token = openviduRemoveUserReq.getToken();
@@ -221,7 +223,7 @@ public class OpenviduController {
 
     @PostMapping("/remove-user-sub")
     @Operation(summary = "Subscriber 방 퇴장")
-    public ResultRes removeUserSubscriber(@RequestBody OpenviduRemoveUserReq openviduRemoveUserReq) {
+    public ResultRes<MessageRes> removeUserSubscriber(@RequestBody OpenviduRemoveUserReq openviduRemoveUserReq) {
         Long productId = openviduRemoveUserReq.getProductId();
         String token = openviduRemoveUserReq.getToken();
         log.info("Removing user | {productId, token} = {}, {}", productId, token);
