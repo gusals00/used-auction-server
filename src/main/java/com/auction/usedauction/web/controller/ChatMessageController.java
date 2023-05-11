@@ -4,6 +4,7 @@ import com.auction.usedauction.service.ChatMessageService;
 import com.auction.usedauction.service.ChatRoomService;
 import com.auction.usedauction.service.SseEmitterService;
 import com.auction.usedauction.service.dto.ChatMessageRes;
+import com.auction.usedauction.service.dto.PageListRes;
 import com.auction.usedauction.service.query.ChatMessageQueryService;
 import com.auction.usedauction.web.dto.*;
 import io.swagger.v3.oas.annotations.Operation;

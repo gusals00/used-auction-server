@@ -9,7 +9,6 @@ import com.auction.usedauction.repository.dto.MyPageAuctionHistoryPageContentRes
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.dto.*;
 import com.auction.usedauction.web.dto.MyPageSearchConReq;
-import com.auction.usedauction.web.dto.PageListRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

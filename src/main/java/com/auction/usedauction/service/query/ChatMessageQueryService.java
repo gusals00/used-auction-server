@@ -3,7 +3,7 @@ package com.auction.usedauction.service.query;
 import com.auction.usedauction.domain.ChatMessage;
 import com.auction.usedauction.repository.chat.ChatMessageRepository;
 import com.auction.usedauction.service.dto.ChatMessageRes;
-import com.auction.usedauction.web.dto.PageListRes;
+import com.auction.usedauction.service.dto.PageListRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -2,8 +2,8 @@ package com.auction.usedauction.service.query;
 
 import com.auction.usedauction.domain.Question;
 import com.auction.usedauction.repository.QuestionRepository;
+import com.auction.usedauction.service.dto.PageListRes;
 import com.auction.usedauction.service.dto.QuestionPageContentRes;
-import com.auction.usedauction.web.dto.PageListRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
