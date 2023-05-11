@@ -1,7 +1,7 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.service.QuestionService;
-import com.auction.usedauction.web.dto.PageListRes;
+import com.auction.usedauction.service.dto.PageListRes;
 import com.auction.usedauction.service.dto.QuestionPageContentRes;
 import com.auction.usedauction.service.dto.QuestionRegisterDTO;
 import com.auction.usedauction.service.query.QuestionQueryService;

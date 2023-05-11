@@ -14,7 +14,6 @@ import com.auction.usedauction.service.dto.*;
 import com.auction.usedauction.util.FileSubPath;
 import com.auction.usedauction.util.S3FileUploader;
 import com.auction.usedauction.util.UploadFileDTO;
-import com.auction.usedauction.web.dto.PageListRes;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
