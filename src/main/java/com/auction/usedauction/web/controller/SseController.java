@@ -7,7 +7,7 @@ import com.auction.usedauction.repository.sseEmitter.SseSendName;
 import com.auction.usedauction.repository.sseEmitter.SseType;
 import com.auction.usedauction.security.TokenProvider;
 import com.auction.usedauction.service.ChatRoomService;
-import com.auction.usedauction.service.SseEmitterService;
+import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import com.auction.usedauction.service.dto.SseSendDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

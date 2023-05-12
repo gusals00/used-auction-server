@@ -1,7 +1,7 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.service.ChatRoomService;
-import com.auction.usedauction.service.SseEmitterService;
+import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import com.auction.usedauction.service.query.ChatRoomQueryService;
 import com.auction.usedauction.web.dto.ChatRoomRes;
 import com.auction.usedauction.web.dto.MessageRes;

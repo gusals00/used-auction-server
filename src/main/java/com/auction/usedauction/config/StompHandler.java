@@ -3,7 +3,7 @@ package com.auction.usedauction.config;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.security.TokenProvider;
 import com.auction.usedauction.service.ChatRoomService;
-import com.auction.usedauction.service.SseEmitterService;
+import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
