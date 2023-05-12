@@ -71,6 +71,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/sessions/remove-user-sub").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/sessions/is-live/*").permitAll()
 
                 //sse
                 .requestMatchers("/api/sse/bid-connect/*").permitAll()
