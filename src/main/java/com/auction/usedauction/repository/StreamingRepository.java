@@ -45,4 +45,12 @@ public class StreamingRepository {
     public OpenViduRole removeToken(Long productId, String token) {
         return mapProductIdTokens.get(productId).remove(token);
     }
+
+    public OpenViduRole getTokenRole(Long productId, String token) {
+        return mapProductIdTokens.get(productId).get(token);
+    }
+
+    public boolean isLive(Long productId) {
+        return getSession(productId)!=null && existsToken(productId);
+    }
 }

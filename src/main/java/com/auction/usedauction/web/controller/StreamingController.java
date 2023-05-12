@@ -1,5 +1,6 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.repository.StreamingRepository;
 import com.auction.usedauction.service.StreamingService;
 import com.auction.usedauction.service.dto.OpenviduTokenRes;
 import com.auction.usedauction.web.dto.*;
@@ -28,6 +29,7 @@ public class StreamingController {
 
     private final OpenVidu openVidu;
     private final StreamingService streamingService;
+    private final StreamingRepository streamingRepository;
 
     /**
      * @param params The Session properties
@@ -91,5 +93,9 @@ public class StreamingController {
         return new ResultRes(new MessageRes("방 퇴장 성공"));
     }
 
-
+    @GetMapping("/is-live/{productId}")
+    @Operation(summary = "생방송중인지 여부 확인")
+    public ResultRes<IsLiveRes> isLive(@PathVariable Long productId) {
+        return new ResultRes<>(new IsLiveRes(streamingRepository.isLive(productId)));
+    }
 }
