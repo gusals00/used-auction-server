@@ -50,6 +50,7 @@ public class StreamingRepository {
         return mapProductIdTokens.get(productId).get(token);
     }
 
+    //라이브 방송중인지
     public boolean isLive(Long productId) {
         return getSession(productId)!=null && existsToken(productId);
     }

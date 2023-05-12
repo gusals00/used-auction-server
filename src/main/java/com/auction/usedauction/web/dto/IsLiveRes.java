@@ -12,8 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class IsLiveRes {
 
-    @Schema(description = "라이브 여부 확인, true -> 방송중O/false -> 방송중X",example = "true")
-    private boolean isLive;
+    @Schema(description = "라이브 여부 확인, true -> 생방송0 /false -> 생방송X",example = "true")
+    private boolean liveBroadcasting;
 
 
 }
