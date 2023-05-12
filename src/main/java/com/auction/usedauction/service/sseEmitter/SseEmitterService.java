@@ -1,4 +1,4 @@
-package com.auction.usedauction.service;
+package com.auction.usedauction.service.sseEmitter;
 
 import com.auction.usedauction.repository.sseEmitter.SseType;
 import com.auction.usedauction.service.dto.SseSendDTO;

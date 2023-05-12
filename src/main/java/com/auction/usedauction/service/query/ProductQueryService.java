@@ -4,6 +4,7 @@ package com.auction.usedauction.service.query;
 import com.auction.usedauction.domain.*;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.*;
+import com.auction.usedauction.repository.StreamingRepository;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.dto.PageListRes;
@@ -25,6 +26,7 @@ import static com.auction.usedauction.domain.ProductStatus.EXIST;
 @Service
 public class ProductQueryService {
     private final ProductRepository productRepository;
+    private final StreamingRepository streamingRepository;
 
     //상품 리스트 조회
     public PageListRes<ProductPageContentRes> getProductPage(ProductSearchCondDTO searchCond, Pageable pageable) {
@@ -34,7 +36,7 @@ public class ProductQueryService {
 
         //라이브 중인지는 나중에 추가할 예정
         List<ProductPageContentRes> productListContents = contents.stream()
-                .map(ProductPageContentRes::new)
+                .map(product -> new ProductPageContentRes(product, streamingRepository.isLive(product.getId())))
                 .toList();
         return new PageListRes<>(productListContents, findPage);
     }

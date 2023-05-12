@@ -32,8 +32,10 @@ public class ProductPageContentRes {
     private String status;
     @Schema(description = "경매 ID",example = "1")
     private Long auctionId;
+    @Schema(description = "방송중인지",example = "true")
+    private boolean liveBroadcasting;
 
-    public ProductPageContentRes(Product product) {
+    public ProductPageContentRes(Product product,boolean isLive) {
         this.nickname = product.getMember().getName();
         this.categoryName = product.getCategory().getName();
         this.productName = product.getName();
@@ -45,7 +47,8 @@ public class ProductPageContentRes {
         this.sigImgSrc = product.getSigImage().getFullPath();
         this.status = AuctionProgressUtil.changeAuctionStatusToName(auction.getStatus());
         this.auctionId = product.getAuction().getId();
-
+        // 방송중인지
+        this.liveBroadcasting = isLive;
     }
 
 }

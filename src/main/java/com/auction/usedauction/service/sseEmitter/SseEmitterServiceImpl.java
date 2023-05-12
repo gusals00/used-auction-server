@@ -1,4 +1,4 @@
-package com.auction.usedauction.service;
+package com.auction.usedauction.service.sseEmitter;
 
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.repository.chat.ChatRoomRepository;
@@ -9,6 +9,7 @@ import com.auction.usedauction.repository.query.ChatRoomQueryRepository;
 import com.auction.usedauction.repository.sseEmitter.SseEmitterRepository;
 import com.auction.usedauction.repository.sseEmitter.SseSendName;
 import com.auction.usedauction.repository.sseEmitter.SseType;
+import com.auction.usedauction.service.ChatRoomService;
 import com.auction.usedauction.service.dto.SseDataRes;
 import com.auction.usedauction.service.dto.SseRoomEnterDataRes;
 import com.auction.usedauction.service.dto.SseSendDTO;
@@ -23,7 +24,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.auction.usedauction.exception.error_code.ChatErrorCode.*;

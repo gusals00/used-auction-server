@@ -2,7 +2,7 @@ package com.auction.usedauction.web.controller;
 
 
 import com.auction.usedauction.service.AuctionHistoryService;
-import com.auction.usedauction.service.SseEmitterService;
+import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import com.auction.usedauction.service.dto.SseUpdatePriceDTO;
 import com.auction.usedauction.web.dto.BidReq;

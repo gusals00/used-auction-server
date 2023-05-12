@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class OpenviduRepository {
+public class StreamingRepository {
 
-    private Map<Long, Session> mapSessions = new ConcurrentHashMap<>(); // <productId, session>
+    private Map<Long, Session> mapSessions = new ConcurrentHashMap<>(); // <productId : session>
 
-    private Map<Long, Map<String, OpenViduRole>> mapProductIdTokens = new ConcurrentHashMap<>();
+    private Map<Long, Map<String, OpenViduRole>> mapProductIdTokens = new ConcurrentHashMap<>(); // <productId : <token : role>>
 
     public Session getSession(Long productId) {
         return mapSessions.get(productId);
@@ -44,5 +44,14 @@ public class OpenviduRepository {
 
     public OpenViduRole removeToken(Long productId, String token) {
         return mapProductIdTokens.get(productId).remove(token);
+    }
+
+    public OpenViduRole getTokenRole(Long productId, String token) {
+        return mapProductIdTokens.get(productId).get(token);
+    }
+
+    //라이브 방송중인지
+    public boolean isLive(Long productId) {
+        return getSession(productId)!=null && existsToken(productId);
     }
 }
