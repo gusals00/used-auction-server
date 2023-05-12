@@ -121,10 +121,9 @@ public class StreamingService {
         // If the session exists
         if (streamingRepository.getSession(productId) != null && streamingRepository.existsToken(productId)) {
 
-            // If the token exists
-            if (streamingRepository.removeToken(productId, token) != null) {
+            // If the token is publisher
+            if (streamingRepository.getTokenRole(productId, token) == OpenViduRole.PUBLISHER) {
                 // User left the session
-
                 Session removedSession = streamingRepository.removeSession(productId);
                 streamingRepository.removeProductIdTokens(productId);
                 try {
@@ -138,7 +137,7 @@ public class StreamingService {
             } else {
                 // The TOKEN wasn't valid
                 log.info("Problems in the app server: the TOKEN wasn't valid");
-                throw new CustomException(INVALID_STREAMING_TOKEN);
+                throw new CustomException(INVALID_STREAMING_PUBLISHER);
             }
 
         } else {
@@ -155,14 +154,14 @@ public class StreamingService {
         // If the session exists
         if (streamingRepository.getSession(productId) != null && streamingRepository.existsToken(productId)) {
 
-            // If the token exists
-            if (streamingRepository.removeToken(productId,token) != null) {
-
+            //  If the token is subscriber
+            if (streamingRepository.getTokenRole(productId, token) == OpenViduRole.SUBSCRIBER) {
+                streamingRepository.removeToken(productId, token);
                 return token;
             } else {
                 // The TOKEN wasn't valid
                 log.info("Problems in the app server: the TOKEN wasn't valid");
-                throw new CustomException(INVALID_STREAMING_TOKEN);
+                throw new CustomException(INVALID_STREAMING_SUBSCRIBER);
             }
 
         } else {
