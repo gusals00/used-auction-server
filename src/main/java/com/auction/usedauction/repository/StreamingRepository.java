@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class OpenviduRepository {
+public class StreamingRepository {
 
-    private Map<Long, Session> mapSessions = new ConcurrentHashMap<>(); // <productId, session>
+    private Map<Long, Session> mapSessions = new ConcurrentHashMap<>(); // <productId : session>
 
-    private Map<Long, Map<String, OpenViduRole>> mapProductIdTokens = new ConcurrentHashMap<>();
+    private Map<Long, Map<String, OpenViduRole>> mapProductIdTokens = new ConcurrentHashMap<>(); // <productId : <token : role>>
 
     public Session getSession(Long productId) {
         return mapSessions.get(productId);
