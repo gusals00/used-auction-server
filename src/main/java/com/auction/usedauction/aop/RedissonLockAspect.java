@@ -20,7 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @Aspect
 @Component
-@Order
+@Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 @RequiredArgsConstructor
 public class RedissonLockAspect {
