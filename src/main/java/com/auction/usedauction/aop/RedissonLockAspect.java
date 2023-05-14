@@ -20,18 +20,17 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @Aspect
 @Component
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order(1)
 @Slf4j
-@RequiredArgsConstructor
 public class RedissonLockAspect {
 
     private final RedissonClient redissonClient;
-//    private final TransactionTemplate txTemplate;
+    private final TransactionTemplate txTemplate;
 
-//    public RedissonLockAspect(RedissonClient redissonClient, PlatformTransactionManager transactionManager) {
-//        this.redissonClient = redissonClient;
-//        this.txTemplate = new TransactionTemplate(transactionManager);
-//    }
+    public RedissonLockAspect(RedissonClient redissonClient, PlatformTransactionManager transactionManager) {
+        this.redissonClient = redissonClient;
+        this.txTemplate = new TransactionTemplate(transactionManager);
+    }
 
     @Around("@annotation(redissonLock) && execution(* com.auction.usedauction..*(..))")
     public Object doLock(ProceedingJoinPoint joinPoint, RedissonLock redissonLock) throws Throwable {
