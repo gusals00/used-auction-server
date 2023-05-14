@@ -1,5 +1,6 @@
 package com.auction.usedauction.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -14,6 +15,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableRedisRepositories
+@Slf4j
 public class RedisConfig {
 
     @Value("${spring.redis.host}")
@@ -38,11 +40,14 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    @Bean
+    @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
+        log.info("redissonClient create before");
         Config config = new Config();
         config.useSingleServer().setAddress(REDISSON_HOST_PREFIX+host+":"+port);
-        return Redisson.create(config);
+        RedissonClient redissonClient = Redisson.create(config);
+        log.info("redissonClient create after");
+        return redissonClient;
     }
 
 

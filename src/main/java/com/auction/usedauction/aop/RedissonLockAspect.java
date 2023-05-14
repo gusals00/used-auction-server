@@ -9,44 +9,62 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 @Aspect
 @Component
-@RequiredArgsConstructor
-@Order(1)
+@Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
+@RequiredArgsConstructor
 public class RedissonLockAspect {
 
     private final RedissonClient redissonClient;
+//    private final TransactionTemplate txTemplate;
+
+//    public RedissonLockAspect(RedissonClient redissonClient, PlatformTransactionManager transactionManager) {
+//        this.redissonClient = redissonClient;
+//        this.txTemplate = new TransactionTemplate(transactionManager);
+//    }
 
     @Around("@annotation(redissonLock) && execution(* com.auction.usedauction..*(..))")
     public Object doLock(ProceedingJoinPoint joinPoint, RedissonLock redissonLock) throws Throwable {
-        log.info("redisson Lock key = {}",redissonLock.key());
+        log.info("redisson Lock key = {}, isActiveTransaction = {}", redissonLock.key(), TransactionSynchronizationManager.isActualTransactionActive());
         RLock lock = redissonClient.getLock(redissonLock.key().name());
         try {
-            log.info("redisson Lock 획득 시도");
+            log.info("redisson Lock 획득 시도, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
             boolean available = lock.tryLock(redissonLock.waitTime(), redissonLock.leaseTime(), redissonLock.timeUnit());
             if (!available) { // 락 획득 실패
                 CustomException customException = new CustomException(LockErrorCode.TRY_AGAIN_LOCK);
-                log.error("redisson Lock 획득 실패",customException);
+                log.error("redisson Lock 획득 실패, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
                 throw customException;
             }
-            log.info("redisson Lock 획득 성공");
+            log.info("redisson Lock 획득 성공, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
 
             return joinPoint.proceed();
+//            return txTemplate.execute(transactionStatus -> {
+//                try {
+//                    log.info("transactionTemplate ,isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
+//                    return joinPoint.proceed();
+//                } catch (Throwable e) {
+//                    throw new RuntimeException(e);
+//                }
+//            });
         } catch (InterruptedException e) {
             log.error("Thread interrupted while waiting for lock ", e);
             Thread.currentThread().interrupt();
             throw new CustomException(LockErrorCode.TRY_AGAIN_LOCK);
 
-        }finally {
-            log.info("redisson Lock 해제 시도");
+        } finally {
+            log.info("redisson Lock 해제 시도, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
             lock.unlock();
-            log.info("redisson Lock 해제 성공");
-
+            log.info("redisson Lock 해제 성공, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
             //IllegalMonitorStateException, transaction timeout 처리 추가해야 함
         }
     }

@@ -183,7 +183,6 @@ public class InitDBService {
         Product findProduct1 = insertProduct("이것이 코딩 테스트다", "책 정보입니다", bookCategory.getId(), now.minusDays(14), now.minusDays(10), 10000, 2000,
                 "1_1.jpg", Arrays.asList("1_2.jpg", "1_3.jpg", "1_4.jpg"), member1.getLoginId(), 3);
         log.info("이것이 코딩 테스트다 저장 완료");
-        log.info("sleeping-------------");
         // member3이 낙찰됨
         AuctionHistory auctionHistory1 = bidAuction(findProduct1.getAuction().getId(), 20000, member3.getLoginId(), LocalDateTime.now().minusDays(12));
         log.info("member3이 입찰");
