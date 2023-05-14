@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.validation.annotation.Validated;
 
 
@@ -44,6 +45,7 @@ public class AuctionHistoryService {
     @Transactional
     @RedissonLock(key = LockKey.BID_LOCK)
     public AuctionBidResultDTO biddingAuction(Long auctionId, int bidPrice, String loginId) {
+        log.info("비즈니스 로직, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
 
         // 경매중 인지 확인
         Auction findAuction = auctionRepository.findBidAuctionByAuctionIdWithFetchJoin(auctionId)
