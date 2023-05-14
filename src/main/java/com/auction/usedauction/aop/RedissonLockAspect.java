@@ -20,7 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @Aspect
 @Component
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order
 @Slf4j
 @RequiredArgsConstructor
 public class RedissonLockAspect {
@@ -48,14 +48,6 @@ public class RedissonLockAspect {
             log.info("redisson Lock 획득 성공, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
 
             return joinPoint.proceed();
-//            return txTemplate.execute(transactionStatus -> {
-//                try {
-//                    log.info("transactionTemplate ,isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
-//                    return joinPoint.proceed();
-//                } catch (Throwable e) {
-//                    throw new RuntimeException(e);
-//                }
-//            });
         } catch (InterruptedException e) {
             log.error("Thread interrupted while waiting for lock ", e);
             Thread.currentThread().interrupt();
