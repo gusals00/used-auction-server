@@ -19,33 +19,35 @@ import static java.util.stream.Collectors.*;
 @NoArgsConstructor
 public class ProductDetailInfoRes {
 
-    @Schema(description = "상품 이름",example = "자료구조 책 팝니다")
+    @Schema(description = "상품 이름", example = "자료구조 책 팝니다")
     private String productName;
-    @Schema(description = "상품 정보",example = "자료구조 새 책입니다.")
+    @Schema(description = "상품 정보", example = "자료구조 새 책입니다.")
     private String info;
-    @Schema(description = "카테고리 이름",example = "디지털 기기")
+    @Schema(description = "카테고리 이름", example = "디지털 기기")
     private String categoryName;
-    @Schema(description = "판매자 아이디(pk)",example = "100")
+    @Schema(description = "판매자 아이디(pk)", example = "100")
     private Long memberId;
-    @Schema(description = "판매자 로그인 아이디",example = "lovesoe1234")
+    @Schema(description = "판매자 로그인 아이디", example = "lovesoe1234")
     private String nickname;
-    @Schema(description = "경매 종료 날짜",example = "2023-10-12 12:01")
+    @Schema(description = "경매 종료 날짜", example = "2023-10-12 12:01")
     private String auctionEndDate;
-    @Schema(description = "현재 가격",example = "10000")
+    @Schema(description = "현재 가격", example = "10000")
     private int nowPrice;
-    @Schema(description = "시작 가격",example = "1000")
+    @Schema(description = "시작 가격", example = "1000")
     private int startPrice;
-    @Schema(description = "입찰 단위 가격",example = "1000")
+    @Schema(description = "입찰 단위 가격", example = "1000")
     private int priceUnit;
-    @Schema(description = "조회수",example = "7")
+    @Schema(description = "조회수", example = "7")
     private int viewCount;
-    @Schema(description = "경매상태",example = "경매 중")
+    @Schema(description = "경매상태", example = "경매 중")
     private String status;
-    @Schema(description = "경매 ID",example = "1")
+    @Schema(description = "경매 ID", example = "1")
     private Long auctionId;
 
     private ImageInfoRes sigImg;
     private List<ImageInfoRes> ordinalImgList;
+
+    private List<VideoInfoRes> videoList;
 
     public ProductDetailInfoRes(Product product) {
         this.productName = product.getName();
@@ -67,10 +69,14 @@ public class ProductDetailInfoRes {
         this.sigImg = new ImageInfoRes(sigImage.getOriginalName(), sigImage.getFullPath());
         this.ordinalImgList = product.getOrdinalImageList()
                 .stream()
-                .map(ordinalImg->new ImageInfoRes(ordinalImg.getOriginalName(),ordinalImg.getFullPath()))
+                .map(ordinalImg -> new ImageInfoRes(ordinalImg.getOriginalName(), ordinalImg.getFullPath()))
+                .collect(toList());
+
+        this.videoList = product.getProductVideoList()
+                .stream()
+                .map(productVideo -> new VideoInfoRes(productVideo.getOriginalName(), productVideo.getFullPath()))
                 .collect(toList());
     }
-
 
 
 }

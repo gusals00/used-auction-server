@@ -9,28 +9,25 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 
 @Aspect
 @Component
 @Order(1)
 @Slf4j
+@RequiredArgsConstructor
 public class RedissonLockAspect {
 
     private final RedissonClient redissonClient;
-    private final TransactionTemplate txTemplate;
 
-    public RedissonLockAspect(RedissonClient redissonClient, PlatformTransactionManager transactionManager) {
-        this.redissonClient = redissonClient;
-        this.txTemplate = new TransactionTemplate(transactionManager);
-    }
+//    private final TransactionTemplate txTemplate;
+//    public RedissonLockAspect(RedissonClient redissonClient, PlatformTransactionManager transactionManager) {
+//        this.redissonClient = redissonClient;
+//        this.txTemplate = new TransactionTemplate(transactionManager);
+//    }
 
     @Around("@annotation(redissonLock) && execution(* com.auction.usedauction..*(..))")
     public Object doLock(ProceedingJoinPoint joinPoint, RedissonLock redissonLock) throws Throwable {
@@ -46,7 +43,15 @@ public class RedissonLockAspect {
             }
             log.info("redisson Lock 획득 성공, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
 
+//            return txTemplate.execute(status -> {
+//                try {
+//                    return joinPoint.proceed();
+//                } catch (Throwable e) {
+//                    throw new RuntimeException(e);
+//                }
+//            });
             return joinPoint.proceed();
+
         } catch (InterruptedException e) {
             log.error("Thread interrupted while waiting for lock ", e);
             Thread.currentThread().interrupt();
