@@ -23,12 +23,6 @@ public class RedissonLockAspect {
 
     private final RedissonClient redissonClient;
 
-//    private final TransactionTemplate txTemplate;
-//    public RedissonLockAspect(RedissonClient redissonClient, PlatformTransactionManager transactionManager) {
-//        this.redissonClient = redissonClient;
-//        this.txTemplate = new TransactionTemplate(transactionManager);
-//    }
-
     @Around("@annotation(redissonLock) && execution(* com.auction.usedauction..*(..))")
     public Object doLock(ProceedingJoinPoint joinPoint, RedissonLock redissonLock) throws Throwable {
         log.info("redisson Lock key = {}, isActiveTransaction = {}", redissonLock.key(), TransactionSynchronizationManager.isActualTransactionActive());
@@ -43,13 +37,6 @@ public class RedissonLockAspect {
             }
             log.info("redisson Lock 획득 성공, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
 
-//            return txTemplate.execute(status -> {
-//                try {
-//                    return joinPoint.proceed();
-//                } catch (Throwable e) {
-//                    throw new RuntimeException(e);
-//                }
-//            });
             return joinPoint.proceed();
 
         } catch (InterruptedException e) {
