@@ -40,9 +40,8 @@ public class BidAuctionConcurrencyTest {
     void concurrencyTest() throws Exception {
         //given
         List<String> buyerList = new ArrayList<>(List.of("20180012", "20180592"));
-        List<Integer> priceList = new ArrayList<>(List.of(15000,15000));
         int threadCnt = 2;
-        int bidPrice = priceList.get(1);
+        int bidPrice = 15000;
         Long auctionId = 1L;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCnt);
         CountDownLatch latch = new CountDownLatch(threadCnt);
@@ -53,7 +52,7 @@ public class BidAuctionConcurrencyTest {
             int index = i;
             executorService.submit(() -> {
                 try {
-                    auctionHistoryService.biddingAuction(auctionId, priceList.get(index), buyerList.get(index));
+                    auctionHistoryService.biddingAuction(auctionId, bidPrice, buyerList.get(index));
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

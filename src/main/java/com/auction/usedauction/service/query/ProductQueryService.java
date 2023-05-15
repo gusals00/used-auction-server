@@ -49,8 +49,6 @@ public class ProductQueryService {
         // 조회수 증가
         findProduct.increaseViewCount();
 
-        //라이브 중인지는 나중에 추가할 예정
-
         return new ProductDetailInfoRes(findProduct);
     }
 

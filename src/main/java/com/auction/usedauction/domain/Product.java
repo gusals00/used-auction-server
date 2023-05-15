@@ -3,6 +3,7 @@ package com.auction.usedauction.domain;
 import com.auction.usedauction.domain.file.File;
 import com.auction.usedauction.domain.file.ProductImage;
 import com.auction.usedauction.domain.file.ProductImageType;
+import com.auction.usedauction.domain.file.ProductVideo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -102,6 +103,17 @@ public class Product extends BaseTimeEntity {
             }
         }
         return ordinalImages;
+    }
+
+    public List<ProductVideo> getProductVideoList() {
+        List<ProductVideo> videos = new ArrayList<>();
+
+        for (File file :fileList) {
+            if (file instanceof ProductVideo videoFile) {
+                videos.add(videoFile);
+            }
+        }
+        return videos;
     }
 
     public int increaseViewCount() {
