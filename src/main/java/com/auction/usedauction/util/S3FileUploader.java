@@ -25,6 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3FileUploader {
     private final AmazonS3 amazonS3Client;
+    private final S3BackUpManager s3BackUpManager;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -41,6 +42,13 @@ public class S3FileUploader {
         return storeResult;
     }
 
+    // 백업해야 하는 경우에 백업
+    private void insertBackUp(String filePath) {
+        if (s3BackUpManager.isBackUpState()) {
+            s3BackUpManager.insertBackUpData(BackUpCommand.INSERT, filePath);
+        }
+    }
+
     public UploadFileDTO uploadFile(MultipartFile multipartFile, String subPath) {
         if (isEmptyFile(multipartFile)) {
             throw new CustomException(FileErrorCode.FILE_EMPTY);
@@ -52,6 +60,8 @@ public class S3FileUploader {
         String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, multipartFile);
         log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, storeFileFullUrl);
 
+        //backUp 해야 하는 경우 backUp
+        insertBackUp( subPath + storeFileName);
         return new UploadFileDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
     }
 
@@ -82,6 +92,9 @@ public class S3FileUploader {
         String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, file);
         log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, storeFileFullUrl);
 
+        //backUp 해야 하는 경우 backUp
+        insertBackUp( subPath + storeFileName);
+
         return new UploadFileDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
     }
 
@@ -101,6 +114,12 @@ public class S3FileUploader {
         if (!isExist) {
             throw new CustomException(FileErrorCode.S3_FILE_NOT_FOUND);
         }
+
+        if (s3BackUpManager.isBackUpState()) {// 백업해야 하는 경우
+            s3BackUpManager.insertBackUpData(BackUpCommand.DELETE, filePath);
+            return filePath;
+        }
+
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filePath));
         log.info("S3 파일 삭제 완료 deletedFilePath = {}", filePath);
         return filePath;

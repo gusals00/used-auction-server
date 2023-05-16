@@ -1,6 +1,7 @@
 package com.auction.usedauction.web.controller;
 
 
+import com.auction.usedauction.aop.S3Rollback;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.BindingErrorCode;
 import com.auction.usedauction.exception.error_code.FileErrorCode;
@@ -75,6 +76,7 @@ public class ProductController {
 
     @Operation(summary = "상품 등록 메서드")
     @PostMapping
+    @S3Rollback
     public ResultRes<MessageRes> registerProduct(@Valid ProductRegisterReq registerReq, @AuthenticationPrincipal User user) {
 
         log.info("상품 등록 컨트롤러 호출");
