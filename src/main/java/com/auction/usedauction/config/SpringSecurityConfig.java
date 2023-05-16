@@ -49,23 +49,20 @@ public class SpringSecurityConfig {
                 .requestMatchers("/api/member/is-login").permitAll()
                 .requestMatchers("/api/member/reissue").permitAll()
                 .requestMatchers("/api/email/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/products/*").permitAll()
                 .requestMatchers("/api/member/email/**").permitAll()
                 .requestMatchers("/api/member/loginid/**").permitAll()
                 .requestMatchers("/api/member/name/**").permitAll()
-
+                // product
+                .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/products/*").permitAll()
                 //category
                 .requestMatchers("/api/categories").permitAll()
-
                 //question
                 .requestMatchers(HttpMethod.GET,"/api/questions/*").permitAll()
-
                 //swagger
                 .requestMatchers("/swagger-ui/*").permitAll()
                 .requestMatchers("/v3/api-docs/*").permitAll()
                 .requestMatchers("/v3/api-docs").permitAll()
-
                 //openvidu
                 .requestMatchers(HttpMethod.POST,"/api/sessions/get-token-sub").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/sessions/remove-user-sub").permitAll()
@@ -73,7 +70,6 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/sessions/*/*").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/sessions/is-live/*").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/sessions/count/*").permitAll()
-
                 //sse
                 .requestMatchers("/api/sse/bid-connect/*").permitAll()
 
