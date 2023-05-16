@@ -201,6 +201,18 @@ public class InitDBService {
         auctionHistory3.changeStatus(AuctionHistoryStatus.SUCCESSFUL_BID);
         findProduct2.getAuction().changeAuctionStatus(AuctionStatus.SUCCESS_BID);
 
+        Product product_member1_2 = insertProduct("레트로 옛날 게임기 팔아요", "사진보시면 600여가지 게임 들어있어요 버튼 여유분 들어있고요 전원선.HDMI케이블 같이 드려요\n전 티비에 연결해서 사용했어요", digitalCategory.getId(), now.plusDays(10), 80000, 1000,
+                "21_1.jpg", Arrays.asList("21_2.jpg","21_3.jpg"), member1.getLoginId(), 1);
+        Product product_member1_3 = insertProduct("Lightning Digital AV 어댑터 판매합니다", "Lightning Digital AV 어댑터 판매합니다\n아이패드프로와 연결해서 화의, 유튜브감상용으로 사용가능합니가.\n기변으로 인한 판매입니다~!", digitalCategory.getId(), now.plusDays(14), 40000, 3000,
+                "22_1.jpg", Arrays.asList("22_2.jpg","22_3.jpg"), member1.getLoginId(), 7);
+        Product product_member1_4 = insertProduct("네트워크 튜너 (스마트폰으로 TV보기)", "스마트폰으로 유선 TV볼 수 있게 해주는 기계입니다.\n구매는 한달 전에 했고 실 사용시간은 2시간도 안됩니다.집에서 태블릿으로 TV보는 용도로 구매했는데 TV를 사게 되서 판매합니다", digitalCategory.getId(), now.plusDays(9), 32000, 4000,
+                "23_1.jpg", Arrays.asList("23_2.jpg","23_3.jpg"), member1.getLoginId(), 5);
+        Product product_member1_5 = insertProduct("sk 스마트빔 (2-3번 사용)", "인터넷 최저가 검색 후 확인해주세요:)\n\n구입한지는 1년정도 됐지만 2-3번? 사용했을 정도로\n새제품과 같습니다 ㅠ 박스에 넣어 보관해서 생활기스도 거의 없습니다 !", digitalCategory.getId(), now.plusDays(10), 160000, 10000,
+                "24_1.jpg", Arrays.asList("24_2.jpg"), member1.getLoginId(), 2);
+        Product product_member1_6 = insertProduct("공기청정기 새제품", "박스만 없는 새 제품 공기청정기입니다.\n컬러도 아주 예뻐요.", appliancesCategory.getId(), now.minusDays(7), now.plusDays(12), 70000, 5000,
+                "25_1.jpg", Arrays.asList("25_1.jpg"), member1.getLoginId(), 2);
+        Product product_member1_7 = insertProduct("샤오미 플러그 멀티탭 4구 개별스위치+ USB3구 1.6M 접지코드 해외 가전제품 호환", "단종 제품 국내 전자제품 및 해외직구 전자제품 돼지코 변환 어댑터 구입 없이 사용 외관상 튀어 나올일 없고 변환어댑터는 화제 문제로 변환어댑터 없이 이용 추천 드립니다.", appliancesCategory.getId(), now.minusDays(7), now.plusDays(5), 20000, 5000,
+                "26_1.jpg", Arrays.asList("26_1.jpg"), member1.getLoginId(), 8);
         log.info("member1 상품 저장 완료");
 
         //member2 상품 저장
