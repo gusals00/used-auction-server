@@ -1,5 +1,6 @@
 package com.auction.usedauction.service;
 
+import com.auction.usedauction.aop.S3Rollback;
 import com.auction.usedauction.domain.*;
 import com.auction.usedauction.domain.file.File;
 import com.auction.usedauction.domain.file.ProductImage;
@@ -141,6 +142,7 @@ public class ProductService {
     }
 
     @Transactional
+    @S3Rollback
     public Long updateProduct(Long productId, ProductUpdateReq updateReq, String loginId) {
 
         //상품이 존재하는지 확인

@@ -82,7 +82,7 @@ public class StreamingController {
     public ResultRes<MessageRes> removeUserPublisher(@RequestBody OpenviduRemoveUserReq openviduRemoveUserReq, @AuthenticationPrincipal User user) {
 
         streamingService.closeSession(openviduRemoveUserReq.getProductId(), openviduRemoveUserReq.getToken(), user.getUsername());
-        return new ResultRes(new MessageRes("방송이 종료되었습니다."));
+        return new ResultRes<>(new MessageRes("방송이 종료되었습니다."));
     }
 
     @PostMapping("/remove-user-sub")
@@ -90,12 +90,18 @@ public class StreamingController {
     public ResultRes<MessageRes> removeUserSubscriber(@RequestBody OpenviduRemoveUserReq openviduRemoveUserReq) {
 
         streamingService.exitSession(openviduRemoveUserReq.getProductId(), openviduRemoveUserReq.getToken());
-        return new ResultRes(new MessageRes("방 퇴장 성공"));
+        return new ResultRes<>(new MessageRes("방 퇴장 성공"));
     }
 
     @GetMapping("/is-live/{productId}")
     @Operation(summary = "생방송중인지 여부 확인")
     public ResultRes<IsLiveRes> isLive(@PathVariable Long productId) {
         return new ResultRes<>(new IsLiveRes(streamingRepository.isLive(productId)));
+    }
+
+    @GetMapping("/count/{productId}")
+    @Operation(summary = "시청자 수 조회")
+    public ResultRes<LiveCountRes> liveCount(@PathVariable Long productId) {
+        return new ResultRes<>(new LiveCountRes(streamingRepository.getLiveCount(productId)));
     }
 }

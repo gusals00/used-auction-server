@@ -32,7 +32,7 @@ public class StreamingRepository {
     }
 
     public void addToken(Long productId, String token, OpenViduRole role) {
-        if(mapProductIdTokens.get(productId) == null) {
+        if (mapProductIdTokens.get(productId) == null) {
             mapProductIdTokens.put(productId, new ConcurrentHashMap<>());
         }
         mapProductIdTokens.get(productId).put(token, role);
@@ -52,6 +52,15 @@ public class StreamingRepository {
 
     //라이브 방송중인지
     public boolean isLive(Long productId) {
-        return getSession(productId)!=null && existsToken(productId);
+        return getSession(productId) != null && existsToken(productId);
+    }
+
+    //몇명이 방송 시청중인지
+    public int getLiveCount(Long productId) {
+        if (mapSessions.get(productId) == null) { // 생방송중이 아닌 경우
+            return 0;
+        } else {
+            return mapProductIdTokens.get(productId).size() - 1;
+        }
     }
 }

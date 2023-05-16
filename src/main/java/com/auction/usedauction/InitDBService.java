@@ -1,5 +1,6 @@
 package com.auction.usedauction;
 
+import com.auction.usedauction.aop.S3Rollback;
 import com.auction.usedauction.domain.*;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.*;
@@ -68,6 +69,7 @@ public class InitDBService {
     private String filePath;
 
     @Transactional
+    @S3Rollback
     public void init() {
         //Category 추가
         insertCategory();
