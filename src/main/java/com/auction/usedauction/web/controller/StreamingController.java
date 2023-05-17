@@ -102,6 +102,6 @@ public class StreamingController {
     @GetMapping("/count/{productId}")
     @Operation(summary = "시청자 수 조회")
     public ResultRes<LiveCountRes> liveCount(@PathVariable Long productId) {
-        return new ResultRes<>(new LiveCountRes(streamingRepository.getLiveCount(productId)));
+        return new ResultRes<>(new LiveCountRes(streamingService.getLiveCount(productId)));
     }
 }
