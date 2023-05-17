@@ -42,6 +42,14 @@ public class StreamingService {
 
         log.info("Getting a token from OpenVidu Server | {productId}= {}", productId);
 
+        String publisherToken = streamingRepository.getPublisherToken(productId);
+
+        // 방송중인 판매자가 재입장하는 경우 이미 존재하는 토큰과 세션 반환
+        if(publisherToken != null) {
+            log.info("방송중인 판매자가 재입장하는 경우");
+            return new OpenviduTokenRes(publisherToken, streamingRepository.getSession(productId).getSessionId());
+        }
+
         // Role associated to this user
         OpenViduRole role = OpenViduRole.PUBLISHER;
 
@@ -168,6 +176,24 @@ public class StreamingService {
             // The SESSION does not exist
             log.info("Problems in the app server: the SESSION does not exist");
             throw new CustomException(STREAMING_END);
+        }
+    }
+
+    //몇명이 방송 시청중인지
+    public int getLiveCount(Long productId) {
+        if (streamingRepository.getSession(productId) == null) { // 생방송중이 아닌 경우
+            return 0;
+        } else {
+            Session session = streamingRepository.getSession(productId);
+            try {
+                session.fetch();
+            } catch (OpenViduJavaClientException e) {
+                log.error("liveCount error", e);
+            } catch (OpenViduHttpException e) {
+                log.error("liveCount error", e);
+            }
+
+            return session.getActiveConnections().size()-1;
         }
     }
 }

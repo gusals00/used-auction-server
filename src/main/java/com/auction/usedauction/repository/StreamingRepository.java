@@ -5,8 +5,11 @@ import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class StreamingRepository {
@@ -55,12 +58,16 @@ public class StreamingRepository {
         return getSession(productId) != null && existsToken(productId);
     }
 
-    //몇명이 방송 시청중인지
-    public int getLiveCount(Long productId) {
-        if (mapSessions.get(productId) == null) { // 생방송중이 아닌 경우
-            return 0;
-        } else {
-            return mapProductIdTokens.get(productId).size() - 1;
+    public String getPublisherToken(Long productId) {
+        if (mapSessions.get(productId) != null) {
+            Map<String, OpenViduRole> rolemap = mapProductIdTokens.get(productId);
+            List<String> collect = rolemap.entrySet().stream()
+                    .filter(entry -> rolemap.get(entry.getKey()).equals(OpenViduRole.PUBLISHER))
+                    .map(Map.Entry::getKey)
+                    .collect(toList());
+
+            return collect.isEmpty() ? null : collect.get(0);
         }
+        return null;
     }
 }
