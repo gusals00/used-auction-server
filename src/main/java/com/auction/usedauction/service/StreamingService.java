@@ -81,8 +81,9 @@ public class StreamingService {
             streamingRepository.addToken(productId, token, role);
 
             log.info("start recording");
-            Recording recording = this.openVidu.startRecording(String.valueOf(productId), recordingProperties);
+            Recording recording = this.openVidu.startRecording(session.getSessionId(), recordingProperties);
             this.sessionRecordings.put(productId, recording.getId());
+            log.info("start recording complete");
 
             return new OpenviduTokenRes(token, session.getSessionId());
         } catch (Exception e) {
@@ -149,8 +150,10 @@ public class StreamingService {
                 Session removedSession = streamingRepository.removeSession(productId);
                 streamingRepository.removeProductIdTokens(productId);
                 try {
+                    log.info("stop recording");
                     this.openVidu.stopRecording(sessionRecordings.get(productId));
                     this.sessionRecordings.remove(productId);
+                    log.info("stop recording complete");
                     removedSession.close();
                 } catch (Exception e) {
                     log.error("pub close error = ", e);
