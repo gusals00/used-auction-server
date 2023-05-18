@@ -172,7 +172,7 @@ public class StreamingService {
         }
         // 녹화 파일 이름 -> 녹화 시작 날짜(2023-05-08 12:11)
         RecordingProperties properties = new RecordingProperties.Builder()
-                .name(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .name("testname")
                 .build();
         try {
             log.info("start recording");
