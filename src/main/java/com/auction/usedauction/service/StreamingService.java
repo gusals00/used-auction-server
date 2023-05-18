@@ -6,6 +6,7 @@ import com.auction.usedauction.domain.ProductStatus;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.exception.error_code.ProductErrorCode;
+import com.auction.usedauction.exception.error_code.StreamingErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.repository.StreamingRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
@@ -50,7 +51,7 @@ public class StreamingService {
         String publisherToken = streamingRepository.getPublisherToken(productId);
 
         // 방송중인 판매자가 재입장하는 경우 이미 존재하는 토큰과 세션 반환
-        if(publisherToken != null) {
+        if (publisherToken != null) {
             log.info("방송중인 판매자가 재입장하는 경우");
             return new OpenviduTokenRes(publisherToken, streamingRepository.getSession(productId).getSessionId());
         }
@@ -88,6 +89,91 @@ public class StreamingService {
             return new OpenviduTokenRes(token, session.getSessionId());
         } catch (Exception e) {
             log.error("pub error = ", e);
+            throw new CustomException(STREAMING_SERVER_ERROR);
+        }
+    }
+
+    public OpenviduTokenRes joinPublisherTest(Long productId, String loginId) {
+        // 판매자 - 세션 없어야 가능, 구매자 - 세션 존재해야 가능
+        // 권한 체크
+        Product product = productRepository.findByIdAndProductStatus(productId, ProductStatus.EXIST)
+                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        if (product.getAuction().getStatus() != AuctionStatus.BID) {
+            throw new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING);
+        }
+        if (!loginId.equals(product.getMember().getLoginId())) {
+            throw new CustomException(UserErrorCode.INVALID_USER);
+        }
+
+        log.info("Getting a token from OpenVidu Server | {productId}= {}", productId);
+
+        String publisherToken = streamingRepository.getPublisherToken(productId);
+
+        // 방송중인 판매자가 재입장하는 경우 이미 존재하는 토큰과 세션 반환
+        if (publisherToken != null) {
+            log.info("방송중인 판매자가 재입장하는 경우");
+            return new OpenviduTokenRes(publisherToken, streamingRepository.getSession(productId).getSessionId());
+        }
+
+        // Role associated to this user
+        OpenViduRole role = OpenViduRole.PUBLISHER;
+
+        ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).role(role).build();
+
+        RecordingProperties recordingProperties = new RecordingProperties.Builder()
+                .outputMode(Recording.OutputMode.COMPOSED)
+                .resolution("640x480")
+                .frameRate(24)
+                .build();
+
+        SessionProperties sessionProperties = new SessionProperties.Builder()
+                .recordingMode(RecordingMode.MANUAL)
+                .defaultRecordingProperties(recordingProperties)
+                .build();
+
+        try {
+            // Create a new OpenVidu Session
+            Session session = openVidu.createSession(sessionProperties);
+            log.info("New session = {} , sessionId = {}", productId, session.getSessionId());
+
+            // Generate a new Connection with the recently created connectionProperties
+            String token = session.createConnection(connectionProperties).getToken();
+            log.info("New pub token = {}", token);
+            // Store the session and the token in our collections
+            streamingRepository.addSession(productId, session);
+            streamingRepository.addToken(productId, token, role);
+
+            return new OpenviduTokenRes(token, session.getSessionId());
+        } catch (Exception e) {
+            log.error("pub error = ", e);
+            throw new CustomException(STREAMING_SERVER_ERROR);
+        }
+    }
+
+    public String startRecording(Long productId, String loginId) {
+        // 권한 체크
+        Product product = productRepository.findByIdAndProductStatus(productId, ProductStatus.EXIST)
+                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        if (!loginId.equals(product.getMember().getLoginId())) {
+            throw new CustomException(UserErrorCode.INVALID_USER);
+        }
+        // 방 존재 x 
+        Session session = streamingRepository.getSession(productId);
+        if (session == null) {
+            throw new CustomException(INVALID_SESSION);
+        }
+
+        RecordingProperties properties = new RecordingProperties.Builder()
+                .name("MY_RECORDING_NAME")
+                .build();
+        try {
+            log.info("start recording");
+            Recording recording = this.openVidu.startRecording(session.getSessionId(), properties);
+            this.sessionRecordings.put(productId, recording.getId());
+            log.info("start recording complete");
+            return recording.getId();
+        } catch (Exception e) {
+            log.error("recording start error, productId={}", productId, e);
             throw new CustomException(STREAMING_SERVER_ERROR);
         }
     }
@@ -150,10 +236,10 @@ public class StreamingService {
                 Session removedSession = streamingRepository.removeSession(productId);
                 streamingRepository.removeProductIdTokens(productId);
                 try {
-//                    log.info("stop recording");
-//                    this.openVidu.stopRecording(sessionRecordings.get(productId));
-//                    this.sessionRecordings.remove(productId);
-//                    log.info("stop recording complete");
+                    log.info("stop recording");
+                    this.openVidu.stopRecording(sessionRecordings.get(productId));
+                    this.sessionRecordings.remove(productId);
+                    log.info("stop recording complete");
                     removedSession.close();
                 } catch (Exception e) {
                     log.error("pub close error = ", e);
@@ -212,7 +298,7 @@ public class StreamingService {
                 log.error("liveCount error", e);
             }
 
-            return session.getActiveConnections().size()-1;
+            return session.getActiveConnections().size() - 1;
         }
     }
 }
