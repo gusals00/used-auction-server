@@ -67,7 +67,14 @@ public class StreamingController {
     @Operation(summary = "Publisher 토큰 생성")
     public ResultRes<OpenviduTokenRes> getTokenPublisher(@RequestBody OpenviduTokenReq openviduTokenReq, @AuthenticationPrincipal User user) {
 
-        return new ResultRes<>(streamingService.joinPublisher(openviduTokenReq.getProductId(), user.getUsername()));
+//        return new ResultRes<>(streamingService.joinPublisher(openviduTokenReq.getProductId(), user.getUsername()));
+        return new ResultRes<>(streamingService.joinPublisherTest(openviduTokenReq.getProductId(), user.getUsername()));
+    }
+
+    @PostMapping("/recording")
+    public ResultRes<MessageRes> startRecording(@RequestBody RecordingStartReq startReq, @AuthenticationPrincipal User user) {
+        streamingService.startRecording(startReq.getProductId(), user.getUsername());
+        return new ResultRes<>(new MessageRes("녹화가 시작됩니다"));
     }
 
     @PostMapping("/get-token-sub")
