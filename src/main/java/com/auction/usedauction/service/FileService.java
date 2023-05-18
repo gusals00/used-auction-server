@@ -1,5 +1,6 @@
 package com.auction.usedauction.service;
 
+import com.auction.usedauction.aop.S3Rollback;
 import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.ProductStatus;
 import com.auction.usedauction.domain.file.ProductVideo;
@@ -25,6 +26,7 @@ public class FileService {
     private final ProductRepository productRepository;
 
     @Transactional
+    @S3Rollback
     public Long registerVideoFile(Long productId, File file) {
         UploadFileDTO uploadFileDTO = fileUploader.uploadFile(file, FileSubPath.STREAMING_VIDEO_PATH);
         Product findProduct = productRepository.findByIdAndProductStatus(productId, ProductStatus.EXIST).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));

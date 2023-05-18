@@ -13,9 +13,15 @@ import com.auction.usedauction.service.dto.OpenviduTokenRes;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,6 +35,9 @@ public class StreamingService {
     private final StreamingRepository streamingRepository;
     private final OpenVidu openVidu;
     private final ProductRepository productRepository;
+    private final FileService fileService;
+    @Value("${INIT_FILE_PATH}")
+    private String tempFilePath;
 
     private Map<Long, String> sessionRecordings = new ConcurrentHashMap<>(); // <productId, recordingId>
 
@@ -161,9 +170,9 @@ public class StreamingService {
         if (session == null) {
             throw new CustomException(INVALID_SESSION);
         }
-
+        // 녹화 파일 이름 -> 녹화 시작 날짜(2023-05-08 12:11)
         RecordingProperties properties = new RecordingProperties.Builder()
-                .name("MY_RECORDING_NAME")
+                .name(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
         try {
             log.info("start recording");
@@ -175,6 +184,43 @@ public class StreamingService {
             log.error("recording start error, productId={}", productId, e);
             throw new CustomException(STREAMING_SERVER_ERROR);
         }
+    }
+
+    public void stopRecording(Long productId) throws OpenViduJavaClientException, OpenViduHttpException {
+        log.info("stop recording");
+        Recording recording = this.openVidu.stopRecording(sessionRecordings.get(productId));
+        log.info("[stop recording productId = {}] id = {}, sessionId={}, name = {}, url = {}", productId, recording.getId(), recording.getSessionId(), recording.getName(), recording.getUrl());
+        log.info("stop recording complete");
+
+        // s3에 영상 저장 및 db에 s3 url 저장
+        sendRecordingFileToS3(recording, productId);
+    }
+
+    public void sendRecordingFileToS3(Recording recording, Long productId) {
+        String urlStr = recording.getUrl();
+        try {
+            URL url = new URL(urlStr);
+            URLConnection connection = url.openConnection();
+            InputStream inputStream = connection.getInputStream();
+            log.info("임시 파일 생성");
+            File file = new File(tempFilePath + recording.getName()+".mp4");
+            copyInputStreamToFile(inputStream, file);
+            fileService.registerVideoFile(productId,file);
+            if (file.delete()) {
+                log.info("임시 파일 삭제");
+            }
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void copyInputStreamToFile(InputStream input, File file) throws IOException {
+        // append = false
+        try (OutputStream output = new FileOutputStream(file, false)) {
+            input.transferTo(output);
+        }
+
     }
 
     // 구매자 방송 참여
@@ -235,11 +281,8 @@ public class StreamingService {
                 Session removedSession = streamingRepository.removeSession(productId);
                 streamingRepository.removeProductIdTokens(productId);
                 try {
-                    log.info("stop recording");
-                    Recording recording = this.openVidu.stopRecording(sessionRecordings.get(productId));
+                    stopRecording(productId);
                     this.sessionRecordings.remove(productId);
-                    log.info("[stop recording productId = {}] id = {}, sessionId={}, name = {}, url = {}", productId, recording.getId(), recording.getSessionId(), recording.getName(), recording.getUrl());
-                    log.info("stop recording complete");
                     removedSession.close();
                 } catch (Exception e) {
                     log.error("pub close error = ", e);
