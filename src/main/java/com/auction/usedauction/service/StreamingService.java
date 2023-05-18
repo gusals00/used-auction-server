@@ -16,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static com.auction.usedauction.exception.error_code.StreamingErrorCode.*;
 
 @Service
@@ -26,6 +29,8 @@ public class StreamingService {
     private final StreamingRepository streamingRepository;
     private final OpenVidu openVidu;
     private final ProductRepository productRepository;
+
+    private Map<Long, String> sessionRecordings = new ConcurrentHashMap<>(); // <productId, recordingId>
 
     // 판매자 방송 시작
     public OpenviduTokenRes joinPublisher(Long productId, String loginId) {
@@ -53,22 +58,31 @@ public class StreamingService {
         // Role associated to this user
         OpenViduRole role = OpenViduRole.PUBLISHER;
 
-        // Build connectionProperties object with the serverData and the role
         ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).role(role).build();
+
+        RecordingProperties recordingProperties = new RecordingProperties.Builder().outputMode(Recording.OutputMode.COMPOSED).hasAudio(true)
+                .hasVideo(true).name("test-record").build();
+
+        SessionProperties sessionProperties = new SessionProperties.Builder()
+                .recordingMode(RecordingMode.MANUAL)
+                .defaultRecordingProperties(recordingProperties)
+                .build();
 
         try {
             // Create a new OpenVidu Session
-            Session session = openVidu.createSession();
+            Session session = openVidu.createSession(sessionProperties);
             log.info("New session = {} , sessionId = {}", productId, session.getSessionId());
 
             // Generate a new Connection with the recently created connectionProperties
             String token = session.createConnection(connectionProperties).getToken();
             log.info("New pub token = {}", token);
-
             // Store the session and the token in our collections
             streamingRepository.addSession(productId, session);
             streamingRepository.addToken(productId, token, role);
 
+            log.info("start recording");
+            Recording recording = this.openVidu.startRecording(String.valueOf(productId), recordingProperties);
+            this.sessionRecordings.put(productId, recording.getId());
 
             return new OpenviduTokenRes(token, session.getSessionId());
         } catch (Exception e) {
@@ -135,6 +149,8 @@ public class StreamingService {
                 Session removedSession = streamingRepository.removeSession(productId);
                 streamingRepository.removeProductIdTokens(productId);
                 try {
+                    this.openVidu.stopRecording(sessionRecordings.get(productId));
+                    this.sessionRecordings.remove(productId);
                     removedSession.close();
                 } catch (Exception e) {
                     log.error("pub close error = ", e);
