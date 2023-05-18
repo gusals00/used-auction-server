@@ -6,7 +6,6 @@ import com.auction.usedauction.domain.ProductStatus;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.exception.error_code.ProductErrorCode;
-import com.auction.usedauction.exception.error_code.StreamingErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.repository.StreamingRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
@@ -237,8 +236,9 @@ public class StreamingService {
                 streamingRepository.removeProductIdTokens(productId);
                 try {
                     log.info("stop recording");
-                    this.openVidu.stopRecording(sessionRecordings.get(productId));
+                    Recording recording = this.openVidu.stopRecording(sessionRecordings.get(productId));
                     this.sessionRecordings.remove(productId);
+                    log.info("[stop recording productId = {}] id = {}, sessionId={}, name = {}, url = {}", productId, recording.getId(), recording.getSessionId(), recording.getName(), recording.getUrl());
                     log.info("stop recording complete");
                     removedSession.close();
                 } catch (Exception e) {
