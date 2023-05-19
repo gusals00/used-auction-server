@@ -175,11 +175,14 @@ public class StreamingService {
             throw new CustomException(ALREADY_RECORDING);
         }
 
-        // 녹화 파일 이름 -> 녹화 시작 날짜(20230508-12:11)
-//        String recordName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-//        log.info("recording name = {}", recordName);
+        // 녹화 파일 이름 -> 녹화 시작 날짜(20230508_1211)
+        StringBuilder recordNameBuilder = new StringBuilder();
+        String recordName = recordNameBuilder
+                .append("record")
+                .append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"))).toString();
+
         RecordingProperties properties = new RecordingProperties.Builder()
-                .name("name_test201812301221")
+                .name(recordName)
                 .build();
         try {
             log.info("start recording");
