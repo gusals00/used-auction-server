@@ -38,7 +38,6 @@ public class StreamingService {
     private final FileService fileService;
     @Value("${INIT_FILE_PATH}")
     private String tempFilePath;
-
     private Map<Long, String> sessionRecordings = new ConcurrentHashMap<>(); // <productId, recordingId>
 
     // 판매자 방송 시작
@@ -170,9 +169,15 @@ public class StreamingService {
         if (session == null) {
             throw new CustomException(INVALID_SESSION);
         }
-        // 녹화 파일 이름 -> 녹화 시작 날짜(2023-05-08 12:11)
+
+        // 이미 녹화중인 경우
+        if (sessionRecordings.get(productId) != null) {
+            throw new CustomException(ALREADY_RECORDING);
+        }
+
+        // 녹화 파일 이름 -> 녹화 시작 날짜(20230508-12:11)
         RecordingProperties properties = new RecordingProperties.Builder()
-                .name("testname")
+                .name(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm")))
                 .build();
         try {
             log.info("start recording");
@@ -187,25 +192,32 @@ public class StreamingService {
     }
 
     public void stopRecording(Long productId) throws OpenViduJavaClientException, OpenViduHttpException {
-        log.info("stop recording");
-        Recording recording = this.openVidu.stopRecording(sessionRecordings.get(productId));
-        log.info("[stop recording productId = {}] id = {}, sessionId={}, name = {}, url = {}", productId, recording.getId(), recording.getSessionId(), recording.getName(), recording.getUrl());
-        log.info("stop recording complete");
+        log.info("trying to stop recording");
 
-        // s3에 영상 저장 및 db에 s3 url 저장
-        sendRecordingFileToS3(recording, productId);
+        if (sessionRecordings.get(productId) != null) {
+            String recordId = sessionRecordings.remove(productId);
+            Recording recording = this.openVidu.stopRecording(recordId);
+            log.info("stop recording productId = {}] id = {}, sessionId={}, name = {}, url = {}", productId, recording.getId(), recording.getSessionId(), recording.getName(), recording.getUrl());
+            log.info("stop recording complete");
+
+            // s3에 영상 저장 및 db에 s3 url 저장
+            sendRecordingFileToS3(recording, productId);
+        } else {
+            log.info("it is not recording status");
+        }
     }
 
     public void sendRecordingFileToS3(Recording recording, Long productId) {
         String urlStr = recording.getUrl();
+        String ext = ".mp4";
         try {
             URL url = new URL(urlStr);
             URLConnection connection = url.openConnection();
             InputStream inputStream = connection.getInputStream();
             log.info("임시 파일 생성");
-            File file = new File(tempFilePath + recording.getName()+".mp4");
+            File file = new File(tempFilePath + recording.getName() + ext);
             copyInputStreamToFile(inputStream, file);
-            fileService.registerVideoFile(productId,file);
+            fileService.registerVideoFile(productId, file);
             if (file.delete()) {
                 log.info("임시 파일 삭제");
             }

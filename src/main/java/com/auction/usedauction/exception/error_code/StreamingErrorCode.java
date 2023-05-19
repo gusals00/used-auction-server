@@ -13,7 +13,8 @@ public enum StreamingErrorCode implements ErrorCode {
     STREAMING_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "다시 시도해 주세요"),
     INVALID_STREAMING_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 토큰입니다."),
     INVALID_STREAMING_PUBLISHER(HttpStatus.BAD_REQUEST, "스트리밍 PUBLISHER가 아닙니다."),
-    INVALID_STREAMING_SUBSCRIBER(HttpStatus.BAD_REQUEST, "스트리밍 SUBSCRIBER가 아닙니다.");
+    INVALID_STREAMING_SUBSCRIBER(HttpStatus.BAD_REQUEST, "스트리밍 SUBSCRIBER가 아닙니다."),
+    ALREADY_RECORDING(HttpStatus.BAD_REQUEST,"이미 녹화중입니다.");
     private final HttpStatus status;
     private final String message;
 }
