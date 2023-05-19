@@ -114,14 +114,6 @@ public class StreamingService {
 
         log.info("Getting a token from OpenVidu Server | {productId}= {}", productId);
 
-        String publisherToken = streamingRepository.getPublisherToken(productId);
-
-        // 방송중인 판매자가 재입장하는 경우 이미 존재하는 토큰과 세션 반환
-        if (publisherToken != null) {
-            log.info("방송중인 판매자가 재입장하는 경우");
-            return new OpenviduTokenRes(publisherToken, streamingRepository.getSession(productId).getSessionId());
-        }
-
         // Role associated to this user
         OpenViduRole role = OpenViduRole.PUBLISHER;
 
@@ -129,7 +121,7 @@ public class StreamingService {
 
         RecordingProperties recordingProperties = new RecordingProperties.Builder()
                 .outputMode(Recording.OutputMode.COMPOSED)
-                .resolution("640x480")
+                .resolution("1280x720")
                 .frameRate(24)
                 .build();
 
