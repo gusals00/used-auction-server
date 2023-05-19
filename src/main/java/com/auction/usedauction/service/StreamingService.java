@@ -179,7 +179,7 @@ public class StreamingService {
 //        String recordName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
 //        log.info("recording name = {}", recordName);
         RecordingProperties properties = new RecordingProperties.Builder()
-                .name("name_test")
+                .name("name_test201812301221")
                 .build();
         try {
             log.info("start recording");
