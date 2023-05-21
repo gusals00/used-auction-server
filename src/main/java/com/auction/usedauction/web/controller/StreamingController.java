@@ -4,19 +4,14 @@ import com.auction.usedauction.repository.StreamingRepository;
 import com.auction.usedauction.service.StreamingService;
 import com.auction.usedauction.service.dto.OpenviduTokenRes;
 import com.auction.usedauction.web.dto.*;
-import io.openvidu.java.client.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 
 @RestController
@@ -27,51 +22,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StreamingController {
 
-    private final OpenVidu openVidu;
     private final StreamingService streamingService;
     private final StreamingRepository streamingRepository;
-
-    /**
-     * @param params The Session properties
-     * @return The Session ID
-     */
-    @PostMapping
-    @Operation(summary = "openvidu tutorial 세션 생성")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        SessionProperties properties = SessionProperties.fromJson(params).build();
-        Session session = openVidu.createSession(properties);
-        return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
-    }
-
-    /**
-     * @param sessionId The Session in which to create the Connection
-     * @param params    The Connection properties
-     * @return The Token associated to the Connection
-     */
-    @PostMapping("/{sessionId}/connections")
-    @Operation(summary = "openvidu tutorial 토큰 생성")
-    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-                                                   @RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        Session session = openVidu.getActiveSession(sessionId);
-        if (session == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
-        Connection connection = session.createConnection(properties);
-        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
-    }
 
     @PostMapping("/get-token-pub")
     @Operation(summary = "Publisher 토큰 생성")
     public ResultRes<OpenviduTokenRes> getTokenPublisher(@RequestBody OpenviduTokenReq openviduTokenReq, @AuthenticationPrincipal User user) {
 
-//        return new ResultRes<>(streamingService.joinPublisher(openviduTokenReq.getProductId(), user.getUsername()));
-        return new ResultRes<>(streamingService.joinPublisherTest(openviduTokenReq.getProductId(), user.getUsername()));
+        return new ResultRes<>(streamingService.joinPublisher(openviduTokenReq.getProductId(), user.getUsername()));
     }
 
     @PostMapping("/recording")
+    @Operation(summary = "방송 녹화 시작")
     public ResultRes<MessageRes> startRecording(@RequestBody RecordingStartReq startReq, @AuthenticationPrincipal User user) {
         streamingService.startRecording(startReq.getProductId(), user.getUsername());
         return new ResultRes<>(new MessageRes("녹화가 시작됩니다"));

@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.util.stream.Collectors.toList;
-
 @Repository
 public class StreamingRepository {
 
     private Map<Long, Session> mapSessions = new ConcurrentHashMap<>(); // <productId : session>
 
     private Map<Long, Map<String, OpenViduRole>> mapProductIdTokens = new ConcurrentHashMap<>(); // <productId : <token : role>>
+
+    private Map<Long, String> sessionRecordings = new ConcurrentHashMap<>(); // <productId, recordingId>, 녹화중인 방송
 
     public Session getSession(Long productId) {
         return mapSessions.get(productId);
@@ -61,13 +61,28 @@ public class StreamingRepository {
     public String getPublisherToken(Long productId) {
         if (mapSessions.get(productId) != null) {
             Map<String, OpenViduRole> rolemap = mapProductIdTokens.get(productId);
-            List<String> collect = rolemap.entrySet().stream()
-                    .filter(entry -> rolemap.get(entry.getKey()).equals(OpenViduRole.PUBLISHER))
-                    .map(Map.Entry::getKey)
-                    .collect(toList());
+            List<String> collect = rolemap.keySet().stream()
+                    .filter(openViduRole -> rolemap.get(openViduRole).equals(OpenViduRole.PUBLISHER))
+                    .toList();
 
             return collect.isEmpty() ? null : collect.get(0);
         }
         return null;
+    }
+
+    public boolean existRecordingId(Long productId) {
+        return sessionRecordings.get(productId) != null;
+    }
+
+    public String getRecordingId(Long productId) {
+        return sessionRecordings.get(productId);
+    }
+
+    public String removeRecordingId(Long productId) {
+        return sessionRecordings.remove(productId);
+    }
+
+    public void addRecordingId(Long productId, String recordingId) {
+        sessionRecordings.put(productId, recordingId);
     }
 }
