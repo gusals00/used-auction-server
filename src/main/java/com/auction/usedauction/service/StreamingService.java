@@ -55,65 +55,6 @@ public class StreamingService {
 
         log.info("Getting a token from OpenVidu Server | {productId}= {}", productId);
 
-        String publisherToken = streamingRepository.getPublisherToken(productId);
-
-        // 방송중인 판매자가 재입장하는 경우 이미 존재하는 토큰과 세션 반환
-        if (publisherToken != null) {
-            log.info("방송중인 판매자가 재입장하는 경우");
-            return new OpenviduTokenRes(publisherToken, streamingRepository.getSession(productId).getSessionId());
-        }
-
-        // Role associated to this user
-        OpenViduRole role = OpenViduRole.PUBLISHER;
-
-        ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).role(role).build();
-
-        RecordingProperties recordingProperties = new RecordingProperties.Builder().outputMode(Recording.OutputMode.COMPOSED).hasAudio(true)
-                .hasVideo(true).name("test-record").build();
-
-        SessionProperties sessionProperties = new SessionProperties.Builder()
-                .recordingMode(RecordingMode.MANUAL)
-                .defaultRecordingProperties(recordingProperties)
-                .build();
-
-        try {
-            // Create a new OpenVidu Session
-            Session session = openVidu.createSession(sessionProperties);
-            log.info("New session = {} , sessionId = {}", productId, session.getSessionId());
-
-            // Generate a new Connection with the recently created connectionProperties
-            String token = session.createConnection(connectionProperties).getToken();
-            log.info("New pub token = {}", token);
-            // Store the session and the token in our collections
-            streamingRepository.addSession(productId, session);
-            streamingRepository.addToken(productId, token, role);
-
-//            log.info("start recording");
-//            Recording recording = this.openVidu.startRecording(session.getSessionId(), recordingProperties);
-//            this.sessionRecordings.put(productId, recording.getId());
-//            log.info("start recording complete");
-
-            return new OpenviduTokenRes(token, session.getSessionId());
-        } catch (Exception e) {
-            log.error("pub error = ", e);
-            throw new CustomException(STREAMING_SERVER_ERROR);
-        }
-    }
-
-    public OpenviduTokenRes joinPublisherTest(Long productId, String loginId) {
-        // 판매자 - 세션 없어야 가능, 구매자 - 세션 존재해야 가능
-        // 권한 체크
-        Product product = productRepository.findByIdAndProductStatus(productId, ProductStatus.EXIST)
-                .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
-        if (product.getAuction().getStatus() != AuctionStatus.BID) {
-            throw new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING);
-        }
-        if (!loginId.equals(product.getMember().getLoginId())) {
-            throw new CustomException(UserErrorCode.INVALID_USER);
-        }
-
-        log.info("Getting a token from OpenVidu Server | {productId}= {}", productId);
-
         // Role associated to this user
         OpenViduRole role = OpenViduRole.PUBLISHER;
 
@@ -124,7 +65,6 @@ public class StreamingService {
                 .resolution("1280x720")
                 .frameRate(24)
                 .build();
-
         SessionProperties sessionProperties = new SessionProperties.Builder()
                 .recordingMode(RecordingMode.MANUAL)
                 .defaultRecordingProperties(recordingProperties)
@@ -179,7 +119,7 @@ public class StreamingService {
         try {
             log.info("start recording");
             Recording recording = this.openVidu.startRecording(session.getSessionId(), properties);
-            this.sessionRecordings.put(productId, recording.getId());
+            streamingRepository.addRecordingId(productId, recording.getId());
             log.info("start recording complete");
             return recording.getId();
         } catch (Exception e) {
@@ -189,33 +129,35 @@ public class StreamingService {
     }
 
     public void stopRecording(Long productId) throws OpenViduJavaClientException, OpenViduHttpException {
-        log.info("trying to stop recording");
+        log.info("[녹화 종료 시도]");
 
-        if (sessionRecordings.get(productId) != null) {
-            String recordId = sessionRecordings.remove(productId);
+        if (streamingRepository.existRecordingId(productId)) {
+            String recordId = streamingRepository.removeRecordingId(productId);
             Recording recording = this.openVidu.stopRecording(recordId);
-            log.info("stop recording productId = {}] id = {}, sessionId={}, name = {}, url = {}", productId, recording.getId(), recording.getSessionId(), recording.getName(), recording.getUrl());
-            log.info("stop recording complete");
+            log.info("녹화 종료 productId = {}] id = {}, sessionId={}, name = {}, url = {}", productId, recording.getId(), recording.getSessionId(), recording.getName(), recording.getUrl());
+            log.info("[녹화 종료 성공]");
 
             // s3에 영상 저장 및 db에 s3 url 저장
             sendRecordingFileToS3(recording, productId);
         } else {
-            log.info("it is not recording status");
+            log.info("[녹화중인 방송이 아닙니다.]");
         }
     }
 
-    public void sendRecordingFileToS3(Recording recording, Long productId) {
+    private void sendRecordingFileToS3(Recording recording, Long productId) {
         String urlStr = recording.getUrl();
         String ext = ".mp4";
         try {
+            //녹화 파일 접근
             URL url = new URL(urlStr);
             URLConnection connection = url.openConnection();
             InputStream inputStream = connection.getInputStream();
             log.info("임시 파일 생성");
-            File file = new File(tempFilePath + recording.getName() + ext);
-            copyInputStreamToFile(inputStream, file);
-            fileService.registerVideoFile(productId, file);
-            if (file.delete()) {
+            File recordingFile = new File(tempFilePath + recording.getName() + ext);
+            copyInputStreamToFile(inputStream, recordingFile);
+            // 파일 저장
+            fileService.registerVideoFile(productId, recordingFile);
+            if (recordingFile.delete()) {
                 log.info("임시 파일 삭제");
             }
             inputStream.close();
@@ -224,7 +166,7 @@ public class StreamingService {
         }
     }
 
-    private static void copyInputStreamToFile(InputStream input, File file) throws IOException {
+    private void copyInputStreamToFile(InputStream input, File file) throws IOException {
         // append = false
         try (OutputStream output = new FileOutputStream(file, false)) {
             input.transferTo(output);
@@ -338,19 +280,16 @@ public class StreamingService {
 
     //몇명이 방송 시청중인지
     public int getLiveCount(Long productId) {
-        if (streamingRepository.getSession(productId) == null) { // 생방송중이 아닌 경우
-            return 0;
-        } else {
+        if (streamingRepository.getSession(productId) != null) {
             Session session = streamingRepository.getSession(productId);
             try {
                 session.fetch();
-            } catch (OpenViduJavaClientException e) {
-                log.error("liveCount error", e);
-            } catch (OpenViduHttpException e) {
+                int viewerCount = session.getActiveConnections().size();
+                return viewerCount > 0 ? viewerCount - 1 : 0;
+            } catch (OpenViduJavaClientException | OpenViduHttpException e) {
                 log.error("liveCount error", e);
             }
-
-            return session.getActiveConnections().size() - 1;
         }
+        return 0;
     }
 }
