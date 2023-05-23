@@ -74,7 +74,7 @@ public class ProductDetailInfoRes {
 
         this.videoList = product.getProductVideoList()
                 .stream()
-                .map(productVideo -> new VideoInfoRes(productVideo.getOriginalName(), productVideo.getFullPath()))
+                .map(productVideo -> new VideoInfoRes(productVideo.getId(), productVideo.getFullPath()))
                 .collect(toList());
     }
 

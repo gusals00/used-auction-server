@@ -34,7 +34,6 @@ public class ProductQueryService {
         Page<Product> findPage = productRepository.findBySearchCond(searchCond, pageable);
         List<Product> contents = findPage.getContent();
 
-        //라이브 중인지는 나중에 추가할 예정
         List<ProductPageContentRes> productListContents = contents.stream()
                 .map(product -> new ProductPageContentRes(product, streamingRepository.isLive(product.getId())))
                 .toList();

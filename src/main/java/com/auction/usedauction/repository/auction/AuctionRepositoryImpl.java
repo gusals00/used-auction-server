@@ -33,12 +33,25 @@ public class AuctionRepositoryImpl implements AuctionRepositoryCustom {
     public List<Long> findSuccessButNotTransIdByDate(LocalDateTime date) {
         return queryFactory.select(auction.id)
                 .from(auction)
-                .where(auctionStatusEq(AuctionStatus.SUCCESS_BID),auction.auctionEndDate.after(date))
+                .where(auctionStatusEq(AuctionStatus.SUCCESS_BID), auction.auctionEndDate.after(date))
                 .fetch();
+    }
+
+    @Override
+    public Optional<Auction> findAuctionByProductId(Long productId) {
+        return Optional.ofNullable(
+                queryFactory.select(auction)
+                        .from(auction)
+                        .join(auction.product, product)
+                        .where(productIdEq(productId)).fetchOne());
     }
 
     private BooleanExpression auctionIdEq(Long auctionId) {
         return auctionId != null ? auction.id.eq(auctionId) : null;
+    }
+
+    private BooleanExpression productIdEq(Long productId) {
+        return productId != null ? product.id.eq(productId) : null;
     }
 
     private BooleanExpression auctionStatusEq(AuctionStatus auctionStatus) {
