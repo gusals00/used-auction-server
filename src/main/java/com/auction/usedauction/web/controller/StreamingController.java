@@ -1,6 +1,7 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.repository.StreamingRepository;
+import com.auction.usedauction.service.FileService;
 import com.auction.usedauction.service.StreamingService;
 import com.auction.usedauction.service.dto.OpenviduTokenRes;
 import com.auction.usedauction.web.dto.*;
@@ -24,6 +25,7 @@ public class StreamingController {
 
     private final StreamingService streamingService;
     private final StreamingRepository streamingRepository;
+    private final FileService fileService;
 
     @PostMapping("/get-token-pub")
     @Operation(summary = "Publisher 토큰 생성")
@@ -73,4 +75,12 @@ public class StreamingController {
     public ResultRes<LiveCountRes> liveCount(@PathVariable Long productId) {
         return new ResultRes<>(new LiveCountRes(streamingService.getLiveCount(productId)));
     }
+
+    @DeleteMapping("/record/{videoId}")
+    @Operation(summary = "녹화 영상 삭제")
+    public ResultRes<MessageRes> deleteVideo(@PathVariable Long videoId, @AuthenticationPrincipal User user) {
+        fileService.deleteVideo(videoId, user.getUsername());
+        return new ResultRes<>(new MessageRes("녹화 영상 삭제 완료"));
+    }
+
 }

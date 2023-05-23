@@ -13,7 +13,6 @@ public enum FileErrorCode implements ErrorCode {
     FILE_EMPTY(HttpStatus.BAD_REQUEST,"파일이 비어 있습니다."),
     FILE_NOT_FOUND(HttpStatus.BAD_REQUEST,"해당 경로에 파일이 없습니다."),
     NO_FILE_NAME(HttpStatus.BAD_REQUEST,"파일 이름이 비어 있습니다.");
-
     private final HttpStatus status;
     private final String message;
 }
