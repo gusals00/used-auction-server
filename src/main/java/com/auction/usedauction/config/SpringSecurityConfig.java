@@ -55,6 +55,9 @@ public class SpringSecurityConfig {
                 // product
                 .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/products/*").permitAll()
+                // auction
+                .requestMatchers(HttpMethod.GET,"/api/auctions/*").permitAll()
+
                 //category
                 .requestMatchers("/api/categories").permitAll()
                 //question
