@@ -142,9 +142,18 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     public Integer findNowPriceByProductId(Long productId) {
         return queryFactory.select(auction.nowPrice)
                 .from(product)
-                .join(product.auction,auction)
-                .where(productIdEq(productId),productStatusEq(ProductStatus.EXIST))
+                .join(product.auction, auction)
+                .where(productIdEq(productId), productStatusEq(ProductStatus.EXIST))
                 .fetchOne();
+    }
+
+    @Override
+    public boolean existProductByIdAndLoginId(Long productId, String loginId) {
+        return queryFactory.select(product)
+                .from(product)
+                .join(product.member, member)
+                .where(productIdEq(productId), member.loginId.eq(loginId))
+                .fetchOne() != null;
     }
 
     private OrderSpecifier[] orderCond(ProductOrderCond orderCond) {
@@ -223,9 +232,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private BooleanExpression historyStatusEq(String status) {
-        if(!StringUtils.hasText(status)) {
+        if (!StringUtils.hasText(status)) {
             return auction.status.eq(AuctionStatus.TRANSACTION_OK).or(auction.status.eq(AuctionStatus.TRANSACTION_FAIL));
-        } else if(status.equals("transaction-ok")) {
+        } else if (status.equals("transaction-ok")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_OK);
         } else if (status.equals("transaction-fail")) {
             return auction.status.eq(AuctionStatus.TRANSACTION_FAIL);

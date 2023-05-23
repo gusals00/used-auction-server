@@ -7,6 +7,7 @@ import com.auction.usedauction.exception.error_code.BindingErrorCode;
 import com.auction.usedauction.exception.error_code.FileErrorCode;
 import com.auction.usedauction.repository.dto.ProductOrderCond;
 import com.auction.usedauction.repository.dto.ProductSearchCondDTO;
+import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.ProductService;
 import com.auction.usedauction.service.dto.*;
 import com.auction.usedauction.service.query.ProductQueryService;
@@ -44,6 +45,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 @Tag(name = "상품 컨트롤러", description = "상품 관련 api")
 public class ProductController {
+    private final ProductRepository productRepository;
 
     private final ProductService productService;
     private final ProductQueryService productQueryService;
@@ -144,6 +146,13 @@ public class ProductController {
     public ResultRes<ProductUpdateInfoRes> updateProduct(@PathVariable Long productId, @AuthenticationPrincipal User user) {
         log.info("상품 수정 정보 조회 컨트롤러 호출");
         return new ResultRes<>(productQueryService.getProductUpdateInfo(productId, user.getUsername()));
+    }
+
+    @Operation(summary = "판매자가 판매하는 상품인지 확인")
+    @GetMapping("/valid/{productId}")
+    public ResultRes<ValidResult> validRightSellerForProduct(@PathVariable Long productId,@AuthenticationPrincipal User user) {
+        log.info("validRightSellerForProduct controller");
+        return new ResultRes<>(new ValidResult(productRepository.existProductByIdAndLoginId(productId, user.getUsername())));
     }
 
     private List<UploadFileDTO> uploadOrdinalImages(ProductRegisterReq registerReq) {

@@ -16,4 +16,5 @@ public interface ProductRepositoryCustom {
     Page<Product> findMyProductsByCond(String loginId, MyPageSearchConReq cond, Pageable pageable);
     Page<Product> findMySalesHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable);
     Integer findNowPriceByProductId(Long productId);
+    boolean existProductByIdAndLoginId(Long productId, String loginId);
 }
