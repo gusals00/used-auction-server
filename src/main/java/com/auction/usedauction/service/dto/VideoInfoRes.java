@@ -10,8 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class VideoInfoRes {
 
-    @Schema(description = "동영상 원본 이름", example = "1.mp4")
-    private String originalName;
+    @Schema(description = "동영상 ID", example = "1")
+    private Long videoId;
     @Schema(description = "동영상 저장 경로", example = "http://sfieuhfe.1.mp4")
     private String path;
 }

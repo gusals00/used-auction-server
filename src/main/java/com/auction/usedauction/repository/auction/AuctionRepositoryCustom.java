@@ -11,5 +11,5 @@ public interface AuctionRepositoryCustom {
     Optional<Auction> findBidAuctionByAuctionIdWithFetchJoin(Long auctionId);
 
     List<Long> findSuccessButNotTransIdByDate(LocalDateTime date);
-
+    Optional<Auction> findAuctionByProductId(Long productId);
 }

@@ -13,7 +13,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final AuctionEndRepository auctionEndRepository;
-    private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

@@ -1,10 +1,15 @@
 package com.auction.usedauction.web.controller;
 
 
+import com.auction.usedauction.domain.Auction;
+import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.AuctionErrorCode;
+import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
 import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import com.auction.usedauction.service.dto.SseUpdatePriceDTO;
+import com.auction.usedauction.web.dto.AuctionInfoRes;
 import com.auction.usedauction.web.dto.BidReq;
 import com.auction.usedauction.web.dto.MessageRes;
 import com.auction.usedauction.web.dto.ResultRes;
@@ -29,6 +34,7 @@ import java.util.Locale;
 public class AuctionHistoryController {
     private final AuctionHistoryService auctionHistoryService;
     private final SseEmitterService sseEmitterService;
+    private final AuctionRepository auctionRepository;
 
     @PostMapping("/{auctionId}")
     @Operation(summary = "상품 경매 입찰 메서드")
@@ -52,5 +58,13 @@ public class AuctionHistoryController {
         }
 
         return new ResultRes<>(new MessageRes(convertedPrice + "원 입찰을 성공했습니다."));
+    }
+
+    @GetMapping("/{productId}")
+    @Operation(summary = "상품 경매 정보")
+    public ResultRes<AuctionInfoRes> getAuctionInfo(@PathVariable Long productId) {
+        Auction auction = auctionRepository.findAuctionByProductId(productId)
+                .orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_FOUND));
+        return new ResultRes<>(new AuctionInfoRes(auction));
     }
 }
