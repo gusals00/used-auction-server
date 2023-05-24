@@ -152,8 +152,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return queryFactory.select(product)
                 .from(product)
                 .join(product.member, member)
-                .where(productIdEq(productId), member.loginId.eq(loginId))
+                .where(productIdEq(productId), loginIdEq(loginId))
                 .fetchOne() != null;
+    }
+
+    @Override
+    public List<Long> findProductIdsWithMember(List<Long> productIds, String loginId) {
+        return queryFactory.select(product.id)
+                .from(product)
+                .join(product.member, member)
+                .where(productStatusEq(ProductStatus.EXIST),
+                        productIdIn(productIds),
+                        loginIdEq(loginId)
+                )
+                .fetch();
     }
 
     private OrderSpecifier[] orderCond(ProductOrderCond orderCond) {
@@ -207,6 +219,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private BooleanExpression auctionHistoryLoginIdEq(String loginId) {
         return loginId != null ? auctionHistory.member.loginId.eq(loginId) : null;
+    }
+
+    private BooleanExpression productIdIn(List<Long> productIds) {
+        return productIds != null ? product.id.in(productIds) : null;
     }
 
     private BooleanExpression loginIdEq(String loginId) {
