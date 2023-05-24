@@ -89,7 +89,12 @@ public class MemberService {
         return tokenRes;
     }
 
+    @Transactional
     public void logout(User user, LogoutReq logoutReq) {
+
+        //판매자가 방송중인 방송 종료
+        streamingService.closeSellerAllSessions(user.getUsername());
+
         // refresh 토큰 확인
         if(redisUtil.getData("RefreshToken:" + user.getUsername()) != null) {
             // refresh 토큰 삭제
@@ -103,9 +108,6 @@ public class MemberService {
 
         // blacklist 등록
         redisUtil.setData(logoutReq.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
-
-        //판매자가 방송중인 방송 종료
-        streamingService.closeSellerAllSessions(user.getUsername());
     }
 
     @Transactional
