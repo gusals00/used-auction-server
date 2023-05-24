@@ -27,7 +27,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.http.HttpRequest;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +44,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final RedisUtil redisUtil;
+    private final StreamingService streamingService;
+
 
     // id와 password로 사용자를 인증해서 토큰을 반환함.
     public TokenDTO login(String loginId, String password) {
@@ -102,6 +103,9 @@ public class MemberService {
 
         // blacklist 등록
         redisUtil.setData(logoutReq.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+
+        //판매자가 방송중인 방송 종료
+        streamingService.closeSellerAllSessions(user.getUsername());
     }
 
     @Transactional

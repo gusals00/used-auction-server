@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -291,5 +292,15 @@ public class StreamingService {
             }
         }
         return 0;
+    }
+
+    //판매자가 방송하고 있는 방송 모두 종료
+    public void closeSellerAllSessions(String loginId) {
+        // 판매자가 스트리밍 하고 있는 경우,
+        List<Long> streamingProductIds = streamingRepository.getStreamingProductIds();
+        List<Long> findProductIds = productRepository.findProductIdsWithMember(streamingProductIds, loginId);
+        findProductIds.forEach(
+                productId-> closeSession(productId,streamingRepository.getPublisherToken(productId),loginId)
+        );
     }
 }

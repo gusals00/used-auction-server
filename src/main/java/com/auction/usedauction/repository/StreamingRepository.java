@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Repository
 public class StreamingRepository {
@@ -84,5 +85,11 @@ public class StreamingRepository {
 
     public void addRecordingId(Long productId, String recordingId) {
         sessionRecordings.put(productId, recordingId);
+    }
+
+    public List<Long> getStreamingProductIds() {
+        return mapSessions.entrySet().stream()
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 }

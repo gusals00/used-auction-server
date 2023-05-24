@@ -6,6 +6,7 @@ import com.auction.usedauction.web.dto.MyPageSearchConReq;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -17,4 +18,5 @@ public interface ProductRepositoryCustom {
     Page<Product> findMySalesHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable);
     Integer findNowPriceByProductId(Long productId);
     boolean existProductByIdAndLoginId(Long productId, String loginId);
+    List<Long> findProductIdsWithMember(List<Long> productIds, String loginId);
 }
