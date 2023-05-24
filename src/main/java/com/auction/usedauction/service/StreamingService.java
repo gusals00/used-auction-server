@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.io.*;
@@ -294,6 +295,7 @@ public class StreamingService {
         return 0;
     }
 
+    @Transactional
     //판매자가 방송하고 있는 방송 모두 종료
     public void closeSellerAllSessions(String loginId) {
         // 판매자가 스트리밍 하고 있는 경우,
