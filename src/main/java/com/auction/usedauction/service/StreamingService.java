@@ -301,6 +301,14 @@ public class StreamingService {
         // 판매자가 스트리밍 하고 있는 경우,
         List<Long> streamingProductIds = streamingRepository.getStreamingProductIds();
         List<Long> findProductIds = productRepository.findProductIdsWithMember(streamingProductIds, loginId);
+        log.info("현재 스트리밍중인 productId");
+        for (Long findProductId : findProductIds) {
+            log.info("streaming productId={}",findProductId);
+        }
+        log.info("판매자가 스트리밍중인 productId");
+        for (Long findProductId : findProductIds) {
+            log.info("streaming productId={}",findProductId);
+        }
         findProductIds.forEach(
                 productId-> closeSession(productId,streamingRepository.getPublisherToken(productId),loginId)
         );
