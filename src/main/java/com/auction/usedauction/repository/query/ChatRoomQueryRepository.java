@@ -1,5 +1,6 @@
 package com.auction.usedauction.repository.query;
 
+import com.auction.usedauction.domain.QMember;
 import com.auction.usedauction.repository.dto.ChatRoomCreateInfoDTO;
 import com.auction.usedauction.repository.dto.QChatRoomCreateInfoDTO;
 import com.auction.usedauction.repository.dto.QSellerAndBuyerLoginIdDTO;
@@ -22,12 +23,13 @@ public class ChatRoomQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     public Optional<SellerAndBuyerLoginIdDTO> findJoinedMembers(Long roomId) {
+        QMember productMember = new QMember("member2");
         return Optional.of(
                 queryFactory.select(new QSellerAndBuyerLoginIdDTO(product.member.loginId, chatRoom.member.loginId))
                         .from(chatRoom)
                         .join(chatRoom.member, member)
                         .join(chatRoom.product, product)
-                        .join(product.member, member)
+                        .join(product.member, productMember)
                         .where(roomIdEq(roomId))
                         .fetchOne()
         );

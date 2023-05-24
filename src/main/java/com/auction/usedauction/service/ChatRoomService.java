@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.auction.usedauction.exception.error_code.ChatErrorCode.*;
 import static com.auction.usedauction.util.RedisConstants.*;
 
 @Service
@@ -43,6 +44,11 @@ public class ChatRoomService {
         Product product = productRepository.findByIdAndProductStatusNot(productId, ProductStatus.DELETED)
                 .orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
+        // 중복체크
+        if(chatRoomRepository.existsByProductId(productId)) {
+            throw new CustomException(CHAT_ROOM_DUPLICATED);
+        }
+
         ChatRoom chatRoom = ChatRoom.builder()
                 .member(buyer)
                 .product(product)
@@ -55,7 +61,7 @@ public class ChatRoomService {
     @Transactional
     public void enterRoom(Long roomId, String loginId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new CustomException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CHAT_ROOM_NOT_FOUND));
 
         // 채팅방 접속인원 증가
         if(chatRoom.getUserCount() < 2) {
@@ -69,7 +75,7 @@ public class ChatRoomService {
     @Transactional
     public void leaveRoom(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new CustomException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CHAT_ROOM_NOT_FOUND));
 
         // 채팅방 접속인원 감소
         chatRoom.minusUserCount();
