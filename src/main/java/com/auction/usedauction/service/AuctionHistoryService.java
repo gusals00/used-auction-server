@@ -6,6 +6,7 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.exception.error_code.AuctionHistoryErrorCode;
 import com.auction.usedauction.exception.error_code.UserErrorCode;
+import com.auction.usedauction.repository.NotificationRepository;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
@@ -14,6 +15,7 @@ import com.auction.usedauction.repository.dto.AuctionIdAndLoginIds;
 import com.auction.usedauction.repository.dto.SellerAndBuyerIdDTO;
 import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
+import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import com.auction.usedauction.util.LockKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +31,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.auction.usedauction.domain.NotificationType.*;
+import static com.auction.usedauction.exception.error_code.UserErrorCode.*;
 import static com.auction.usedauction.util.MemberBanConstants.*;
 
 @RequiredArgsConstructor
@@ -42,6 +46,8 @@ public class AuctionHistoryService {
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final AuctionHistoryQueryRepository auctionHistoryQueryRepository;
     private final MemberRepository memberRepository;
+    private final SseEmitterService sseEmitterService;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     @RedissonLock(key = LockKey.BID_LOCK)
@@ -60,7 +66,7 @@ public class AuctionHistoryService {
 
         // 입찰자가 존재하는 회원인지
         Member member = memberRepository.findOneByLoginIdAndStatus(loginId, MemberStatus.EXIST)
-                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         // 최근 입찰자 조회
         String latestMemberLoginId = auctionHistoryRepository.findLatestBidMemberLoginId(auctionId);
@@ -106,7 +112,7 @@ public class AuctionHistoryService {
     // 특정 횟수 이상 거래 거절시
     public Long banMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Long rejectCountByMemberId = auctionHistoryRepository.findRejectCountByMemberId(memberId);
 
         if (rejectCountByMemberId >= MEMBER_BAN_MIN_COUNT) {
@@ -176,8 +182,18 @@ public class AuctionHistoryService {
 
         log.info("경매내역 상태 낙찰로 변경. 변경 개수 = {}", changeHistoryCount);
 
-        // 낙찰 성공한 auctionId, sellerLoginId, buyerLoginId
+        // 낙찰 성공한 productId, sellerLoginId, buyerLoginId
         List<AuctionIdAndLoginIds> successIds = auctionHistoryQueryRepository.findSellerAndBuyerLoginIdAndAuctionId(successBidIds);
+
+        // 거래확정 알림 생성, 전송
+        successIds.forEach(ids -> {
+            Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, ids.getProductId(), ids.getBuyerLoginId(), "구매 거래확정 알림");
+            Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, ids.getProductId(), ids.getSellerLoginId(), "판매 거래확정 알림");
+            notificationRepository.saveAll(List.of(buyTransConfirm, sellTransConfirm));
+
+            sseEmitterService.sendNotificationData(ids.getBuyerLoginId(), 1L); // 구매자 거래확정 알림 전송
+            sseEmitterService.sendNotificationData(ids.getSellerLoginId(), 1L); // 판매자 거래확정 알림 전송
+        });
     }
 
     //경매 종료시 경매 상태 변경
@@ -203,7 +219,6 @@ public class AuctionHistoryService {
                 .map(AuctionIdAndBidCountDTO::getAuctionId)
                 .collect(Collectors.toList());
     }
-
     private void validPriceUnit(int bidPrice, Auction auction) {
         if ((bidPrice - auction.getNowPrice()) % auction.getPriceUnit() != 0) {
             throw new CustomException(AuctionHistoryErrorCode.INVALID_PRICE_UNIT);
@@ -220,6 +235,18 @@ public class AuctionHistoryService {
 
     private boolean isProductSeller(Product product, String loginId) {
         return product.getMember().getLoginId().equals(loginId);
+    }
+
+    private Notification createNotification(NotificationType type, Long productId, String loginId, String content) {
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        return Notification.builder()
+                .checked(false)
+                .content(content)
+                .member(member)
+                .notificationType(type)
+                .relatedUrl("productList/productDetail/" + productId)
+                .build();
     }
 
     @Getter

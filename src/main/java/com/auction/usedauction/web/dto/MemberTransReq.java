@@ -14,9 +14,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MemberTransReq {
 
-    @Schema(description = "경매 ID",example = "1")
+    @Schema(description = "상품 ID",example = "1")
     @NotNull
-    private Long auctionId;
+    private Long productId;
 
     @Schema(description = "거래 상태, 거래 확정시 거래 상태 기준 참고",example = "TRANS_COMPLETE")
     @NotNull
