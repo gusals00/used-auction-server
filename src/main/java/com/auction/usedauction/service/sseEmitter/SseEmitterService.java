@@ -11,6 +11,7 @@ public interface SseEmitterService {
     String connect(SseType sseType, String loginId, Long productId, Long timeout);
     String connect(SseType sseType, Long productId, Long timeout);
     String connect(SseType sseType, String loginId, Long timeout);
+    String connectAndSendCount(SseType sseType, String loginId, Long timeout, Long notificationCount);
     void send(SseSendDTO sseSendDTO);
     @TransactionalEventListener
     void sendUpdatedBidPrice(SseUpdatePriceDTO updatePriceDTO);

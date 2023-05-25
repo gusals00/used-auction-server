@@ -1,6 +1,7 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.repository.dto.NotificationInfoDTO;
+import com.auction.usedauction.repository.dto.TransConfirmNotificationInfoDTO;
 import com.auction.usedauction.repository.query.NotificationQueryRepository;
 import com.auction.usedauction.web.dto.ResultRes;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,7 @@ public class NotificationController {
 
     @Operation(summary = "안읽은 거래확정 알림 조회")
     @GetMapping("/trans-confirm")
-    public ResultRes getUnReadTransConfirmNotifications(@AuthenticationPrincipal User user) {
+    public ResultRes<TransConfirmNotificationInfoDTO> getUnReadTransConfirmNotifications(@AuthenticationPrincipal User user) {
         return new ResultRes(notificationQueryRepository.findUnReadTransConfirmNotifications(user.getUsername()));
     }
 }

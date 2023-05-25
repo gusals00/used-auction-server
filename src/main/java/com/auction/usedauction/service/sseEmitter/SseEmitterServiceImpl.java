@@ -63,6 +63,16 @@ public class SseEmitterServiceImpl implements SseEmitterService {
         return sseEmitterId;
     }
 
+    @Override
+    public String connectAndSendCount(SseType sseType, String loginId, Long timeout, Long notificationCount) {
+        String sseEmitterId = SseEmitterUtils.createSseEmitterId(sseType, loginId);
+        SseEmitterDTO sseEmitterDTO = emitterRepository.saveEmitter(sseEmitterId, createSseEmitter(timeout));
+        onCompleteAndTimeout(sseEmitterDTO);
+        send(sseEmitterDTO, CONNECT, notificationCount);
+
+        return sseEmitterId;
+    }
+
     private void connect(String sseEmitterId, Long timeout) {
         SseEmitterDTO sseEmitterDTO = emitterRepository.saveEmitter(sseEmitterId, createSseEmitter(timeout));
         onCompleteAndTimeout(sseEmitterDTO);

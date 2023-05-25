@@ -67,15 +67,11 @@ public class SseController {
     @GetMapping(value = "/notification", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connectNotification(@AuthenticationPrincipal User user) {
         Long timeout = 1000 * 60 * 5L; //5분
-        //연결
-        String id = sseEmitterService.connect(SseType.NOTIFICATION, user.getUsername(), timeout);
-        SseEmitterDTO findEmitter = sseEmitterRepository.findByEmitterId(id);
-
-        // 안읽은 알림 개수 전송
         Long notificationCnt = notificationRepository.countByMember_LoginIdAndChecked(user.getUsername(), false);
-        if(notificationCnt != null) {
-            sseEmitterService.send(new SseSendDTO(findEmitter, SseSendName.SEND_NOTIFICATION_DATA, notificationCnt));
-        }
+
+        //연결하면서 안읽은 알림 개수 전송
+        String id = sseEmitterService.connectAndSendCount(SseType.NOTIFICATION, user.getUsername(), timeout, notificationCnt);
+        SseEmitterDTO findEmitter = sseEmitterRepository.findByEmitterId(id);
 
         return ResponseEntity.ok(findEmitter.getSseEmitter());
     }
