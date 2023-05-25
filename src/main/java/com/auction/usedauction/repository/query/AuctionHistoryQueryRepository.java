@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.auction.usedauction.domain.QAuction.auction;
@@ -55,8 +56,29 @@ public class AuctionHistoryQueryRepository {
         );
     }
 
+    // auctionId, 판매자와 구매자 loginId 리스트 찾기
+    public List<AuctionIdAndLoginIds> findSellerAndBuyerLoginIdAndAuctionId(List auctionIds) {
+        QMember buyer = new QMember("buyer");
+        QMember seller = new QMember("seller");
+
+        return
+                queryFactory.select(new QAuctionIdAndLoginIds(auction.id, seller.loginId, buyer.loginId))
+                        .from(auctionHistory)
+                        .join(auctionHistory.member, buyer)
+                        .rightJoin(auctionHistory.auction, auction)
+                        .join(auction.product, product)
+                        .join(product.member, seller)
+                        .where(auctionIdIn(auctionIds),
+                                auction.nowPrice.eq(auctionHistory.bidPrice))
+                        .fetch();
+
+    }
+
     private BooleanExpression auctionIdEq(Long auctionId) {
         return auctionId != null ? auction.id.eq(auctionId) : null;
     }
 
+    private BooleanExpression auctionIdIn(List auctionIds) {
+        return auctionIds != null ? auction.id.in(auctionIds) : null;
+    }
 }
