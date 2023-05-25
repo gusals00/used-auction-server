@@ -10,6 +10,7 @@ import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.dto.AuctionIdAndBidCountDTO;
+import com.auction.usedauction.repository.dto.AuctionIdAndLoginIds;
 import com.auction.usedauction.repository.dto.SellerAndBuyerIdDTO;
 import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
@@ -156,7 +157,7 @@ public class AuctionHistoryService {
     @Transactional
     public void changeAuctionStatusToAuctionEndStatuses(LocalDateTime localDateTime) {
         // 입찰 종료힐 경매 id, 입찰수 조회
-        List<AuctionIdAndBidCountDTO> idAndBIdCounts = auctionRepository.findIdAndBidCountListByStatusAndEndDate(AuctionStatus.BID,localDateTime);
+        List<AuctionIdAndBidCountDTO> idAndBIdCounts = auctionRepository.findIdAndBidCountListByStatusAndEndDate(AuctionStatus.BID, localDateTime);
 
         // 경매 상태를 FAIL_BID(낙찰 실패) 로 변경
         List<Long> failBidIds = getFailBidIds(idAndBIdCounts);
@@ -174,6 +175,9 @@ public class AuctionHistoryService {
         }
 
         log.info("경매내역 상태 낙찰로 변경. 변경 개수 = {}", changeHistoryCount);
+
+        // 낙찰 성공한 auctionId, sellerLoginId, buyerLoginId
+        List<AuctionIdAndLoginIds> successIds = auctionHistoryQueryRepository.findSellerAndBuyerLoginIdAndAuctionId(successBidIds);
     }
 
     //경매 종료시 경매 상태 변경
