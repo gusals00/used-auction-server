@@ -10,13 +10,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AuctionIdAndLoginIds {
 
-    private Long auctionId;
+    private Long productId;
     private String sellerLoginId;
     private String buyerLoginId;
 
     @QueryProjection
-    public AuctionIdAndLoginIds(Long auctionId,String sellerLoginId, String buyerLoginId) {
-        this.auctionId = auctionId;
+    public AuctionIdAndLoginIds(Long productId, String sellerLoginId, String buyerLoginId) {
+        this.productId = productId;
         this.sellerLoginId = sellerLoginId;
         this.buyerLoginId = buyerLoginId;
     }

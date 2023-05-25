@@ -1,6 +1,10 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.TransStatus;
+import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.exception.error_code.ProductErrorCode;
+import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
 import com.auction.usedauction.service.AuctionService;
 import com.auction.usedauction.web.dto.MemberTransReq;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.auction.usedauction.exception.error_code.ProductErrorCode.*;
 import static java.util.stream.Collectors.toList;
 
 @RestController
@@ -32,15 +37,19 @@ public class TransactionController {
 
     private final AuctionService auctionService;
     private final AuctionHistoryService auctionHistoryService;
+    private final ProductRepository productRepository;
 
     @PostMapping
     @Operation(summary = "거래 확정 요청 메서드")
     public ResultRes<MessageRes> changeSellerTransStatus(@Valid @RequestBody MemberTransReq memberTransReq, @AuthenticationPrincipal User user) {
-        log.info("거래 확정 api 호출 auctionId={}, changeToStatus={}, loginId={}", memberTransReq.getAuctionId(), memberTransReq.getStatus(), user.getUsername());
-        auctionService.memberTransConfirm(memberTransReq.getAuctionId(), user.getUsername(), memberTransReq.getStatus());
+        Long auctionId = productRepository.findById(memberTransReq.getProductId())
+                .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND)).getAuction().getId();
+
+        log.info("거래 확정 api 호출 auctionId={}, changeToStatus={}, loginId={}", auctionId, memberTransReq.getStatus(), user.getUsername());
+        auctionService.memberTransConfirm(auctionId, user.getUsername(), memberTransReq.getStatus());
 
         // 경매 id로 ban 확인 후 ban
-        auctionHistoryService.banMemberByAuctionId(memberTransReq.getAuctionId());
+        auctionHistoryService.banMemberByAuctionId(auctionId);
         return new ResultRes<>(new MessageRes("거래 확정되었습니다."));
     }
 

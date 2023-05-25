@@ -150,6 +150,14 @@ public class SseEmitterServiceImpl implements SseEmitterService {
         }
     }
 
+    @Override
+    public void sendNotificationData(String loginId, Long value) {
+        List<SseEmitterDTO> findEmitterList = emitterRepository.findAllByTypeAndLoginId(SseType.NOTIFICATION, loginId);
+        findEmitterList.forEach(sseEmitterDTO -> {
+            send(sseEmitterDTO, SEND_NOTIFICATION_DATA, value);
+        });
+    }
+
     private void sendUpdatedBidPrice(Long productId, int price) {
         List<SseEmitterDTO> findEmitterList = emitterRepository.findAllByTypeAndProductId(SseType.BID, productId);
         findEmitterList.forEach(

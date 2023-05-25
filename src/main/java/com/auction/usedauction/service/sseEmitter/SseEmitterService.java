@@ -17,4 +17,5 @@ public interface SseEmitterService {
     void sendUpdatedRoomData(ChatMessageDTO messageDTO, String senderLoginId, boolean isRead);
     void sendNewRoomData(Long roomId);
     void sendRoomEnterData(Long roomId, String loginId);
+    void sendNotificationData(String loginId, Long value);
 }
