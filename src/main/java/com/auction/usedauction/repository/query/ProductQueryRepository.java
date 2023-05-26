@@ -4,6 +4,11 @@ import com.auction.usedauction.domain.AuctionStatus;
 import com.auction.usedauction.domain.QAuction;
 import com.auction.usedauction.domain.QMember;
 import com.auction.usedauction.domain.QProduct;
+import com.auction.usedauction.domain.file.ProductImageType;
+import com.auction.usedauction.domain.file.QFile;
+import com.auction.usedauction.domain.file.QProductImage;
+import com.auction.usedauction.repository.dto.ProductInfoDTO;
+import com.auction.usedauction.repository.dto.QProductInfoDTO;
 import com.auction.usedauction.repository.dto.QTransactionCountDTO;
 import com.auction.usedauction.repository.dto.TransactionCountDTO;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -11,9 +16,13 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 import static com.auction.usedauction.domain.QAuction.*;
 import static com.auction.usedauction.domain.QMember.*;
 import static com.auction.usedauction.domain.QProduct.*;
+import static com.auction.usedauction.domain.file.QFile.*;
+import static com.auction.usedauction.domain.file.QProductImage.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,6 +45,17 @@ public class ProductQueryRepository {
                 .join(product.auction, auction)
                 .where(product.member.loginId.eq(loginId),
                         auction.status.eq(AuctionStatus.TRANSACTION_FAIL).or(auction.status.eq(AuctionStatus.TRANSACTION_OK)))
+                .fetchOne();
+    }
+
+    public ProductInfoDTO findSuccessBidProductInfoById(Long productId) {
+        return queryFactory
+                .select(new QProductInfoDTO(product.id, product.name, productImage.fullPath, auction.nowPrice))
+                .from(productImage)
+                .join(productImage.product, product)
+                .join(product.auction, auction)
+                .where(product.id.eq(productId),
+                        productImage.type.eq(ProductImageType.SIGNATURE))
                 .fetchOne();
     }
 }
