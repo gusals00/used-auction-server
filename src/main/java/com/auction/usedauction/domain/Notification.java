@@ -39,4 +39,8 @@ public class Notification extends BaseTimeEntity {
         this.relatedUrl = relatedUrl;
         this.notificationType = notificationType;
     }
+
+    public void changeChecked(boolean checked) {
+        this.checked = checked;
+    }
 }
