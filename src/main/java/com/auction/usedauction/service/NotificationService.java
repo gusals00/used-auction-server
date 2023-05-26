@@ -18,6 +18,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
+    @Transactional
     public void read(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new CustomException(NOTIFICATION_NOT_FOUND));
