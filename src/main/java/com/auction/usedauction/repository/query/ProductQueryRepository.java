@@ -50,7 +50,7 @@ public class ProductQueryRepository {
 
     public ProductInfoDTO findSuccessBidProductInfoById(Long productId) {
         return queryFactory
-                .select(new QProductInfoDTO(product.id, product.name, productImage.fullPath, auction.nowPrice))
+                .select(new QProductInfoDTO(product.id, productImage.fullPath, auction.nowPrice))
                 .from(productImage)
                 .join(productImage.product, product)
                 .join(product.auction, auction)

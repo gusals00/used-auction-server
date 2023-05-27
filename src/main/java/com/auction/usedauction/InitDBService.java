@@ -11,7 +11,7 @@ import com.auction.usedauction.repository.auction_end.AuctionEndRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.chat.ChatMessageRepository;
 import com.auction.usedauction.repository.chat.ChatRoomRepository;
-import com.auction.usedauction.repository.dto.AuctionIdAndLoginIds;
+import com.auction.usedauction.repository.dto.ProductIdAndLoginIds;
 import com.auction.usedauction.repository.file.FileRepository;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
@@ -430,20 +430,22 @@ public class InitDBService {
         Product findProduct1 = productRepository.findByName("한화 이글스 티켓").orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
         Product findProduct2 = productRepository.findByName("이것이 코딩 테스트다").orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        List<AuctionIdAndLoginIds> successIds = auctionHistoryQueryRepository.findSellerAndBuyerLoginIdAndAuctionId(List.of(findProduct1.getAuction().getId(), findProduct2.getAuction().getId()));
+        List<ProductIdAndLoginIds> successIds = auctionHistoryQueryRepository.findSellerAndBuyerLoginIdAndAuctionId(List.of(findProduct1.getAuction().getId(), findProduct2.getAuction().getId()));
 
         successIds.forEach(ids -> {
-            Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, ids.getProductId(), ids.getBuyerLoginId(), "구매 거래확정 알림");
-            Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, ids.getProductId(), ids.getSellerLoginId(), "판매 거래확정 알림");
+            String productName = productRepository.findById(ids.getProductId()).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND)).getName();
+            Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, ids.getProductId(), ids.getBuyerLoginId(), productName, "구매 거래확정 알림");
+            Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, ids.getProductId(), ids.getSellerLoginId(), productName, "판매 거래확정 알림");
             notificationRepository.saveAll(List.of(buyTransConfirm, sellTransConfirm));
         });
     }
 
-    private Notification createNotification(NotificationType type, Long productId, String loginId, String content) {
+    private Notification createNotification(NotificationType type, Long productId, String loginId, String title, String content) {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         return Notification.builder()
                 .checked(false)
+                .title(title)
                 .content(content)
                 .member(member)
                 .notificationType(type)

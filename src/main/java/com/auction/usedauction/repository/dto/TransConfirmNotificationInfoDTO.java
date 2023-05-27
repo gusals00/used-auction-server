@@ -16,6 +16,8 @@ public class TransConfirmNotificationInfoDTO {
 
     private Long productId;
 
+    private String title;
+
     private String content;
 
     private boolean checked;
@@ -25,8 +27,9 @@ public class TransConfirmNotificationInfoDTO {
     private String relatedUrl;
 
     @QueryProjection
-    public TransConfirmNotificationInfoDTO(Long notificationId, String content, boolean checked, NotificationType type, String relatedUrl) {
+    public TransConfirmNotificationInfoDTO(Long notificationId, String title, String content, boolean checked, NotificationType type, String relatedUrl) {
         this.notificationId = notificationId;
+        this.title = title;
         this.content = content;
         this.checked = checked;
         this.type = type.getDescription();

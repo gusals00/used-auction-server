@@ -5,16 +5,14 @@ import com.auction.usedauction.domain.*;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.exception.error_code.AuctionHistoryErrorCode;
-import com.auction.usedauction.repository.NotificationRepository;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.dto.AuctionIdAndBidCountDTO;
-import com.auction.usedauction.repository.dto.AuctionIdAndLoginIds;
+import com.auction.usedauction.repository.dto.ProductIdAndLoginIds;
 import com.auction.usedauction.repository.dto.SellerAndBuyerIdDTO;
 import com.auction.usedauction.repository.query.AuctionHistoryQueryRepository;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
-import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import com.auction.usedauction.util.LockKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -180,11 +178,11 @@ public class AuctionHistoryService {
         log.info("경매내역 상태 낙찰로 변경. 변경 개수 = {}", changeHistoryCount);
 
         // 낙찰 성공한 productId, sellerLoginId, buyerLoginId
-        List<AuctionIdAndLoginIds> successIds = auctionHistoryQueryRepository.findSellerAndBuyerLoginIdAndAuctionId(successBidIds);
+        List<ProductIdAndLoginIds> successIds = auctionHistoryQueryRepository.findSellerAndBuyerLoginIdAndAuctionId(successBidIds);
 
         // 거래확정 알림 생성, 전송
         successIds.forEach(ids -> {
-            notificationService.sendTranConfirmNotification(ids.getProductId(), ids.getBuyerLoginId(), ids.getSellerLoginId());
+            notificationService.sendTranConfirmNotification(ids.getProductId(), ids.getBuyerLoginId(), ids.getSellerLoginId(), ids.getProductName());
         });
     }
 
