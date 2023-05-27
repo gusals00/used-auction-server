@@ -12,6 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static com.auction.usedauction.domain.NotificationType.BUYER_TRANS_CONFIRM;
+import static com.auction.usedauction.domain.NotificationType.SELLER_TRANS_CONFIRM;
 import static com.auction.usedauction.exception.error_code.NotificationErrorCode.*;
 import static com.auction.usedauction.exception.error_code.UserErrorCode.USER_NOT_FOUND;
 
@@ -31,6 +35,16 @@ public class NotificationService {
                 .orElseThrow(() -> new CustomException(NOTIFICATION_NOT_FOUND));
 
         notification.changeChecked(true);
+    }
+
+    @Transactional
+    public void sendTranConfirmNotification(Long productId, String buyerLoginId, String sellerLoginId) {
+        Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, productId, buyerLoginId, "구매 거래확정 알림");
+        Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, productId, sellerLoginId, "판매 거래확정 알림");
+        notificationRepository.saveAll(List.of(buyTransConfirm, sellTransConfirm));
+
+        sseEmitterService.sendNotificationData(buyerLoginId, 1L); // 구매자 거래확정 알림 전송
+        sseEmitterService.sendNotificationData(sellerLoginId, 1L); // 판매자 거래확정 알림 전송
     }
 
     @Transactional
