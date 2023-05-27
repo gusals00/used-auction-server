@@ -12,6 +12,7 @@ public class AuctionBidResultDTO {
     private int nowPrice;
     private Long productId;
     private Long auctionHistoryId;
-
+    private String sellerLoginId;
+    private String productName;
 
 }

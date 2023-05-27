@@ -79,7 +79,7 @@ public class AuctionHistoryService {
         // 현재 금액 변경
         findAuction.increaseNowPrice(bidPrice);
 
-        return new AuctionBidResultDTO(bidPrice, findAuction.getProduct().getId(), auctionHistory.getId());
+        return new AuctionBidResultDTO(bidPrice, findAuction.getProduct().getId(), auctionHistory.getId(), product.getMember().getLoginId(), product.getName());
 
     }
 
