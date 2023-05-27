@@ -5,7 +5,6 @@ import com.auction.usedauction.domain.*;
 import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.exception.error_code.AuctionHistoryErrorCode;
-import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.repository.NotificationRepository;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.repository.MemberRepository;
@@ -31,7 +30,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.auction.usedauction.domain.NotificationType.*;
 import static com.auction.usedauction.exception.error_code.UserErrorCode.*;
 import static com.auction.usedauction.util.MemberBanConstants.*;
 
@@ -46,8 +44,7 @@ public class AuctionHistoryService {
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final AuctionHistoryQueryRepository auctionHistoryQueryRepository;
     private final MemberRepository memberRepository;
-    private final SseEmitterService sseEmitterService;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     @RedissonLock(key = LockKey.BID_LOCK)
@@ -187,12 +184,7 @@ public class AuctionHistoryService {
 
         // 거래확정 알림 생성, 전송
         successIds.forEach(ids -> {
-            Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, ids.getProductId(), ids.getBuyerLoginId(), "구매 거래확정 알림");
-            Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, ids.getProductId(), ids.getSellerLoginId(), "판매 거래확정 알림");
-            notificationRepository.saveAll(List.of(buyTransConfirm, sellTransConfirm));
-
-            sseEmitterService.sendNotificationData(ids.getBuyerLoginId(), 1L); // 구매자 거래확정 알림 전송
-            sseEmitterService.sendNotificationData(ids.getSellerLoginId(), 1L); // 판매자 거래확정 알림 전송
+            notificationService.sendTranConfirmNotification(ids.getProductId(), ids.getBuyerLoginId(), ids.getSellerLoginId());
         });
     }
 
