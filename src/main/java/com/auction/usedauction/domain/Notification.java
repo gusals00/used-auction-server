@@ -22,6 +22,8 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    private String title;
+
     private String content;
 
     private Boolean checked;
@@ -32,8 +34,9 @@ public class Notification extends BaseTimeEntity {
     private NotificationType notificationType;
 
     @Builder
-    public Notification(Member member, String content, boolean checked, String relatedUrl, NotificationType notificationType) {
+    public Notification(Member member, String title, String content, boolean checked, String relatedUrl, NotificationType notificationType) {
         this.member = member;
+        this.title = title;
         this.content = content;
         this.checked = checked;
         this.relatedUrl = relatedUrl;

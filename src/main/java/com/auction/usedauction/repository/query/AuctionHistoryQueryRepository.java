@@ -56,13 +56,13 @@ public class AuctionHistoryQueryRepository {
         );
     }
 
-    // auctionId, 판매자와 구매자 loginId 리스트 찾기
-    public List<AuctionIdAndLoginIds> findSellerAndBuyerLoginIdAndAuctionId(List auctionIds) {
+    // productId, 판매자와 구매자 loginId 리스트 찾기
+    public List<ProductIdAndLoginIds> findSellerAndBuyerLoginIdAndAuctionId(List auctionIds) {
         QMember buyer = new QMember("buyer");
         QMember seller = new QMember("seller");
 
         return
-                queryFactory.select(new QAuctionIdAndLoginIds(product.id, seller.loginId, buyer.loginId))
+                queryFactory.select(new QProductIdAndLoginIds(product.id, seller.loginId, buyer.loginId, product.name))
                         .from(auctionHistory)
                         .join(auctionHistory.member, buyer)
                         .rightJoin(auctionHistory.auction, auction)

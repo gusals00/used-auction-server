@@ -17,6 +17,8 @@ public class TransConfirmNotificationInfoRes {
 
     private Long productId;
 
+    private String title;
+
     private String content;
 
     private boolean checked;
@@ -25,7 +27,6 @@ public class TransConfirmNotificationInfoRes {
 
     private String relatedUrl;
 
-    private String productName;
 
     private String sigImgSrc;
 
@@ -34,11 +35,11 @@ public class TransConfirmNotificationInfoRes {
     public TransConfirmNotificationInfoRes(TransConfirmNotificationInfoDTO notificationInfoDTO, ProductInfoDTO productInfoDTO) {
         this.notificationId = notificationInfoDTO.getNotificationId();
         this.productId = notificationInfoDTO.getProductId();
+        this.title = notificationInfoDTO.getTitle();
         this.content = notificationInfoDTO.getContent();
         this.checked = notificationInfoDTO.isChecked();
         this.type = notificationInfoDTO.getType();
         this.relatedUrl = notificationInfoDTO.getRelatedUrl();
-        this.productName = productInfoDTO.getProductName();
         this.sigImgSrc = productInfoDTO.getSigImgSrc();
         this.endPrice = productInfoDTO.getEndPrice();
     }

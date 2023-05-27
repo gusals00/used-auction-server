@@ -21,7 +21,7 @@ public class NotificationQueryRepository {
 
     public List<NotificationInfoDTO> findUnReadNotifications(String loginId) {
         return queryFactory
-                .select(new QNotificationInfoDTO(notification.id, notification.content, notification.checked, notification.notificationType, notification.relatedUrl))
+                .select(new QNotificationInfoDTO(notification.id, notification.title, notification.content, notification.checked, notification.notificationType, notification.relatedUrl))
                 .from(notification)
                 .where(notification.member.loginId.eq(loginId),
                         notification.checked.eq(false),
@@ -32,7 +32,7 @@ public class NotificationQueryRepository {
 
     public List<TransConfirmNotificationInfoDTO> findUnReadTransConfirmNotifications(String loginId) {
         return queryFactory
-                .select(new QTransConfirmNotificationInfoDTO(notification.id, notification.content, notification.checked, notification.notificationType, notification.relatedUrl))
+                .select(new QTransConfirmNotificationInfoDTO(notification.id, notification.title, notification.content, notification.checked, notification.notificationType, notification.relatedUrl))
                 .from(notification)
                 .where(notification.member.loginId.eq(loginId),
                         notification.checked.eq(false),

@@ -38,9 +38,9 @@ public class NotificationService {
     }
 
     @Transactional
-    public void sendTranConfirmNotification(Long productId, String buyerLoginId, String sellerLoginId) {
-        Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, productId, buyerLoginId, "구매 거래확정 알림");
-        Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, productId, sellerLoginId, "판매 거래확정 알림");
+    public void sendTranConfirmNotification(Long productId, String buyerLoginId, String sellerLoginId, String productName) {
+        Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, productId, buyerLoginId, productName, "구매 거래확정 알림");
+        Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, productId, sellerLoginId, productName, "판매 거래확정 알림");
         notificationRepository.saveAll(List.of(buyTransConfirm, sellTransConfirm));
 
         sseEmitterService.sendNotificationData(buyerLoginId, 1L); // 구매자 거래확정 알림 전송
@@ -49,17 +49,18 @@ public class NotificationService {
 
     @Transactional
     public void sendBidNotification(Long productId, String loginId, String productName, String bidPrice) {
-        Notification notification = createNotification(NotificationType.BID, productId, loginId, productName + " " + bidPrice + "원 입찰");
+        Notification notification = createNotification(NotificationType.BID, productId, loginId, productName, bidPrice + "원 입찰");
         notificationRepository.save(notification);
 
         sseEmitterService.sendNotificationData(loginId, 1L);
     }
 
-    private Notification createNotification(NotificationType type, Long productId, String loginId, String content) {
+    private Notification createNotification(NotificationType type, Long productId, String loginId, String title, String content) {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         return Notification.builder()
                 .checked(false)
+                .title(title)
                 .content(content)
                 .member(member)
                 .notificationType(type)

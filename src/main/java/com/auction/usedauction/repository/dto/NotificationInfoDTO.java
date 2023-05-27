@@ -13,6 +13,8 @@ public class NotificationInfoDTO {
 
     private Long notificationId;
 
+    private String title;
+
     private String content;
 
     private boolean checked;
@@ -22,8 +24,9 @@ public class NotificationInfoDTO {
     private String relatedUrl;
 
     @QueryProjection
-    public NotificationInfoDTO(Long notificationId, String content, boolean checked, NotificationType type, String relatedUrl) {
+    public NotificationInfoDTO(Long notificationId, String title, String content, boolean checked, NotificationType type, String relatedUrl) {
         this.notificationId = notificationId;
+        this.title = title;
         this.content = content;
         this.checked = checked;
         this.type = type.getDescription();

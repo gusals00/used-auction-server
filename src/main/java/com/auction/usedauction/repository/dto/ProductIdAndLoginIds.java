@@ -8,16 +8,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AuctionIdAndLoginIds {
+public class ProductIdAndLoginIds {
 
     private Long productId;
     private String sellerLoginId;
     private String buyerLoginId;
+    private String productName;
 
     @QueryProjection
-    public AuctionIdAndLoginIds(Long productId, String sellerLoginId, String buyerLoginId) {
+    public ProductIdAndLoginIds(Long productId, String sellerLoginId, String buyerLoginId, String productName) {
         this.productId = productId;
         this.sellerLoginId = sellerLoginId;
         this.buyerLoginId = buyerLoginId;
+        this.productName = productName;
     }
 }
