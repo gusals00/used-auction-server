@@ -6,6 +6,7 @@ import com.auction.usedauction.exception.CustomException;
 import com.auction.usedauction.exception.error_code.AuctionErrorCode;
 import com.auction.usedauction.repository.auction.AuctionRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
+import com.auction.usedauction.service.NotificationService;
 import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import com.auction.usedauction.service.dto.AuctionBidResultDTO;
 import com.auction.usedauction.service.dto.SseUpdatePriceDTO;
@@ -35,6 +36,7 @@ public class AuctionHistoryController {
     private final AuctionHistoryService auctionHistoryService;
     private final SseEmitterService sseEmitterService;
     private final AuctionRepository auctionRepository;
+    private final NotificationService notificationService;
 
     @PostMapping("/{auctionId}")
     @Operation(summary = "상품 경매 입찰 메서드")
@@ -56,6 +58,9 @@ public class AuctionHistoryController {
         } catch (TaskRejectedException e) {
             log.error("입찰 가격 전달 async thread pool 초과 예외 발생", e);
         }
+
+        // 판매자에게 입찰 알림 전송
+        notificationService.sendBidNotification(auctionBidResult.getProductId(), auctionBidResult.getSellerLoginId(), auctionBidResult.getProductName(), convertedPrice);
 
         return new ResultRes<>(new MessageRes(convertedPrice + "원 입찰을 성공했습니다."));
     }
