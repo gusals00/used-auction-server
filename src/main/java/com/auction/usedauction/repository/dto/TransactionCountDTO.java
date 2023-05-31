@@ -11,15 +11,17 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TransactionCountDTO {
 
-    @Schema(description = "전체 판매 횟수",example = "2")
     private Long allCount;
 
-    @Schema(description = "성공 판매 횟수",example = "1")
     private Long successCount;
 
     @QueryProjection
     public TransactionCountDTO(Long allCount, Long successCount) {
         this.allCount = allCount;
-        this.successCount = successCount;
+        if(successCount == null) {
+            this.successCount = 0L;
+        } else {
+            this.successCount = successCount;
+        }
     }
 }

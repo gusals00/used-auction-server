@@ -81,6 +81,20 @@ public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryReposit
                 .fetchOne();
     }
 
+    public Long findRejectCountByMemberLoginId(String loginId) {
+        QMember buyer = new QMember("buyer");
+        QMember seller = new QMember("seller");
+
+        return queryFactory.select(auctionHistory.count().longValue())
+                .from(auctionHistory)
+                .join(auctionHistory.member, buyer)
+                .join(auctionHistory.auction, auction)
+                .join(auction.product, product)
+                .join(product.member, seller)
+                .where(sellerOrBuyerLoginIdEq(loginId, buyer, seller), auctionStatusEq(AuctionStatus.TRANSACTION_FAIL))
+                .fetchOne();
+    }
+
     //마이페이지 구매 내역
     @Override
     public Page<AuctionHistory> findMyBuyHistoryByCond(String loginId, MyPageSearchConReq cond, Pageable pageable) {
@@ -128,8 +142,16 @@ public class AuctionHistoryRepositoryCustomImpl implements AuctionHistoryReposit
         return memberIdEq(memberId, buyer).or(memberIdEq(memberId, seller));
     }
 
+    private BooleanExpression sellerOrBuyerLoginIdEq(String loginId, QMember buyer, QMember seller) {
+        return memberLoginIdEq(loginId, buyer).or(memberLoginIdEq(loginId, seller));
+    }
+
     private BooleanExpression memberIdEq(Long memberId, QMember member) {
         return memberId != null ? member.id.eq(memberId) : null;
+    }
+
+    private BooleanExpression memberLoginIdEq(String loginId, QMember member) {
+        return loginId != null ? member.loginId.eq(loginId) : null;
     }
 
     private BooleanExpression auctionStatusEq(AuctionStatus auctionStatus) {
