@@ -230,10 +230,8 @@ public class InitDBService {
         //member2 상품 저장
         Product product_member2_1 = insertProduct("자바만 잡아도 팝니다", "자바만 잡아도 정보입니다", bookCategory.getId(), now.plusDays(7), 20000, 2000,
                 "3_1.jpg", Arrays.asList("3_2.jpg"), member2.getLoginId(), 2);
-        insertVideo(product_member2_1.getId(), "123.mp4");
         Product product_member2_2 = insertProduct("갤럭시 북 3 팝니다", "갤럭시 북이고 상태 좋습니다", digitalCategory.getId(), now.plusDays(6), 1000000, 100000,
                 "4_1.jpg", Arrays.asList("4_2.jpg"), member2.getLoginId(), 15);
-        insertVideo(product_member2_2.getId(), "123.mp4");
 
         log.info("member2 상품 저장 완료");
 
@@ -459,9 +457,4 @@ public class InitDBService {
         fileRepository.findAll()
                 .forEach(file -> fileUploader.deleteFile(file.getPath()));
     }
-
-    public void insertVideo(Long productId, String fileName) {
-        fileService.registerVideoFile(productId, new File(filePath + fileName));
-    }
-
 }
