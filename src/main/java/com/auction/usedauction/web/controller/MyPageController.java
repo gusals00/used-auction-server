@@ -1,5 +1,6 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
 import com.auction.usedauction.repository.dto.MyPageAuctionHistoryPageContentRes;
 import com.auction.usedauction.repository.dto.TransactionCountDTO;
 import com.auction.usedauction.repository.query.ProductQueryRepository;
@@ -25,6 +26,7 @@ public class MyPageController {
      private final MemberService memberService;
      private final MyPageQueryService myPageQueryService;
      private final ProductQueryRepository productQueryRepository;
+     private final AuctionHistoryRepository auctionHistoryRepository;
 
     @Operation(summary = "회원정보 조회")
      @GetMapping
@@ -64,9 +66,12 @@ public class MyPageController {
         return myPageQueryService.getMySalesHistoryPage(searchConReq, user.getUsername());
     }
 
-    @Operation(summary = "판매횟수 조회")
-    @GetMapping("/transaction-count")
-    public TransactionCountDTO getTransactionCount(@AuthenticationPrincipal User user) {
-        return productQueryRepository.findTransactionCountByLoginId(user.getUsername());
+    @Operation(summary = "판매횟수, 경고횟수 조회")
+    @GetMapping("/count")
+    public TransactionAndRejectCountRes getTransactionCount(@AuthenticationPrincipal User user) {
+        TransactionCountDTO transactionCountDTO = productQueryRepository.findTransactionCountByLoginId(user.getUsername());
+        Long rejectCount = auctionHistoryRepository.findRejectCountByMemberLoginId(user.getUsername());
+
+        return new TransactionAndRejectCountRes(transactionCountDTO.getAllCount(), transactionCountDTO.getAllCount(), rejectCount);
     }
 }
