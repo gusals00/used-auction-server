@@ -57,6 +57,7 @@ public class Auction {
 
     public void changeAuction(int startPrice, int priceUnit, LocalDateTime auctionEndDate) {
         this.startPrice = startPrice;
+        this.nowPrice = startPrice;
         this.priceUnit = priceUnit;
         this.auctionEndDate = auctionEndDate;
     }
