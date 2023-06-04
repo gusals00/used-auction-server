@@ -1,4 +1,4 @@
-package com.auction.usedauction.util;
+package com.auction.usedauction.util.s3;
 
 public interface FileSubPath {
     String PRODUCT_IMG_PATH="product_img/";

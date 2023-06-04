@@ -1,6 +1,6 @@
 package com.auction.usedauction.aop;
 
-import com.auction.usedauction.util.S3BackUpManager;
+import com.auction.usedauction.util.s3.S3BackUpManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

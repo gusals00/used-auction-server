@@ -17,9 +17,9 @@ import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.dto.AuctionRegisterDTO;
 import com.auction.usedauction.service.dto.ProductRegisterDTO;
 import com.auction.usedauction.service.dto.ProductUpdateReq;
-import com.auction.usedauction.util.FileSubPath;
-import com.auction.usedauction.util.S3FileUploader;
-import com.auction.usedauction.util.UploadFileDTO;
+import com.auction.usedauction.util.s3.FileSubPath;
+import com.auction.usedauction.util.s3.S3FileUploader;
+import com.auction.usedauction.util.s3.UploadFileDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
