@@ -1,6 +1,6 @@
 package com.auction.usedauction.service.dto;
 
-import com.auction.usedauction.util.UploadFileDTO;
+import com.auction.usedauction.util.s3.UploadFileDTO;
 import com.auction.usedauction.web.dto.ProductRegisterReq;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

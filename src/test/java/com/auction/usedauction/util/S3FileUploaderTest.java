@@ -2,6 +2,8 @@ package com.auction.usedauction.util;
 
 
 import com.auction.usedauction.exception.CustomException;
+import com.auction.usedauction.util.s3.S3FileUploader;
+import com.auction.usedauction.util.s3.UploadFileDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.auction.usedauction.exception.error_code.FileErrorCode.*;
-import static com.auction.usedauction.util.FileSubPath.PRODUCT_IMG_PATH;
-import static com.auction.usedauction.util.FileSubPath.STREAMING_VIDEO_PATH;
+import static com.auction.usedauction.util.s3.FileSubPath.PRODUCT_IMG_PATH;
+import static com.auction.usedauction.util.s3.FileSubPath.STREAMING_VIDEO_PATH;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest

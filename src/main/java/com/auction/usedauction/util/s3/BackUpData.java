@@ -1,4 +1,4 @@
-package com.auction.usedauction.util;
+package com.auction.usedauction.util.s3;
 
 import lombok.extern.slf4j.Slf4j;
 
