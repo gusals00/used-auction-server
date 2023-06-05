@@ -61,8 +61,7 @@ public class AuctionHistoryQueryRepository {
         QMember buyer = new QMember("buyer");
         QMember seller = new QMember("seller");
 
-        return
-                queryFactory.select(new QProductIdAndLoginIds(product.id, seller.loginId, buyer.loginId, product.name))
+        return queryFactory.select(new QProductIdAndLoginIds(product.id, seller.loginId, buyer.loginId, product.name, seller.name, buyer.name))
                         .from(auctionHistory)
                         .join(auctionHistory.member, buyer)
                         .rightJoin(auctionHistory.auction, auction)

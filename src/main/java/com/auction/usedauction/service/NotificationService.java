@@ -38,9 +38,10 @@ public class NotificationService {
     }
 
     @Transactional
-    public void sendTranConfirmNotification(Long productId, String buyerLoginId, String sellerLoginId, String productName) {
-        Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, productId, buyerLoginId, productName, "구매 거래확정 알림");
-        Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, productId, sellerLoginId, productName, "판매 거래확정 알림");
+    public void sendTranConfirmNotification(Long productId, String buyerLoginId, String sellerLoginId, String productName, String sellerName, String buyerName) {
+        String sellerAndBuyer = " 판매자 : " + sellerName + ", 구매자 : " + buyerName;
+        Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, productId, buyerLoginId, productName, sellerAndBuyer);
+        Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, productId, sellerLoginId, productName, sellerAndBuyer);
         notificationRepository.saveAll(List.of(buyTransConfirm, sellTransConfirm));
 
         sseEmitterService.sendNotificationData(buyerLoginId, 1L); // 구매자 거래확정 알림 전송

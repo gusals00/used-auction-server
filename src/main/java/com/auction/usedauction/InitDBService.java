@@ -432,8 +432,9 @@ public class InitDBService {
 
         successIds.forEach(ids -> {
             String productName = productRepository.findById(ids.getProductId()).orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND)).getName();
-            Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, ids.getProductId(), ids.getBuyerLoginId(), productName, "구매 거래확정 알림");
-            Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, ids.getProductId(), ids.getSellerLoginId(), productName, "판매 거래확정 알림");
+            String sellerAndBuyer = " 판매자 : " + ids.getSellerName() + ", 구매자 : " + ids.getBuyerName();
+            Notification buyTransConfirm = createNotification(BUYER_TRANS_CONFIRM, ids.getProductId(), ids.getBuyerLoginId(), productName, sellerAndBuyer);
+            Notification sellTransConfirm = createNotification(SELLER_TRANS_CONFIRM, ids.getProductId(), ids.getSellerLoginId(), productName, sellerAndBuyer);
             notificationRepository.saveAll(List.of(buyTransConfirm, sellTransConfirm));
         });
     }
