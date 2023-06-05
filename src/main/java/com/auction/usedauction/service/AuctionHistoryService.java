@@ -182,7 +182,7 @@ public class AuctionHistoryService {
 
         // 거래확정 알림 생성, 전송
         successIds.forEach(ids -> {
-            notificationService.sendTranConfirmNotification(ids.getProductId(), ids.getBuyerLoginId(), ids.getSellerLoginId(), ids.getProductName());
+            notificationService.sendTranConfirmNotification(ids.getProductId(), ids.getBuyerLoginId(), ids.getSellerLoginId(), ids.getProductName(), ids.getSellerName(), ids.getBuyerName());
         });
     }
 

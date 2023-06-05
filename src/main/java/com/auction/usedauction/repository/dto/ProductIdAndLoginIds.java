@@ -14,12 +14,16 @@ public class ProductIdAndLoginIds {
     private String sellerLoginId;
     private String buyerLoginId;
     private String productName;
+    private String sellerName;
+    private String buyerName;
 
     @QueryProjection
-    public ProductIdAndLoginIds(Long productId, String sellerLoginId, String buyerLoginId, String productName) {
+    public ProductIdAndLoginIds(Long productId, String sellerLoginId, String buyerLoginId, String productName, String sellerName, String buyerName) {
         this.productId = productId;
         this.sellerLoginId = sellerLoginId;
         this.buyerLoginId = buyerLoginId;
         this.productName = productName;
+        this.sellerName = sellerName;
+        this.buyerName = buyerName;
     }
 }
