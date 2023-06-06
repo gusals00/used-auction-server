@@ -47,7 +47,7 @@
 
 #### ✨공통
 <div align='left'>
-  Openvidu, Websocket, SSE
+  Openvidu, Websocket, STOMP, SSE
 
 </div>
 
