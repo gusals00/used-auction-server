@@ -55,4 +55,4 @@
 ![image](https://user-images.githubusercontent.com/87007552/234491762-603ed91b-45f9-48e5-8352-dd5847526596.png)
 
 ## API
-[ API 문서 바로가기 ](https://usedauction.shop/swagger-ui/index.html#/)
+[ API 문서  바로가기 ](https://usedauction.shop/swagger-ui/index.html#/)
