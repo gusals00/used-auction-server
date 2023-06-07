@@ -31,7 +31,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 @RequestMapping("/api/auctions")
 @Slf4j
-@Tag(name = "입찰/낙찰 컨트롤러", description = "입찰/낙찰 관련 api")
+@Tag(name = "bid controller", description = "입찰/낙찰 관련 api")
 public class AuctionHistoryController {
     private final AuctionHistoryService auctionHistoryService;
     private final SseEmitterService sseEmitterService;

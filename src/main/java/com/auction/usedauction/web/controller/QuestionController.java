@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/api/questions")
 @RequiredArgsConstructor
-@Tag(name = "질문 컨트롤러", description = "질문 관련 api")
+@Tag(name = "question controller", description = "질문 관련 api")
 public class QuestionController {
 
     private final QuestionService questionService;

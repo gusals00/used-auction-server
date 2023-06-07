@@ -1,9 +1,7 @@
 package com.auction.usedauction.web.controller;
 
-import com.auction.usedauction.domain.Product;
 import com.auction.usedauction.domain.TransStatus;
 import com.auction.usedauction.exception.CustomException;
-import com.auction.usedauction.exception.error_code.ProductErrorCode;
 import com.auction.usedauction.repository.product.ProductRepository;
 import com.auction.usedauction.service.AuctionHistoryService;
 import com.auction.usedauction.service.AuctionService;

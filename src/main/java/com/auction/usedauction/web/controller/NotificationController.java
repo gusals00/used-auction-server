@@ -1,7 +1,6 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.repository.dto.NotificationInfoDTO;
-import com.auction.usedauction.repository.dto.TransConfirmNotificationInfoDTO;
 import com.auction.usedauction.repository.query.NotificationQueryRepository;
 import com.auction.usedauction.service.NotificationService;
 import com.auction.usedauction.service.dto.TransConfirmNotificationInfoRes;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notification")
-@Tag(name = "알림 컨트롤러", description = "알림 관련 api")
+@Tag(name = "alarm controller", description = "알림 관련 api")
 public class NotificationController {
 
     private final NotificationQueryRepository notificationQueryRepository;

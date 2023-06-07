@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/chat-message")
-@Tag(name = "채팅 메세지 컨트롤러", description = "채팅 메세지 관련 api")
+@Tag(name = "chatting message controller", description = "채팅 메세지 관련 api")
 public class ChatMessageController {
 
     private final SimpMessageSendingOperations template;

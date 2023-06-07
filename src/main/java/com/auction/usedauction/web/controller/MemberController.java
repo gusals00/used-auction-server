@@ -1,7 +1,6 @@
 package com.auction.usedauction.web.controller;
 
 import com.auction.usedauction.security.TokenDTO;
-import com.auction.usedauction.util.AuthConstants;
 import com.auction.usedauction.service.MemberService;
 import com.auction.usedauction.web.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
-@Tag(name = "회원 컨트롤러", description = "회원 관련 api")
+@Tag(name = "member controller", description = "회원 관련 api")
 public class MemberController {
 
     private final MemberService memberService;

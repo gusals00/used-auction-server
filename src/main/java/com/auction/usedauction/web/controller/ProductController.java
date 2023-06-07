@@ -43,7 +43,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-@Tag(name = "상품 컨트롤러", description = "상품 관련 api")
+@Tag(name = "product controller", description = "상품 관련 api")
 public class ProductController {
     private final ProductRepository productRepository;
 

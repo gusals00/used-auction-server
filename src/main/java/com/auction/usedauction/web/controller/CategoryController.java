@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/categories")
-@Tag(name = "카테고리 컨트롤러", description = "카테고리 관련 api")
+@Tag(name = "category controller", description = "카테고리 관련 api")
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;

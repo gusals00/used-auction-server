@@ -1,7 +1,5 @@
 package com.auction.usedauction.web.controller;
 
-import com.auction.usedauction.exception.CustomException;
-import com.auction.usedauction.exception.error_code.UserErrorCode;
 import com.auction.usedauction.service.EmailService;
 import com.auction.usedauction.web.dto.ResultRes;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +14,7 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/email")
-@Tag(name = "이메일 컨트롤러", description = "이메일 관련 api")
+@Tag(name = "email controller", description = "이메일 관련 api")
 public class EmailController {
 
     private final EmailService emailService;

@@ -24,7 +24,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Slf4j
 @RequestMapping("/api/sse")
 @RequiredArgsConstructor
-@Tag(name = "Sse 컨트롤러", description = "Sse 관련 api")
+@Tag(name = "sse controller", description = "Sse 관련 api")
 public class SseController {
 
     private final SseEmitterService sseEmitterService;
