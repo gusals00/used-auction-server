@@ -30,7 +30,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 @RequestMapping("/api/trans")
 @RequiredArgsConstructor
-@Tag(name = "거래 확정 컨트롤러", description = "거래 확인 관련 api")
+@Tag(name = "Transaction confirm controller", description = "거래 확정 관련 api")
 public class TransactionController {
 
     private final AuctionService auctionService;
