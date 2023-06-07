@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Profile(value = {"local", "production"})
 @RequestMapping("/api/sessions")
-@Tag(name = "스트리밍 컨트롤러", description = "스트리밍 관련 api")
+@Tag(name = "streaming controller", description = "스트리밍 관련 api")
 @Slf4j
 @RequiredArgsConstructor
 public class StreamingController {
