@@ -1,0 +1,4015 @@
+<!doctype html>
+<html>
+  <head>
+    <title>중고경매플랫폼</title>
+      <meta charset = "utf-8">
+    <style type="text/css">
+      body {
+      	font-family: Trebuchet MS, sans-serif;
+      	font-size: 15px;
+      	color: #444;
+      	margin-right: 24px;
+      }
+
+      h1	{
+      	font-size: 25px;
+      }
+      h2	{
+      	font-size: 20px;
+      }
+      h3	{
+      	font-size: 16px;
+      	font-weight: bold;
+      }
+      hr	{
+      	height: 1px;
+      	border: 0;
+      	color: #ddd;
+      	background-color: #ddd;
+      }
+
+      .app-desc {
+        clear: both;
+        margin-left: 20px;
+      }
+      .param-name {
+        width: 100%;
+      }
+      .license-info {
+        margin-left: 20px;
+      }
+
+      .license-url {
+        margin-left: 20px;
+      }
+
+      .model {
+        margin: 0 0 0px 20px;
+      }
+
+      .method {
+        margin-left: 20px;
+      }
+
+      .method-notes	{
+      	margin: 10px 0 20px 0;
+      	font-size: 90%;
+      	color: #555;
+      }
+
+      pre {
+        padding: 10px;
+        margin-bottom: 2px;
+      }
+
+      .http-method {
+       text-transform: uppercase;
+      }
+
+      pre.get {
+        background-color: #0f6ab4;
+      }
+
+      pre.post {
+        background-color: #10a54a;
+      }
+
+      pre.put {
+        background-color: #c5862b;
+      }
+
+      pre.delete {
+        background-color: #a41e22;
+      }
+
+      .huge	{
+      	color: #fff;
+      }
+
+      pre.example {
+        background-color: #f3f3f3;
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+
+      code {
+        white-space: pre;
+      }
+
+      .nickname {
+        font-weight: bold;
+      }
+
+      .method-path {
+        font-size: 1.5em;
+        background-color: #0f6ab4;
+      }
+
+      .up {
+        float:right;
+      }
+
+      .parameter {
+        width: 500px;
+      }
+
+      .param {
+        width: 500px;
+        padding: 10px 0 0 20px;
+        font-weight: bold;
+      }
+
+      .param-desc {
+        width: 700px;
+        padding: 0 0 0 20px;
+        color: #777;
+      }
+
+      .param-type {
+        font-style: italic;
+      }
+
+      .param-enum-header {
+      width: 700px;
+      padding: 0 0 0 60px;
+      color: #777;
+      font-weight: bold;
+      }
+
+      .param-enum {
+      width: 700px;
+      padding: 0 0 0 80px;
+      color: #777;
+      font-style: italic;
+      }
+
+      .field-label {
+        padding: 0;
+        margin: 0;
+        clear: both;
+      }
+
+      .field-items	{
+      	padding: 0 0 15px 0;
+      	margin-bottom: 15px;
+      }
+
+      .return-type {
+        clear: both;
+        padding-bottom: 10px;
+      }
+
+      .param-header {
+        font-weight: bold;
+      }
+
+      .method-tags {
+        text-align: right;
+      }
+
+      .method-tag {
+        background: none repeat scroll 0% 0% #24A600;
+        border-radius: 3px;
+        padding: 2px 10px;
+        margin: 2px;
+        color: #FFF;
+        display: inline-block;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+  <h1>중고경매플랫폼</h1>
+    <div class="app-desc">창의융합종합설계2 - 중고경매플랫폼 API</div>
+    <div class="app-desc">More information: <a href="https://helloreverb.com">https://helloreverb.com</a></div>
+    <div class="app-desc">Contact Info: <a href="hello@helloreverb.com">hello@helloreverb.com</a></div>
+    <div class="app-desc">Version: 1.0</div>
+
+    <div class="license-info">All rights reserved</div>
+    <div class="license-url">http://apache.org/licenses/LICENSE-2.0.html</div>
+  <h2>Access</h2>
+    <ol>
+      <li></li>
+    </ol>
+
+  <h2><a name="__Methods">Methods</a></h2>
+  [ Jump to <a href="#__Models">Models</a> ]
+
+  <h3>Table of Contents </h3>
+  <div class="method-summary"></div>
+  <h4><a href="#AlarmController">AlarmController</a></h4>
+  <ul>
+  <li><a href="#getUnReadNotifications"><code><span class="http-method">get</span> /api/notification</code></a></li>
+  <li><a href="#getUnReadTransConfirmNotifications"><code><span class="http-method">get</span> /api/notification/trans-confirm</code></a></li>
+  <li><a href="#readNotification"><code><span class="http-method">post</span> /api/notification/{notificationId}</code></a></li>
+  </ul>
+  <h4><a href="#BidController">BidController</a></h4>
+  <ul>
+  <li><a href="#bidding"><code><span class="http-method">post</span> /api/auctions/{auctionId}</code></a></li>
+  <li><a href="#getAuctionInfo"><code><span class="http-method">get</span> /api/auctions/{productId}</code></a></li>
+  </ul>
+  <h4><a href="#CategoryController">CategoryController</a></h4>
+  <ul>
+  <li><a href="#getCategoryList"><code><span class="http-method">get</span> /api/categories</code></a></li>
+  </ul>
+  <h4><a href="#ChattingMessageController">ChattingMessageController</a></h4>
+  <ul>
+  <li><a href="#getMessageList"><code><span class="http-method">get</span> /api/chat-message/chats/{roomId}</code></a></li>
+  </ul>
+  <h4><a href="#ChattingRoomController">ChattingRoomController</a></h4>
+  <ul>
+  <li><a href="#createRoom"><code><span class="http-method">post</span> /api/chat-room/{productId}</code></a></li>
+  <li><a href="#getRoomList"><code><span class="http-method">get</span> /api/chat-room</code></a></li>
+  </ul>
+  <h4><a href="#EmailController">EmailController</a></h4>
+  <ul>
+  <li><a href="#sendJoinMail"><code><span class="http-method">post</span> /api/email/{email}</code></a></li>
+  </ul>
+  <h4><a href="#MemberController">MemberController</a></h4>
+  <ul>
+  <li><a href="#checkEmailDuplicate"><code><span class="http-method">get</span> /api/member/email/{email}/exists</code></a></li>
+  <li><a href="#checkLoginIdDuplicate"><code><span class="http-method">get</span> /api/member/loginid/{loginid}/exists</code></a></li>
+  <li><a href="#checkNameDuplicate"><code><span class="http-method">get</span> /api/member/name/{name}/exists</code></a></li>
+  <li><a href="#delete"><code><span class="http-method">delete</span> /api/member</code></a></li>
+  <li><a href="#login"><code><span class="http-method">post</span> /api/member/login</code></a></li>
+  <li><a href="#loginCheck"><code><span class="http-method">get</span> /api/member/is-login</code></a></li>
+  <li><a href="#logout"><code><span class="http-method">post</span> /api/member/logout</code></a></li>
+  <li><a href="#register"><code><span class="http-method">post</span> /api/member/signup</code></a></li>
+  <li><a href="#reissue"><code><span class="http-method">post</span> /api/member/reissue</code></a></li>
+  </ul>
+  <h4><a href="#MypageController">MypageController</a></h4>
+  <ul>
+  <li><a href="#getInfo"><code><span class="http-method">get</span> /api/mypage</code></a></li>
+  <li><a href="#getMyAuctionHistory"><code><span class="http-method">get</span> /api/mypage/auction-history</code></a></li>
+  <li><a href="#getMyBuyHistory"><code><span class="http-method">get</span> /api/mypage/buy-history</code></a></li>
+  <li><a href="#getMyProducts"><code><span class="http-method">get</span> /api/mypage/products</code></a></li>
+  <li><a href="#getMySalesHistory"><code><span class="http-method">get</span> /api/mypage/sales-history</code></a></li>
+  <li><a href="#getTransactionCount"><code><span class="http-method">get</span> /api/mypage/count</code></a></li>
+  <li><a href="#updateInfo"><code><span class="http-method">patch</span> /api/mypage</code></a></li>
+  </ul>
+  <h4><a href="#ProductController">ProductController</a></h4>
+  <ul>
+  <li><a href="#deleteProduct"><code><span class="http-method">delete</span> /api/products/{productId}</code></a></li>
+  <li><a href="#getProduct"><code><span class="http-method">get</span> /api/products/{productId}</code></a></li>
+  <li><a href="#getProductList"><code><span class="http-method">get</span> /api/products</code></a></li>
+  <li><a href="#getProductOderByList"><code><span class="http-method">get</span> /api/products/order-by</code></a></li>
+  <li><a href="#registerProduct"><code><span class="http-method">post</span> /api/products</code></a></li>
+  <li><a href="#updateProduct"><code><span class="http-method">patch</span> /api/products/update/{productId}</code></a></li>
+  <li><a href="#updateProduct1"><code><span class="http-method">get</span> /api/products/update/{productId}</code></a></li>
+  <li><a href="#validRightSellerForProduct"><code><span class="http-method">get</span> /api/products/valid/{productId}</code></a></li>
+  </ul>
+  <h4><a href="#QuestionController">QuestionController</a></h4>
+  <ul>
+  <li><a href="#deleteQuestion"><code><span class="http-method">delete</span> /api/questions/{questionId}</code></a></li>
+  <li><a href="#getQuestions"><code><span class="http-method">get</span> /api/questions/{productId}</code></a></li>
+  <li><a href="#registerQuestion"><code><span class="http-method">post</span> /api/questions</code></a></li>
+  </ul>
+  <h4><a href="#SseController">SseController</a></h4>
+  <ul>
+  <li><a href="#connectBid"><code><span class="http-method">get</span> /api/sse/bid-connect/{productId}</code></a></li>
+  <li><a href="#connectChatList"><code><span class="http-method">get</span> /api/sse/chat-connect</code></a></li>
+  <li><a href="#connectNotification"><code><span class="http-method">get</span> /api/sse/notification</code></a></li>
+  </ul>
+  <h4><a href="#StreamingController">StreamingController</a></h4>
+  <ul>
+  <li><a href="#deleteVideo"><code><span class="http-method">delete</span> /api/sessions/record/{videoId}</code></a></li>
+  <li><a href="#getTokenPublisher"><code><span class="http-method">post</span> /api/sessions/get-token-pub</code></a></li>
+  <li><a href="#getTokenSubscriber"><code><span class="http-method">post</span> /api/sessions/get-token-sub</code></a></li>
+  <li><a href="#isLive"><code><span class="http-method">get</span> /api/sessions/is-live/{productId}</code></a></li>
+  <li><a href="#liveCount"><code><span class="http-method">get</span> /api/sessions/count/{productId}</code></a></li>
+  <li><a href="#removeUserPublisher"><code><span class="http-method">post</span> /api/sessions/remove-user-pub</code></a></li>
+  <li><a href="#removeUserSubscriber"><code><span class="http-method">post</span> /api/sessions/remove-user-sub</code></a></li>
+  <li><a href="#startRecording"><code><span class="http-method">post</span> /api/sessions/recording</code></a></li>
+  </ul>
+  <h4><a href="#TransactionConfirmController">TransactionConfirmController</a></h4>
+  <ul>
+  <li><a href="#changeSellerTransStatus"><code><span class="http-method">post</span> /api/trans</code></a></li>
+  <li><a href="#getTransStatus"><code><span class="http-method">get</span> /api/trans/status</code></a></li>
+  </ul>
+
+  <h1><a name="AlarmController">AlarmController</a></h1>
+  <div class="method"><a name="getUnReadNotifications"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/notification</code></pre></div>
+    <div class="method-summary">안읽은 일반 알림 조회 (<span class="nickname">getUnReadNotifications</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResNotificationInfoDTO">ResultResNotificationInfoDTO</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "checked" : true,
+    "notificationId" : 0,
+    "relatedUrl" : "relatedUrl",
+    "title" : "title",
+    "type" : "type",
+    "content" : "content"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResNotificationInfoDTO">ResultResNotificationInfoDTO</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getUnReadTransConfirmNotifications"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/notification/trans-confirm</code></pre></div>
+    <div class="method-summary">안읽은 거래확정 알림 조회 (<span class="nickname">getUnReadTransConfirmNotifications</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResTransConfirmNotificationInfoRes">ResultResTransConfirmNotificationInfoRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "productId" : 6,
+    "checked" : true,
+    "notificationId" : 0,
+    "relatedUrl" : "relatedUrl",
+    "endPrice" : 1,
+    "title" : "title",
+    "type" : "type",
+    "content" : "content",
+    "sigImgSrc" : "sigImgSrc"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResTransConfirmNotificationInfoRes">ResultResTransConfirmNotificationInfoRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="readNotification"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/notification/{notificationId}</code></pre></div>
+    <div class="method-summary">알림 읽음처리 (<span class="nickname">readNotification</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">notificationId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="BidController">BidController</a></h1>
+  <div class="method"><a name="bidding"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/auctions/{auctionId}</code></pre></div>
+    <div class="method-summary">상품 경매 입찰 메서드 (<span class="nickname">bidding</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">auctionId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#BidReq">BidReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getAuctionInfo"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/auctions/{productId}</code></pre></div>
+    <div class="method-summary">상품 경매 정보 (<span class="nickname">getAuctionInfo</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResAuctionInfoRes">ResultResAuctionInfoRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "auctionId" : 1,
+    "priceUnit" : 1000,
+    "auctionEndDate" : "2023-10-12 12:01"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResAuctionInfoRes">ResultResAuctionInfoRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="CategoryController">CategoryController</a></h1>
+  <div class="method"><a name="getCategoryList"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/categories</code></pre></div>
+    <div class="method-summary">카테고리 리스트 조회 메서드 (<span class="nickname">getCategoryList</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResListCategoryRes">ResultResListCategoryRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : [ {
+    "name" : "스포츠/레저",
+    "categoryId" : 1
+  }, {
+    "name" : "스포츠/레저",
+    "categoryId" : 1
+  } ]
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResListCategoryRes">ResultResListCategoryRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="ChattingMessageController">ChattingMessageController</a></h1>
+  <div class="method"><a name="getMessageList"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/chat-message/chats/{roomId}</code></pre></div>
+    <div class="method-summary">채팅 메세지 리스트 조회 메서드 (<span class="nickname">getMessageList</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">roomId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">page (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash;  default: 0 format: int32</div>      <div class="param">size (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash;  default: 15 format: int32</div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#PageListResChatMessageRes">PageListResChatMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "pageNumber" : 0,
+  "size" : 10,
+  "numberOfElements" : 10,
+  "last" : true,
+  "hasContent" : false,
+  "totalPages" : 10,
+  "hasPrevious" : false,
+  "hasNext" : true,
+  "content" : [ {
+    "sender" : "현민",
+    "readOrNot" : true,
+    "sentTime" : "2023-10-12 12:01:00",
+    "message" : "안녕하세요",
+    "direction" : "outgoing"
+  }, {
+    "sender" : "현민",
+    "readOrNot" : true,
+    "sentTime" : "2023-10-12 12:01:00",
+    "message" : "안녕하세요",
+    "direction" : "outgoing"
+  } ],
+  "first" : true,
+  "totalElements" : 100
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#PageListResChatMessageRes">PageListResChatMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="ChattingRoomController">ChattingRoomController</a></h1>
+  <div class="method"><a name="createRoom"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/chat-room/{productId}</code></pre></div>
+    <div class="method-summary">채팅방 생성 메서드 (<span class="nickname">createRoom</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getRoomList"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/chat-room</code></pre></div>
+    <div class="method-summary">채팅방 리스트 조회 메서드 (<span class="nickname">getRoomList</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResListChatRoomRes">ResultResListChatRoomRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : [ {
+    "recentMessage" : "안녕하세요",
+    "unReadMessages" : 10,
+    "recentSender" : "현민",
+    "chatRoomId" : 1,
+    "roomName" : "공학수학 책 팔아요"
+  }, {
+    "recentMessage" : "안녕하세요",
+    "unReadMessages" : 10,
+    "recentSender" : "현민",
+    "chatRoomId" : 1,
+    "roomName" : "공학수학 책 팔아요"
+  } ]
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResListChatRoomRes">ResultResListChatRoomRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="EmailController">EmailController</a></h1>
+  <div class="method"><a name="sendJoinMail"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/email/{email}</code></pre></div>
+    <div class="method-summary">인증 이메일 발송 (<span class="nickname">sendJoinMail</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">email (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResString">ResultResString</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : "result"
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResString">ResultResString</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="MemberController">MemberController</a></h1>
+  <div class="method"><a name="checkEmailDuplicate"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/member/email/{email}/exists</code></pre></div>
+    <div class="method-summary">이메일 중복 확인 (<span class="nickname">checkEmailDuplicate</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">email (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResBoolean">ResultResBoolean</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : true
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResBoolean">ResultResBoolean</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="checkLoginIdDuplicate"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/member/loginid/{loginid}/exists</code></pre></div>
+    <div class="method-summary">아이디 중복 확인 (<span class="nickname">checkLoginIdDuplicate</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">loginid (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResBoolean">ResultResBoolean</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : true
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResBoolean">ResultResBoolean</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="checkNameDuplicate"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/member/name/{name}/exists</code></pre></div>
+    <div class="method-summary">닉네임 중복 확인 (<span class="nickname">checkNameDuplicate</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">name (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResBoolean">ResultResBoolean</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : true
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResBoolean">ResultResBoolean</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="delete"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /api/member</code></pre></div>
+    <div class="method-summary">회원탈퇴 (<span class="nickname">delete</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">password (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="login"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/member/login</code></pre></div>
+    <div class="method-summary">로그인 (<span class="nickname">login</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#LoginReq">LoginReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResTokenDTO">ResultResTokenDTO</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "accessToken" : "accessToken",
+    "refreshToken" : "refreshToken"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResTokenDTO">ResultResTokenDTO</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="loginCheck"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/member/is-login</code></pre></div>
+    <div class="method-summary">로그인 체크 (<span class="nickname">loginCheck</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResLoginCheckRes">ResultResLoginCheckRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "loginId" : "loginId",
+    "name" : "name",
+    "status" : true
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResLoginCheckRes">ResultResLoginCheckRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="logout"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/member/logout</code></pre></div>
+    <div class="method-summary">로그아웃 (<span class="nickname">logout</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#LogoutReq">LogoutReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="register"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/member/signup</code></pre></div>
+    <div class="method-summary">회원가입 (<span class="nickname">register</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#RegisterReq">RegisterReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="reissue"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/member/reissue</code></pre></div>
+    <div class="method-summary">토큰 재발급 (<span class="nickname">reissue</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#TokenDTO">TokenDTO</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResTokenDTO">ResultResTokenDTO</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "accessToken" : "accessToken",
+    "refreshToken" : "refreshToken"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResTokenDTO">ResultResTokenDTO</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="MypageController">MypageController</a></h1>
+  <div class="method"><a name="getInfo"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/mypage</code></pre></div>
+    <div class="method-summary">회원정보 조회 (<span class="nickname">getInfo</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMemberDetailInfoRes">ResultResMemberDetailInfoRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "loginId" : "loginId",
+    "phoneNumber" : "phoneNumber",
+    "createdDate" : "createdDate",
+    "name" : "name",
+    "birth" : "birth",
+    "email" : "email"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMemberDetailInfoRes">ResultResMemberDetailInfoRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getMyAuctionHistory"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/mypage/auction-history</code></pre></div>
+    <div class="method-summary">입찰/낙찰 내역 (<span class="nickname">getMyAuctionHistory</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">status (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 상태별 조회, 없을시 전체조회 </div>      <div class="param">page (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 번호 , 0부터 시작 </div>      <div class="param">size (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 크기 ,1 이상 </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#PageListResMyPageAuctionHistoryPageContentRes">PageListResMyPageAuctionHistoryPageContentRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "pageNumber" : 0,
+  "size" : 10,
+  "numberOfElements" : 10,
+  "last" : true,
+  "hasContent" : false,
+  "totalPages" : 10,
+  "hasPrevious" : false,
+  "hasNext" : true,
+  "content" : [ {
+    "nowPrice" : 50000,
+    "createdDate" : "2023-10-12 12:01",
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "입찰"
+  }, {
+    "nowPrice" : 50000,
+    "createdDate" : "2023-10-12 12:01",
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "입찰"
+  } ],
+  "first" : true,
+  "totalElements" : 100
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#PageListResMyPageAuctionHistoryPageContentRes">PageListResMyPageAuctionHistoryPageContentRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getMyBuyHistory"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/mypage/buy-history</code></pre></div>
+    <div class="method-summary">구매 내역 (<span class="nickname">getMyBuyHistory</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">status (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 상태별 조회, 없을시 전체조회 </div>      <div class="param">page (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 번호 , 0부터 시작 </div>      <div class="param">size (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 크기 ,1 이상 </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#PageListResMyPageBuySellHistoryContentRes">PageListResMyPageBuySellHistoryContentRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "pageNumber" : 0,
+  "size" : 10,
+  "numberOfElements" : 10,
+  "last" : true,
+  "hasContent" : false,
+  "totalPages" : 10,
+  "hasPrevious" : false,
+  "hasNext" : true,
+  "content" : [ {
+    "nowPrice" : 50000,
+    "createdDate" : "2023-10-12 12:01",
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "거래 성공"
+  }, {
+    "nowPrice" : 50000,
+    "createdDate" : "2023-10-12 12:01",
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "거래 성공"
+  } ],
+  "first" : true,
+  "totalElements" : 100
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#PageListResMyPageBuySellHistoryContentRes">PageListResMyPageBuySellHistoryContentRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getMyProducts"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/mypage/products</code></pre></div>
+    <div class="method-summary">상품 관리 (<span class="nickname">getMyProducts</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">status (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 상태별 조회, 없을시 전체조회 </div>      <div class="param">page (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 번호 , 0부터 시작 </div>      <div class="param">size (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 크기 ,1 이상 </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#PageListResMyPageProductPageContentRes">PageListResMyPageProductPageContentRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "pageNumber" : 0,
+  "size" : 10,
+  "numberOfElements" : 10,
+  "last" : true,
+  "hasContent" : false,
+  "totalPages" : 10,
+  "hasPrevious" : false,
+  "hasNext" : true,
+  "content" : [ {
+    "nowPrice" : 50000,
+    "createdDate" : "2023-10-12 12:01",
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "possibleUpdate" : true,
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "경매중"
+  }, {
+    "nowPrice" : 50000,
+    "createdDate" : "2023-10-12 12:01",
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "possibleUpdate" : true,
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "경매중"
+  } ],
+  "first" : true,
+  "totalElements" : 100
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#PageListResMyPageProductPageContentRes">PageListResMyPageProductPageContentRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getMySalesHistory"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/mypage/sales-history</code></pre></div>
+    <div class="method-summary">판매 내역 (<span class="nickname">getMySalesHistory</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">status (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 상태별 조회, 없을시 전체조회 </div>      <div class="param">page (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 번호 , 0부터 시작 </div>      <div class="param">size (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 크기 ,1 이상 </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#PageListResMyPageBuySellHistoryContentRes">PageListResMyPageBuySellHistoryContentRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "pageNumber" : 0,
+  "size" : 10,
+  "numberOfElements" : 10,
+  "last" : true,
+  "hasContent" : false,
+  "totalPages" : 10,
+  "hasPrevious" : false,
+  "hasNext" : true,
+  "content" : [ {
+    "nowPrice" : 50000,
+    "createdDate" : "2023-10-12 12:01",
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "거래 성공"
+  }, {
+    "nowPrice" : 50000,
+    "createdDate" : "2023-10-12 12:01",
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "거래 성공"
+  } ],
+  "first" : true,
+  "totalElements" : 100
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#PageListResMyPageBuySellHistoryContentRes">PageListResMyPageBuySellHistoryContentRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getTransactionCount"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/mypage/count</code></pre></div>
+    <div class="method-summary">판매횟수, 경고횟수 조회 (<span class="nickname">getTransactionCount</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#TransactionAndRejectCountRes">TransactionAndRejectCountRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "successCount" : 1,
+  "allCount" : 2,
+  "rejectCount" : 2
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#TransactionAndRejectCountRes">TransactionAndRejectCountRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="updateInfo"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /api/mypage</code></pre></div>
+    <div class="method-summary">회원정보 수정 (<span class="nickname">updateInfo</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#UserUpdateReq">UserUpdateReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="ProductController">ProductController</a></h1>
+  <div class="method"><a name="deleteProduct"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /api/products/{productId}</code></pre></div>
+    <div class="method-summary">상품 삭제 메서드 (<span class="nickname">deleteProduct</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getProduct"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/products/{productId}</code></pre></div>
+    <div class="method-summary">상품 상세 조회 메서드 (<span class="nickname">getProduct</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResProductDetailInfoRes">ResultResProductDetailInfoRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "startPrice" : 1000,
+    "priceUnit" : 1000,
+    "sigImg" : {
+      "originalName" : "객체지향.jpg",
+      "path" : "http://sfieuhfe.sfee.jpg"
+    },
+    "categoryName" : "디지털 기기",
+    "productName" : "자료구조 책 팝니다",
+    "auctionId" : 1,
+    "nowPrice" : 10000,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "videoList" : [ {
+      "path" : "http://sfieuhfe.1.mp4",
+      "videoId" : 1
+    }, {
+      "path" : "http://sfieuhfe.1.mp4",
+      "videoId" : 1
+    } ],
+    "ordinalImgList" : [ null, null ],
+    "nickname" : "lovesoe1234",
+    "viewCount" : 7,
+    "info" : "자료구조 새 책입니다.",
+    "memberId" : 100,
+    "status" : "경매 중"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResProductDetailInfoRes">ResultResProductDetailInfoRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getProductList"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/products</code></pre></div>
+    <div class="method-summary">상품 리스트 조회 메서드 (<span class="nickname">getProductList</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">categoryId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 카테고리 ID </div>      <div class="param">productName (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 상품 이름 </div>      <div class="param">orderBy (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 정렬 순서 </div>      <div class="param">page (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 번호 , 0부터 시작 </div>      <div class="param">size (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이지 크기 ,1 이상 </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#PageListResProductPageContentRes">PageListResProductPageContentRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "pageNumber" : 0,
+  "size" : 10,
+  "numberOfElements" : 10,
+  "last" : true,
+  "hasContent" : false,
+  "totalPages" : 10,
+  "hasPrevious" : false,
+  "hasNext" : true,
+  "content" : [ {
+    "auctionId" : 1,
+    "nowPrice" : 50000,
+    "liveBroadcasting" : true,
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "nickname" : "hochang123",
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "경매 종료"
+  }, {
+    "auctionId" : 1,
+    "nowPrice" : 50000,
+    "liveBroadcasting" : true,
+    "productId" : 1,
+    "auctionEndDate" : "2023-10-12 12:01",
+    "nickname" : "hochang123",
+    "categoryName" : "디지털 기기",
+    "productName" : "공학수학 책 팔아요",
+    "sigImgSrc" : "https://used.wsdf.wjfiojs.jpg",
+    "status" : "경매 종료"
+  } ],
+  "first" : true,
+  "totalElements" : 100
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#PageListResProductPageContentRes">PageListResProductPageContentRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getProductOderByList"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/products/order-by</code></pre></div>
+    <div class="method-summary">상품 리스트 조회 시 정렬 기준 (<span class="nickname">getProductOderByList</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResListOrderByRes">ResultResListOrderByRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : [ {
+    "name" : "VIEW_ORDER",
+    "description" : "조회순"
+  }, {
+    "name" : "VIEW_ORDER",
+    "description" : "조회순"
+  } ]
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResListOrderByRes">ResultResListOrderByRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="registerProduct"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/products</code></pre></div>
+    <div class="method-summary">상품 등록 메서드 (<span class="nickname">registerProduct</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#ProductRegisterReq">ProductRegisterReq</a> (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="updateProduct"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /api/products/update/{productId}</code></pre></div>
+    <div class="method-summary">상품 수정 메서드 (<span class="nickname">updateProduct</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#ProductUpdateReq">ProductUpdateReq</a> (optional)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="updateProduct1"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/products/update/{productId}</code></pre></div>
+    <div class="method-summary">상품 수정 정보 조회 메서드 (<span class="nickname">updateProduct1</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResProductUpdateInfoRes">ResultResProductUpdateInfoRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "startPrice" : 10000,
+    "priceUnit" : 10000,
+    "auctionEndDate" : "2022-12-11 12:01",
+    "sigImg" : {
+      "originalName" : "객체지향.jpg",
+      "path" : "http://sfieuhfe.sfee.jpg"
+    },
+    "ordinalImgList" : [ null, null ],
+    "productName" : "맛있는 사과입니다",
+    "categoryId" : 2,
+    "info" : "맛있는 사과입니다 맛있습니다"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResProductUpdateInfoRes">ResultResProductUpdateInfoRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="validRightSellerForProduct"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/products/valid/{productId}</code></pre></div>
+    <div class="method-summary">판매자가 판매하는 상품인지 확인 (<span class="nickname">validRightSellerForProduct</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResValidResult">ResultResValidResult</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "valid" : true
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResValidResult">ResultResValidResult</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="QuestionController">QuestionController</a></h1>
+  <div class="method"><a name="deleteQuestion"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /api/questions/{questionId}</code></pre></div>
+    <div class="method-summary">질문 삭제 메서드 (<span class="nickname">deleteQuestion</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">questionId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getQuestions"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/questions/{productId}</code></pre></div>
+    <div class="method-summary">질문 리스트 조회 메서드 (<span class="nickname">getQuestions</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">page (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이저 번호, 0부터 시작 </div>      <div class="param">size (required)</div>
+
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; 페이저 사이즈, 1 이상 </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#PageListResQuestionPageContentRes">PageListResQuestionPageContentRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "pageNumber" : 0,
+  "size" : 10,
+  "numberOfElements" : 10,
+  "last" : true,
+  "hasContent" : false,
+  "totalPages" : 10,
+  "hasPrevious" : false,
+  "hasNext" : true,
+  "content" : [ {
+    "questionId" : 1,
+    "createdDate" : "2023-04-06 01:05",
+    "loginId" : "5",
+    "nickname" : "컴소공 고인물",
+    "content" : "흠집은 없나요"
+  }, {
+    "questionId" : 1,
+    "createdDate" : "2023-04-06 01:05",
+    "loginId" : "5",
+    "nickname" : "컴소공 고인물",
+    "content" : "흠집은 없나요"
+  } ],
+  "first" : true,
+  "totalElements" : 100
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#PageListResQuestionPageContentRes">PageListResQuestionPageContentRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="registerQuestion"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/questions</code></pre></div>
+    <div class="method-summary">질문 등록 메서드 (<span class="nickname">registerQuestion</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#QuestionRegisterReq">QuestionRegisterReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="SseController">SseController</a></h1>
+  <div class="method"><a name="connectBid"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/sse/bid-connect/{productId}</code></pre></div>
+    <div class="method-summary">sse 입찰 금액 연결 메서드 (<span class="nickname">connectBid</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#SseEmitter">SseEmitter</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "timeout" : 0
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>text/event-stream</code></li>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#SseEmitter">SseEmitter</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="connectChatList"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/sse/chat-connect</code></pre></div>
+    <div class="method-summary">sse 채팅방 리스트 연결 메서드 (<span class="nickname">connectChatList</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#SseEmitter">SseEmitter</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "timeout" : 0
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>text/event-stream</code></li>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#SseEmitter">SseEmitter</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="connectNotification"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/sse/notification</code></pre></div>
+    <div class="method-summary">sse 알림 연결 메서드 (<span class="nickname">connectNotification</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#SseEmitter">SseEmitter</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "timeout" : 0
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>text/event-stream</code></li>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#SseEmitter">SseEmitter</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="StreamingController">StreamingController</a></h1>
+  <div class="method"><a name="deleteVideo"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /api/sessions/record/{videoId}</code></pre></div>
+    <div class="method-summary">녹화 영상 삭제 (<span class="nickname">deleteVideo</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">videoId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getTokenPublisher"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/sessions/get-token-pub</code></pre></div>
+    <div class="method-summary">Publisher 토큰 생성 (<span class="nickname">getTokenPublisher</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#OpenviduTokenReq">OpenviduTokenReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResOpenviduTokenRes">ResultResOpenviduTokenRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "sessionId" : "ses_FL20dvk",
+    "token" : "wss://openvidu.shop?sessionId=ses_FL20dvk&token=tok_4yYraijPA"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResOpenviduTokenRes">ResultResOpenviduTokenRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getTokenSubscriber"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/sessions/get-token-sub</code></pre></div>
+    <div class="method-summary">Subscriber 토큰 생성 (<span class="nickname">getTokenSubscriber</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#OpenviduTokenReq">OpenviduTokenReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResOpenviduTokenRes">ResultResOpenviduTokenRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "sessionId" : "ses_FL20dvk",
+    "token" : "wss://openvidu.shop?sessionId=ses_FL20dvk&token=tok_4yYraijPA"
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResOpenviduTokenRes">ResultResOpenviduTokenRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="isLive"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/sessions/is-live/{productId}</code></pre></div>
+    <div class="method-summary">생방송중인지 여부 확인 (<span class="nickname">isLive</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResIsLiveRes">ResultResIsLiveRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "liveBroadcasting" : true
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResIsLiveRes">ResultResIsLiveRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="liveCount"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/sessions/count/{productId}</code></pre></div>
+    <div class="method-summary">시청자 수 조회 (<span class="nickname">liveCount</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">productId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResLiveCountRes">ResultResLiveCountRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "count" : 3
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResLiveCountRes">ResultResLiveCountRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="removeUserPublisher"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/sessions/remove-user-pub</code></pre></div>
+    <div class="method-summary">Publisher 방송 종료 (<span class="nickname">removeUserPublisher</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#OpenviduRemoveUserReq">OpenviduRemoveUserReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="removeUserSubscriber"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/sessions/remove-user-sub</code></pre></div>
+    <div class="method-summary">Subscriber 방 퇴장 (<span class="nickname">removeUserSubscriber</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#OpenviduRemoveUserReq">OpenviduRemoveUserReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="startRecording"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/sessions/recording</code></pre></div>
+    <div class="method-summary">방송 녹화 시작 (<span class="nickname">startRecording</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#RecordingStartReq">RecordingStartReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="TransactionConfirmController">TransactionConfirmController</a></h1>
+  <div class="method"><a name="changeSellerTransStatus"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/trans</code></pre></div>
+    <div class="method-summary">거래 확정 요청 메서드 (<span class="nickname">changeSellerTransStatus</span>)</div>
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#MemberTransReq">MemberTransReq</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResMessageRes">ResultResMessageRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : {
+    "msg" : "성공했습니다."
+  }
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResMessageRes">ResultResMessageRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getTransStatus"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/trans/status</code></pre></div>
+    <div class="method-summary">거래 확정시 거래 상태 기준 (<span class="nickname">getTransStatus</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#ResultResListStatusTypeRes">ResultResListStatusTypeRes</a>
+
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "result" : [ {
+    "name" : "TRANS_BEFORE",
+    "description" : "거래 불발"
+  }, {
+    "name" : "TRANS_BEFORE",
+    "description" : "거래 불발"
+  } ]
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json;charset=UTF-8</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#ResultResListStatusTypeRes">ResultResListStatusTypeRes</a>
+    <h4 class="field-label">400</h4>
+    Bad Request
+        <a href="#ErrorRes">ErrorRes</a>
+  </div> <!-- method -->
+  <hr/>
+
+  <h2><a name="__Models">Models</a></h2>
+  [ Jump to <a href="#__Methods">Methods</a> ]
+
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#AuctionInfoRes"><code>AuctionInfoRes</code></a></li>
+    <li><a href="#BidReq"><code>BidReq</code></a></li>
+    <li><a href="#CategoryRes"><code>CategoryRes</code></a></li>
+    <li><a href="#ChatMessageRes"><code>ChatMessageRes</code></a></li>
+    <li><a href="#ChatRoomRes"><code>ChatRoomRes</code></a></li>
+    <li><a href="#ErrorRes"><code>ErrorRes</code></a></li>
+    <li><a href="#ImageInfoRes"><code>ImageInfoRes</code></a></li>
+    <li><a href="#IsLiveRes"><code>IsLiveRes</code></a></li>
+    <li><a href="#LiveCountRes"><code>LiveCountRes</code></a></li>
+    <li><a href="#LoginCheckRes"><code>LoginCheckRes</code></a></li>
+    <li><a href="#LoginReq"><code>LoginReq</code></a></li>
+    <li><a href="#LogoutReq"><code>LogoutReq</code></a></li>
+    <li><a href="#MemberDetailInfoRes"><code>MemberDetailInfoRes</code></a></li>
+    <li><a href="#MemberTransReq"><code>MemberTransReq</code></a></li>
+    <li><a href="#MessageRes"><code>MessageRes</code></a></li>
+    <li><a href="#MyPageAuctionHistoryPageContentRes"><code>MyPageAuctionHistoryPageContentRes</code></a></li>
+    <li><a href="#MyPageBuySellHistoryContentRes"><code>MyPageBuySellHistoryContentRes</code></a></li>
+    <li><a href="#MyPageProductPageContentRes"><code>MyPageProductPageContentRes</code></a></li>
+    <li><a href="#NotificationInfoDTO"><code>NotificationInfoDTO</code></a></li>
+    <li><a href="#OpenviduRemoveUserReq"><code>OpenviduRemoveUserReq</code></a></li>
+    <li><a href="#OpenviduTokenReq"><code>OpenviduTokenReq</code></a></li>
+    <li><a href="#OpenviduTokenRes"><code>OpenviduTokenRes</code></a></li>
+    <li><a href="#OrderByRes"><code>OrderByRes</code></a></li>
+    <li><a href="#PageListResChatMessageRes"><code>PageListResChatMessageRes</code></a></li>
+    <li><a href="#PageListResMyPageAuctionHistoryPageContentRes"><code>PageListResMyPageAuctionHistoryPageContentRes</code></a></li>
+    <li><a href="#PageListResMyPageBuySellHistoryContentRes"><code>PageListResMyPageBuySellHistoryContentRes</code></a></li>
+    <li><a href="#PageListResMyPageProductPageContentRes"><code>PageListResMyPageProductPageContentRes</code></a></li>
+    <li><a href="#PageListResProductPageContentRes"><code>PageListResProductPageContentRes</code></a></li>
+    <li><a href="#PageListResQuestionPageContentRes"><code>PageListResQuestionPageContentRes</code></a></li>
+    <li><a href="#ProductDetailInfoRes"><code>ProductDetailInfoRes</code></a></li>
+    <li><a href="#ProductPageContentRes"><code>ProductPageContentRes</code></a></li>
+    <li><a href="#ProductRegisterReq"><code>ProductRegisterReq</code></a></li>
+    <li><a href="#ProductUpdateInfoRes"><code>ProductUpdateInfoRes</code></a></li>
+    <li><a href="#ProductUpdateReq"><code>ProductUpdateReq</code></a></li>
+    <li><a href="#QuestionPageContentRes"><code>QuestionPageContentRes</code></a></li>
+    <li><a href="#QuestionRegisterReq"><code>QuestionRegisterReq</code></a></li>
+    <li><a href="#RecordingStartReq"><code>RecordingStartReq</code></a></li>
+    <li><a href="#RegisterReq"><code>RegisterReq</code></a></li>
+    <li><a href="#ResultResAuctionInfoRes"><code>ResultResAuctionInfoRes</code></a></li>
+    <li><a href="#ResultResBoolean"><code>ResultResBoolean</code></a></li>
+    <li><a href="#ResultResIsLiveRes"><code>ResultResIsLiveRes</code></a></li>
+    <li><a href="#ResultResListCategoryRes"><code>ResultResListCategoryRes</code></a></li>
+    <li><a href="#ResultResListChatRoomRes"><code>ResultResListChatRoomRes</code></a></li>
+    <li><a href="#ResultResListOrderByRes"><code>ResultResListOrderByRes</code></a></li>
+    <li><a href="#ResultResListStatusTypeRes"><code>ResultResListStatusTypeRes</code></a></li>
+    <li><a href="#ResultResLiveCountRes"><code>ResultResLiveCountRes</code></a></li>
+    <li><a href="#ResultResLoginCheckRes"><code>ResultResLoginCheckRes</code></a></li>
+    <li><a href="#ResultResMemberDetailInfoRes"><code>ResultResMemberDetailInfoRes</code></a></li>
+    <li><a href="#ResultResMessageRes"><code>ResultResMessageRes</code></a></li>
+    <li><a href="#ResultResNotificationInfoDTO"><code>ResultResNotificationInfoDTO</code></a></li>
+    <li><a href="#ResultResOpenviduTokenRes"><code>ResultResOpenviduTokenRes</code></a></li>
+    <li><a href="#ResultResProductDetailInfoRes"><code>ResultResProductDetailInfoRes</code></a></li>
+    <li><a href="#ResultResProductUpdateInfoRes"><code>ResultResProductUpdateInfoRes</code></a></li>
+    <li><a href="#ResultResString"><code>ResultResString</code></a></li>
+    <li><a href="#ResultResTokenDTO"><code>ResultResTokenDTO</code></a></li>
+    <li><a href="#ResultResTransConfirmNotificationInfoRes"><code>ResultResTransConfirmNotificationInfoRes</code></a></li>
+    <li><a href="#ResultResValidResult"><code>ResultResValidResult</code></a></li>
+    <li><a href="#SseEmitter"><code>SseEmitter</code></a></li>
+    <li><a href="#StatusTypeRes"><code>StatusTypeRes</code></a></li>
+    <li><a href="#TokenDTO"><code>TokenDTO</code></a></li>
+    <li><a href="#TransConfirmNotificationInfoRes"><code>TransConfirmNotificationInfoRes</code></a></li>
+    <li><a href="#TransactionAndRejectCountRes"><code>TransactionAndRejectCountRes</code></a></li>
+    <li><a href="#UserUpdateReq"><code>UserUpdateReq</code></a></li>
+    <li><a href="#ValidResult"><code>ValidResult</code></a></li>
+    <li><a href="#VideoInfoRes"><code>VideoInfoRes</code></a></li>
+  </ol>
+
+  <div class="model">
+    <h3><a name="AuctionInfoRes"><code>AuctionInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">auctionId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 경매 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">auctionEndDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 종료 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">priceUnit (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 입찰 단위 가격 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 1000</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="BidReq"><code>BidReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">bidPrice </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 경매 ID format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="CategoryRes"><code>CategoryRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">categoryId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 카테고리 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 카테고리 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 스포츠/레저</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ChatMessageRes"><code>ChatMessageRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">sender (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 발신자 </div>
+          <div class="param-desc"><span class="param-type">example: 현민</span></div>
+<div class="param">direction (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 위치 </div>
+          <div class="param-desc"><span class="param-type">example: outgoing</span></div>
+<div class="param">message (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 메세지 </div>
+          <div class="param-desc"><span class="param-type">example: 안녕하세요</span></div>
+<div class="param">readOrNot (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 읽음 여부 </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+<div class="param">sentTime (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 보낸 시간 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01:00</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ChatRoomRes"><code>ChatRoomRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">chatRoomId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 채팅방 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">roomName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 채팅방 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 공학수학 책 팔아요</span></div>
+<div class="param">recentMessage (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 최근 메세지 </div>
+          <div class="param-desc"><span class="param-type">example: 안녕하세요</span></div>
+<div class="param">recentSender (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 최근 메세지 발신자 </div>
+          <div class="param-desc"><span class="param-type">example: 현민</span></div>
+<div class="param">unReadMessages (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 안읽은 메세지 수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ErrorRes"><code>ErrorRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+        <div class="param-enum-header">Enum:</div>
+        <div class="param-enum">100 CONTINUE</div><div class="param-enum">101 SWITCHING_PROTOCOLS</div><div class="param-enum">102 PROCESSING</div><div class="param-enum">103 EARLY_HINTS</div><div class="param-enum">103 CHECKPOINT</div><div class="param-enum">200 OK</div><div class="param-enum">201 CREATED</div><div class="param-enum">202 ACCEPTED</div><div class="param-enum">203 NON_AUTHORITATIVE_INFORMATION</div><div class="param-enum">204 NO_CONTENT</div><div class="param-enum">205 RESET_CONTENT</div><div class="param-enum">206 PARTIAL_CONTENT</div><div class="param-enum">207 MULTI_STATUS</div><div class="param-enum">208 ALREADY_REPORTED</div><div class="param-enum">226 IM_USED</div><div class="param-enum">300 MULTIPLE_CHOICES</div><div class="param-enum">301 MOVED_PERMANENTLY</div><div class="param-enum">302 FOUND</div><div class="param-enum">302 MOVED_TEMPORARILY</div><div class="param-enum">303 SEE_OTHER</div><div class="param-enum">304 NOT_MODIFIED</div><div class="param-enum">305 USE_PROXY</div><div class="param-enum">307 TEMPORARY_REDIRECT</div><div class="param-enum">308 PERMANENT_REDIRECT</div><div class="param-enum">400 BAD_REQUEST</div><div class="param-enum">401 UNAUTHORIZED</div><div class="param-enum">402 PAYMENT_REQUIRED</div><div class="param-enum">403 FORBIDDEN</div><div class="param-enum">404 NOT_FOUND</div><div class="param-enum">405 METHOD_NOT_ALLOWED</div><div class="param-enum">406 NOT_ACCEPTABLE</div><div class="param-enum">407 PROXY_AUTHENTICATION_REQUIRED</div><div class="param-enum">408 REQUEST_TIMEOUT</div><div class="param-enum">409 CONFLICT</div><div class="param-enum">410 GONE</div><div class="param-enum">411 LENGTH_REQUIRED</div><div class="param-enum">412 PRECONDITION_FAILED</div><div class="param-enum">413 PAYLOAD_TOO_LARGE</div><div class="param-enum">413 REQUEST_ENTITY_TOO_LARGE</div><div class="param-enum">414 URI_TOO_LONG</div><div class="param-enum">414 REQUEST_URI_TOO_LONG</div><div class="param-enum">415 UNSUPPORTED_MEDIA_TYPE</div><div class="param-enum">416 REQUESTED_RANGE_NOT_SATISFIABLE</div><div class="param-enum">417 EXPECTATION_FAILED</div><div class="param-enum">418 I_AM_A_TEAPOT</div><div class="param-enum">419 INSUFFICIENT_SPACE_ON_RESOURCE</div><div class="param-enum">420 METHOD_FAILURE</div><div class="param-enum">421 DESTINATION_LOCKED</div><div class="param-enum">422 UNPROCESSABLE_ENTITY</div><div class="param-enum">423 LOCKED</div><div class="param-enum">424 FAILED_DEPENDENCY</div><div class="param-enum">425 TOO_EARLY</div><div class="param-enum">426 UPGRADE_REQUIRED</div><div class="param-enum">428 PRECONDITION_REQUIRED</div><div class="param-enum">429 TOO_MANY_REQUESTS</div><div class="param-enum">431 REQUEST_HEADER_FIELDS_TOO_LARGE</div><div class="param-enum">451 UNAVAILABLE_FOR_LEGAL_REASONS</div><div class="param-enum">500 INTERNAL_SERVER_ERROR</div><div class="param-enum">501 NOT_IMPLEMENTED</div><div class="param-enum">502 BAD_GATEWAY</div><div class="param-enum">503 SERVICE_UNAVAILABLE</div><div class="param-enum">504 GATEWAY_TIMEOUT</div><div class="param-enum">505 HTTP_VERSION_NOT_SUPPORTED</div><div class="param-enum">506 VARIANT_ALSO_NEGOTIATES</div><div class="param-enum">507 INSUFFICIENT_STORAGE</div><div class="param-enum">508 LOOP_DETECTED</div><div class="param-enum">509 BANDWIDTH_LIMIT_EXCEEDED</div><div class="param-enum">510 NOT_EXTENDED</div><div class="param-enum">511 NETWORK_AUTHENTICATION_REQUIRED</div>
+<div class="param">code (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">msg (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ImageInfoRes"><code>ImageInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">originalName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 사진 원본 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 객체지향.jpg</span></div>
+<div class="param">path (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 사진 저장 경로 </div>
+          <div class="param-desc"><span class="param-type">example: http://sfieuhfe.sfee.jpg</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="IsLiveRes"><code>IsLiveRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">liveBroadcasting (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 라이브 여부 확인, true -&amp;gt; 생방송0 /false -&amp;gt; 생방송X </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="LiveCountRes"><code>LiveCountRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">count (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 방송 시청자 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 3</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="LoginCheckRes"><code>LoginCheckRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">loginId (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="LoginReq"><code>LoginReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">loginId </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">password </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="LogoutReq"><code>LogoutReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">accessToken (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="MemberDetailInfoRes"><code>MemberDetailInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">loginId (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">birth (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">email (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">phoneNumber (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">createdDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="MemberTransReq"><code>MemberTransReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productId </div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">status </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 거래 상태, 거래 확정시 거래 상태 기준 참고 </div>
+        <div class="param-enum-header">Enum:</div>
+        <div class="param-enum">TRANS_COMPLETE</div><div class="param-enum">TRANS_BEFORE</div><div class="param-enum">TRANS_REJECT</div>
+          <div class="param-desc"><span class="param-type">example: TRANS_COMPLETE</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="MessageRes"><code>MessageRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">msg (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 성공메시지 </div>
+          <div class="param-desc"><span class="param-type">example: 성공했습니다.</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="MyPageAuctionHistoryPageContentRes"><code>MyPageAuctionHistoryPageContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">categoryName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 카테고리 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 디지털 기기</span></div>
+<div class="param">productName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 공학수학 책 팔아요</span></div>
+<div class="param">sigImgSrc (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 대표이미지 src </div>
+          <div class="param-desc"><span class="param-type">example: https://used.wsdf.wjfiojs.jpg</span></div>
+<div class="param">nowPrice (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 입찰/낙찰 가격 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 50000</span></div>
+<div class="param">createdDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 입찰/낙찰 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">auctionEndDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 종료 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 입찰/낙찰 </div>
+          <div class="param-desc"><span class="param-type">example: 입찰</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="MyPageBuySellHistoryContentRes"><code>MyPageBuySellHistoryContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">categoryName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 카테고리 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 디지털 기기</span></div>
+<div class="param">productName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 공학수학 책 팔아요</span></div>
+<div class="param">nowPrice (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 낙찰가 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 50000</span></div>
+<div class="param">createdDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 생성 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">auctionEndDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 종료 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">sigImgSrc (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 대표이미지 src </div>
+          <div class="param-desc"><span class="param-type">example: https://used.wsdf.wjfiojs.jpg</span></div>
+<div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 상태 - 거래성공, 거래실패 </div>
+          <div class="param-desc"><span class="param-type">example: 거래 성공</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="MyPageProductPageContentRes"><code>MyPageProductPageContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">categoryName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 카테고리 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 디지털 기기</span></div>
+<div class="param">productName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 공학수학 책 팔아요</span></div>
+<div class="param">nowPrice (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재가 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 50000</span></div>
+<div class="param">createdDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 생성 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">auctionEndDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 종료 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">sigImgSrc (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 대표이미지 src </div>
+          <div class="param-desc"><span class="param-type">example: https://used.wsdf.wjfiojs.jpg</span></div>
+<div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 상태 - 경매중, 낙찰 등 </div>
+          <div class="param-desc"><span class="param-type">example: 경매중</span></div>
+<div class="param">possibleUpdate (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="NotificationInfoDTO"><code>NotificationInfoDTO</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">notificationId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+<div class="param">title (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">checked (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">type (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">relatedUrl (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="OpenviduRemoveUserReq"><code>OpenviduRemoveUserReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 아이디 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 11</span></div>
+<div class="param">token (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 방송 토큰값 </div>
+          <div class="param-desc"><span class="param-type">example: wss://openvidu.shop?sessionId&#x3D;ses_FL20dvk&amp;token&#x3D;tok_4yYraijPA</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="OpenviduTokenReq"><code>OpenviduTokenReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 아이디 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 11</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="OpenviduTokenRes"><code>OpenviduTokenRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">token (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 방송 토큰값 </div>
+          <div class="param-desc"><span class="param-type">example: wss://openvidu.shop?sessionId&#x3D;ses_FL20dvk&amp;token&#x3D;tok_4yYraijPA</span></div>
+<div class="param">sessionId (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 세션 아이디 </div>
+          <div class="param-desc"><span class="param-type">example: ses_FL20dvk</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="OrderByRes"><code>OrderByRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 정렬 기준(orderBy) </div>
+          <div class="param-desc"><span class="param-type">example: VIEW_ORDER</span></div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 설명 </div>
+          <div class="param-desc"><span class="param-type">example: 조회순</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="PageListResChatMessageRes"><code>PageListResChatMessageRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#ChatMessageRes">array[ChatMessageRes]</a></span>  </div>
+<div class="param">totalPages (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 전체 페이지 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">pageNumber (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 0</span></div>
+<div class="param">size (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 페이지 크기 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">numberOfElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지에 나올 데이터 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">hasContent (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 조회된 데이터 존재 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">hasNext (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 다음 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+<div class="param">hasPrevious (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 이전 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">totalElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 전체 데이터 수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 100</span></div>
+<div class="param">first (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">last (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="PageListResMyPageAuctionHistoryPageContentRes"><code>PageListResMyPageAuctionHistoryPageContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#MyPageAuctionHistoryPageContentRes">array[MyPageAuctionHistoryPageContentRes]</a></span>  </div>
+<div class="param">totalPages (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 전체 페이지 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">pageNumber (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 0</span></div>
+<div class="param">size (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 페이지 크기 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">numberOfElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지에 나올 데이터 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">hasContent (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 조회된 데이터 존재 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">hasNext (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 다음 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+<div class="param">hasPrevious (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 이전 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">totalElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 전체 데이터 수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 100</span></div>
+<div class="param">first (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">last (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="PageListResMyPageBuySellHistoryContentRes"><code>PageListResMyPageBuySellHistoryContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#MyPageBuySellHistoryContentRes">array[MyPageBuySellHistoryContentRes]</a></span>  </div>
+<div class="param">totalPages (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 전체 페이지 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">pageNumber (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 0</span></div>
+<div class="param">size (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 페이지 크기 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">numberOfElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지에 나올 데이터 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">hasContent (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 조회된 데이터 존재 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">hasNext (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 다음 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+<div class="param">hasPrevious (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 이전 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">totalElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 전체 데이터 수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 100</span></div>
+<div class="param">first (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">last (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="PageListResMyPageProductPageContentRes"><code>PageListResMyPageProductPageContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#MyPageProductPageContentRes">array[MyPageProductPageContentRes]</a></span>  </div>
+<div class="param">totalPages (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 전체 페이지 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">pageNumber (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 0</span></div>
+<div class="param">size (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 페이지 크기 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">numberOfElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지에 나올 데이터 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">hasContent (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 조회된 데이터 존재 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">hasNext (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 다음 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+<div class="param">hasPrevious (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 이전 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">totalElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 전체 데이터 수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 100</span></div>
+<div class="param">first (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">last (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="PageListResProductPageContentRes"><code>PageListResProductPageContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#ProductPageContentRes">array[ProductPageContentRes]</a></span>  </div>
+<div class="param">totalPages (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 전체 페이지 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">pageNumber (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 0</span></div>
+<div class="param">size (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 페이지 크기 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">numberOfElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지에 나올 데이터 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">hasContent (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 조회된 데이터 존재 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">hasNext (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 다음 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+<div class="param">hasPrevious (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 이전 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">totalElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 전체 데이터 수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 100</span></div>
+<div class="param">first (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">last (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="PageListResQuestionPageContentRes"><code>PageListResQuestionPageContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#QuestionPageContentRes">array[QuestionPageContentRes]</a></span>  </div>
+<div class="param">totalPages (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 전체 페이지 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">pageNumber (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 0</span></div>
+<div class="param">size (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 페이지 크기 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">numberOfElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 페이지에 나올 데이터 수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10</span></div>
+<div class="param">hasContent (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 조회된 데이터 존재 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">hasNext (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 다음 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+<div class="param">hasPrevious (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 이전 페이지 여부 </div>
+          <div class="param-desc"><span class="param-type">example: false</span></div>
+<div class="param">totalElements (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 전체 데이터 수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 100</span></div>
+<div class="param">first (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">last (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ProductDetailInfoRes"><code>ProductDetailInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 자료구조 책 팝니다</span></div>
+<div class="param">info (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 정보 </div>
+          <div class="param-desc"><span class="param-type">example: 자료구조 새 책입니다.</span></div>
+<div class="param">categoryName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 카테고리 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 디지털 기기</span></div>
+<div class="param">memberId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 판매자 아이디(pk) format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 100</span></div>
+<div class="param">nickname (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 판매자 로그인 아이디 </div>
+          <div class="param-desc"><span class="param-type">example: lovesoe1234</span></div>
+<div class="param">auctionEndDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 종료 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">nowPrice (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재 가격 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10000</span></div>
+<div class="param">startPrice (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 시작 가격 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 1000</span></div>
+<div class="param">priceUnit (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 입찰 단위 가격 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 1000</span></div>
+<div class="param">viewCount (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 조회수 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 7</span></div>
+<div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매상태 </div>
+          <div class="param-desc"><span class="param-type">example: 경매 중</span></div>
+<div class="param">auctionId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 경매 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">sigImg (optional)</div><div class="param-desc"><span class="param-type"><a href="#ImageInfoRes">ImageInfoRes</a></span>  </div>
+<div class="param">ordinalImgList (optional)</div><div class="param-desc"><span class="param-type"><a href="#ImageInfoRes">array[ImageInfoRes]</a></span>  </div>
+<div class="param">videoList (optional)</div><div class="param-desc"><span class="param-type"><a href="#VideoInfoRes">array[VideoInfoRes]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ProductPageContentRes"><code>ProductPageContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">nickname (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 판매자 별명 </div>
+          <div class="param-desc"><span class="param-type">example: hochang123</span></div>
+<div class="param">categoryName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 카테고리 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 디지털 기기</span></div>
+<div class="param">productName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 공학수학 책 팔아요</span></div>
+<div class="param">productId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">nowPrice (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 현재가 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 50000</span></div>
+<div class="param">auctionEndDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 종료 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-10-12 12:01</span></div>
+<div class="param">sigImgSrc (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 대표이미지 src </div>
+          <div class="param-desc"><span class="param-type">example: https://used.wsdf.wjfiojs.jpg</span></div>
+<div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 상태 </div>
+          <div class="param-desc"><span class="param-type">example: 경매 종료</span></div>
+<div class="param">auctionId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 경매 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">liveBroadcasting (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> 방송중인지 </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ProductRegisterReq"><code>ProductRegisterReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">name </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 제목 </div>
+          <div class="param-desc"><span class="param-type">example: 공학수학 팔아요</span></div>
+<div class="param">info </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 정보 </div>
+          <div class="param-desc"><span class="param-type">example: 이책은 새책입니다</span></div>
+<div class="param">categoryId </div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 카테고리 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">auctionEndDate </div><div class="param-desc"><span class="param-type"><a href="#DateTime">Date</a></span> 경매 종료 날짜 format: date-time</div>
+<div class="param">startPrice </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 경매 시작가 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 1000</span></div>
+<div class="param">priceUnit </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 입찰 단위가 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 1000</span></div>
+<div class="param">imgList (optional)</div><div class="param-desc"><span class="param-type"><a href="#binary">array[byte[]]</a></span> 일반 이미지 파일들 format: binary</div>
+<div class="param">sigImg </div><div class="param-desc"><span class="param-type"><a href="#binary">byte[]</a></span>  format: binary</div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ProductUpdateInfoRes"><code>ProductUpdateInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productName (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 맛있는 사과입니다</span></div>
+<div class="param">info (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상품 정보 </div>
+          <div class="param-desc"><span class="param-type">example: 맛있는 사과입니다 맛있습니다</span></div>
+<div class="param">categoryId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 카테고리 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 2</span></div>
+<div class="param">auctionEndDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 경매 종료 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2022-12-11 12:01</span></div>
+<div class="param">startPrice (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 시작가격 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10000</span></div>
+<div class="param">priceUnit (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 입찰 단위가 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10000</span></div>
+<div class="param">sigImg (optional)</div><div class="param-desc"><span class="param-type"><a href="#ImageInfoRes">ImageInfoRes</a></span>  </div>
+<div class="param">ordinalImgList (optional)</div><div class="param-desc"><span class="param-type"><a href="#ImageInfoRes">array[ImageInfoRes]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ProductUpdateReq"><code>ProductUpdateReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productName </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 변경할 상품 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 맛있는 사과입니다</span></div>
+<div class="param">info </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 변경할 상품 정보 </div>
+          <div class="param-desc"><span class="param-type">example: 맛있는 사과입니다 맛있습니다</span></div>
+<div class="param">categoryId </div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 카테고리 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 2</span></div>
+<div class="param">auctionEndDate </div><div class="param-desc"><span class="param-type"><a href="#DateTime">Date</a></span> 경매 종료 날짜 format: date-time</div>
+<div class="param">startPrice </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 시작가격 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10000</span></div>
+<div class="param">priceUnit </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> 입찰 단위가 format: int32</div>
+          <div class="param-desc"><span class="param-type">example: 10000</span></div>
+<div class="param">imgList </div><div class="param-desc"><span class="param-type"><a href="#binary">array[byte[]]</a></span>  format: binary</div>
+<div class="param">sigImg </div><div class="param-desc"><span class="param-type"><a href="#binary">byte[]</a></span>  format: binary</div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="QuestionPageContentRes"><code>QuestionPageContentRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">questionId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 질문 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">nickname (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 작성자 별명 </div>
+          <div class="param-desc"><span class="param-type">example: 컴소공 고인물</span></div>
+<div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 질문내용 </div>
+          <div class="param-desc"><span class="param-type">example: 흠집은 없나요</span></div>
+<div class="param">createdDate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 질문 등록 날짜 </div>
+          <div class="param-desc"><span class="param-type">example: 2023-04-06 01:05</span></div>
+<div class="param">loginId (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 질문 등록 회원 아이디, 삭제된 질문이면 loginId &#x3D; 알수없음으로 결과 나감 </div>
+          <div class="param-desc"><span class="param-type">example: 5</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="QuestionRegisterReq"><code>QuestionRegisterReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">parentId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 부모 댓글 ID, 없으면 NULL format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">content </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 댓글 내용 </div>
+          <div class="param-desc"><span class="param-type">example: 낙서 있나요</span></div>
+<div class="param">productId </div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="RecordingStartReq"><code>RecordingStartReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">productId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 상품 아이디 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 11</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="RegisterReq"><code>RegisterReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">name </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 김현민</span></div>
+<div class="param">loginId </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 로그인 아이디 </div>
+          <div class="param-desc"><span class="param-type">example: hyeonmin</span></div>
+<div class="param">password </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 비밀번호 </div>
+          <div class="param-desc"><span class="param-type">example: password</span></div>
+<div class="param">birth </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 생년월일 </div>
+          <div class="param-desc"><span class="param-type">example: 990828</span></div>
+<div class="param">email (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 이메일 </div>
+          <div class="param-desc"><span class="param-type">example: a12b12c@kumoh.ac.kr</span></div>
+<div class="param">phoneNumber </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 전화번호 </div>
+          <div class="param-desc"><span class="param-type">example: 010-1234-5678</span></div>
+<div class="param">code </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 이메일 인증 코드 </div>
+          <div class="param-desc"><span class="param-type">example: 0Pjaz615</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResAuctionInfoRes"><code>ResultResAuctionInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#AuctionInfoRes">AuctionInfoRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResBoolean"><code>ResultResBoolean</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResIsLiveRes"><code>ResultResIsLiveRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#IsLiveRes">IsLiveRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResListCategoryRes"><code>ResultResListCategoryRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#CategoryRes">array[CategoryRes]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResListChatRoomRes"><code>ResultResListChatRoomRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#ChatRoomRes">array[ChatRoomRes]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResListOrderByRes"><code>ResultResListOrderByRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#OrderByRes">array[OrderByRes]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResListStatusTypeRes"><code>ResultResListStatusTypeRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#StatusTypeRes">array[StatusTypeRes]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResLiveCountRes"><code>ResultResLiveCountRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#LiveCountRes">LiveCountRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResLoginCheckRes"><code>ResultResLoginCheckRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#LoginCheckRes">LoginCheckRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResMemberDetailInfoRes"><code>ResultResMemberDetailInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#MemberDetailInfoRes">MemberDetailInfoRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResMessageRes"><code>ResultResMessageRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#MessageRes">MessageRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResNotificationInfoDTO"><code>ResultResNotificationInfoDTO</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#NotificationInfoDTO">NotificationInfoDTO</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResOpenviduTokenRes"><code>ResultResOpenviduTokenRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#OpenviduTokenRes">OpenviduTokenRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResProductDetailInfoRes"><code>ResultResProductDetailInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#ProductDetailInfoRes">ProductDetailInfoRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResProductUpdateInfoRes"><code>ResultResProductUpdateInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#ProductUpdateInfoRes">ProductUpdateInfoRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResString"><code>ResultResString</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResTokenDTO"><code>ResultResTokenDTO</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#TokenDTO">TokenDTO</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResTransConfirmNotificationInfoRes"><code>ResultResTransConfirmNotificationInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#TransConfirmNotificationInfoRes">TransConfirmNotificationInfoRes</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ResultResValidResult"><code>ResultResValidResult</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">result (optional)</div><div class="param-desc"><span class="param-type"><a href="#ValidResult">ValidResult</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="SseEmitter"><code>SseEmitter</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">timeout (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="StatusTypeRes"><code>StatusTypeRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 상태 타입 </div>
+          <div class="param-desc"><span class="param-type">example: TRANS_BEFORE</span></div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 설명 </div>
+          <div class="param-desc"><span class="param-type">example: 거래 불발</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="TokenDTO"><code>TokenDTO</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">accessToken </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">refreshToken </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="TransConfirmNotificationInfoRes"><code>TransConfirmNotificationInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">notificationId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+<div class="param">productId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+<div class="param">title (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">content (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">checked (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+<div class="param">type (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">relatedUrl (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">sigImgSrc (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">endPrice (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  format: int32</div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="TransactionAndRejectCountRes"><code>TransactionAndRejectCountRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">allCount (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 전체 판매 횟수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 2</span></div>
+<div class="param">successCount (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 성공 판매 횟수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">rejectCount (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 경고 횟수 format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 2</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="UserUpdateReq"><code>UserUpdateReq</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">name </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 이름 </div>
+          <div class="param-desc"><span class="param-type">example: 김현민</span></div>
+<div class="param">birth </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 생년월일 </div>
+          <div class="param-desc"><span class="param-type">example: 990828</span></div>
+<div class="param">phoneNumber </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 전화번호 </div>
+          <div class="param-desc"><span class="param-type">example: 010-1234-5678</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="ValidResult"><code>ValidResult</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">valid (optional)</div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="VideoInfoRes"><code>VideoInfoRes</code></a> <a class="up" href="#__Models">Up</a></h3>
+
+    <div class="field-items">
+      <div class="param">videoId (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> 동영상 ID format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">path (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> 동영상 저장 경로 </div>
+          <div class="param-desc"><span class="param-type">example: http://sfieuhfe.1.mp4</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  </body>
+</html>
