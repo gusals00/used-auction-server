@@ -55,4 +55,5 @@
 ![image](https://user-images.githubusercontent.com/87007552/234491762-603ed91b-45f9-48e5-8352-dd5847526596.png)
 
 ## API
-[ API 문서  바로가기 ](https://usedauction.shop/swagger-ui/index.html#/)
+[ API 문서 링크(SWAGGER) ](https://usedauction.shop/swagger-ui/index.html#/)  
+[ API 문서 다운로드(해당 링크의 HTML파일을 다운로드해주세요)](https://github.com/gusals00/used-auction-server/blob/main/src/main/resources/api-docs.html)
