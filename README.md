@@ -54,7 +54,7 @@
 </div>
 
 ## erd
-![image](https://user-images.githubusercontent.com/87007552/234491762-603ed91b-45f9-48e5-8352-dd5847526596.png)
+![중고경매플랫폼](https://github.com/HoChangSUNG/used-auction-server/assets/76422685/06b2252f-3161-4d2e-a326-d73f8b937737)
 
 ## API
 [ API 문서 링크(SWAGGER) ](https://usedauction.shop/swagger-ui/index.html#/)  
