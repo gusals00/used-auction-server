@@ -1,11 +1,14 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.repository.chat.ChatMessageJdbcRepository;
+import com.auction.usedauction.repository.query.ChatRoomQueryRepository;
 import com.auction.usedauction.service.ChatMessageService;
 import com.auction.usedauction.service.ChatRoomService;
 import com.auction.usedauction.service.sseEmitter.SseEmitterService;
 import com.auction.usedauction.service.dto.ChatMessageRes;
 import com.auction.usedauction.service.dto.PageListRes;
 import com.auction.usedauction.service.query.ChatMessageQueryService;
+import com.auction.usedauction.util.RedisUtil;
 import com.auction.usedauction.web.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +49,7 @@ public class ChatMessageController {
             chatRoomService.enterRoom(messageDTO.getChatRoomId(), principal.getName()); // 채팅방 입장 처리
 
         } else if(messageDTO.getType().equals(MessageType.TALK)){ // 대화 메세지
-            isRead = chatMessageService.saveMessage(messageDTO.getChatRoomId(), principal.getName(), messageDTO.getMessage()); // 메시지 저장
+            isRead = chatMessageService.addChat(messageDTO.getChatRoomId(), principal.getName(), messageDTO.getMessage()); // 메세지 redis에 저장
 
             sseEmitterService.sendUpdatedRoomData(messageDTO, principal.getName(), isRead); // sse 채팅방 데이터 전송
         }

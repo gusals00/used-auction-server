@@ -30,7 +30,6 @@ public class SseController {
     private final SseEmitterService sseEmitterService;
     private final SseEmitterRepository sseEmitterRepository;
     private final ProductRepository productRepository;
-    private final ChatRoomService chatRoomService;
     private final NotificationRepository notificationRepository;
 
     @Operation(summary = "sse 입찰 금액 연결 메서드")
@@ -56,9 +55,6 @@ public class SseController {
         // 연결
         String id = sseEmitterService.connect(SseType.CHAT_LIST, user.getUsername(), timeout);
         SseEmitterDTO findEmitter = sseEmitterRepository.findByEmitterId(id);
-
-        // redis에 현재 사용자의 입장중인 방 목록 저장
-        chatRoomService.addJoinedRoomListToRedis(user.getUsername());
 
         return ResponseEntity.ok(findEmitter.getSseEmitter());
     }

@@ -8,6 +8,7 @@ import com.auction.usedauction.repository.dto.SellerAndBuyerLoginIdDTO;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -22,6 +23,7 @@ public class ChatRoomQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
+    @Cacheable(value = "chatRoomLoginIds", key = "#roomId")
     public Optional<SellerAndBuyerLoginIdDTO> findJoinedMembers(Long roomId) {
         QMember productMember = new QMember("member2");
         return Optional.of(
