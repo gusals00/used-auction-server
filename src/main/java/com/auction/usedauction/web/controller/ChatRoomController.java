@@ -32,8 +32,6 @@ public class ChatRoomController {
 
         sseEmitterService.sendNewRoomData(roomId);
 
-        chatRoomService.addNewRoomToRedis(user.getUsername(), roomId);
-
         return new ResultRes(new MessageRes("채팅방 생성 성공"));
     }
 

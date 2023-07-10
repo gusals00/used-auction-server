@@ -9,12 +9,10 @@ import com.auction.usedauction.repository.query.ChatRoomQueryRepository;
 import com.auction.usedauction.repository.sseEmitter.SseEmitterRepository;
 import com.auction.usedauction.repository.sseEmitter.SseSendName;
 import com.auction.usedauction.repository.sseEmitter.SseType;
-import com.auction.usedauction.service.ChatRoomService;
 import com.auction.usedauction.service.dto.SseDataRes;
 import com.auction.usedauction.service.dto.SseRoomEnterDataRes;
 import com.auction.usedauction.service.dto.SseSendDTO;
 import com.auction.usedauction.service.dto.SseUpdatePriceDTO;
-import com.auction.usedauction.util.RedisUtil;
 import com.auction.usedauction.util.SseEmitterUtils;
 import com.auction.usedauction.web.dto.ChatMessageDTO;
 import com.auction.usedauction.web.dto.SseRoomDataRes;
@@ -26,10 +24,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
-import static com.auction.usedauction.exception.error_code.ChatErrorCode.*;
+import static com.auction.usedauction.exception.error_code.ChatErrorCode.CHAT_ROOM_NOT_FOUND;
 import static com.auction.usedauction.repository.sseEmitter.SseSendName.*;
 import static com.auction.usedauction.repository.sseEmitter.SseType.CHAT_LIST;
-import static com.auction.usedauction.util.RedisConstants.ROOM_LIST;
 
 @Service
 @Slf4j
@@ -37,8 +34,6 @@ import static com.auction.usedauction.util.RedisConstants.ROOM_LIST;
 public class SseEmitterServiceImpl implements SseEmitterService {
 
     private final SseEmitterRepository emitterRepository;
-    private final ChatRoomService chatRoomService;
-    private final RedisUtil redisUtil;
     private final ChatRoomQueryRepository chatRoomQueryRepository;
     private final ChatRoomRepository chatRoomRepository;
 
@@ -108,47 +103,42 @@ public class SseEmitterServiceImpl implements SseEmitterService {
 
     @Override
     public void sendUpdatedRoomData(ChatMessageDTO messageDTO, String senderLoginId, boolean isRead) {
-        List<SseEmitterDTO> emitterList = emitterRepository.findAllByType(CHAT_LIST);
+        // 방아이디로 방 인원 조회
+        SellerAndBuyerLoginIdDTO sellerAndBuyerLoginIdDTO = chatRoomQueryRepository.findJoinedMembers(messageDTO.getChatRoomId())
+                .orElseThrow(() -> new CustomException(CHAT_ROOM_NOT_FOUND));
 
-        emitterList.forEach(sseEmitterDTO -> {
-            String loginId = sseEmitterDTO.getSseEmitterId().split("-")[1]; // emitterId 에서 loginId 꺼냄
-            List<String> joinedRoomList = redisUtil.getList(ROOM_LIST + loginId); // redis 에서 loginId의 입장중인 방 리스트 꺼냄
+        List<SseEmitterDTO> buyerEmitterList = emitterRepository.findAllByTypeAndLoginId(CHAT_LIST, sellerAndBuyerLoginIdDTO.getBuyerLoginId());
+        List<SseEmitterDTO> sellerEmitterList = emitterRepository.findAllByTypeAndLoginId(CHAT_LIST, sellerAndBuyerLoginIdDTO.getSellerLoginId());
 
-            if(joinedRoomList == null) {
-                joinedRoomList = chatRoomService.addJoinedRoomListToRedis(loginId); // 방 리스트가 만료되었으면 다시 저장함
-            }
+        boolean buyerRead, sellerRead;
+        if(senderLoginId.equals(sellerAndBuyerLoginIdDTO.getBuyerLoginId())) { // 내가 보낸 메세지인지 확인
+            buyerRead = true;
+            sellerRead = isRead;
+        } else {
+            sellerRead = true;
+            buyerRead = isRead;
+        }
 
-            if(joinedRoomList.contains(messageDTO.getChatRoomId().toString())) { // 내가 입장중인 방에 온 메세지일 때
-                boolean unReadMessage = true;
-                if(!isRead) { // 읽음처리 돼서 가는 메세지가 아닐 때
-                    if(!loginId.equals(senderLoginId)) { // 내가 보낸 메세지가 아닐 때
-                        unReadMessage = false;
-                    }
-                }
-                // 채팅방 데이터 전송
-                send(new SseSendDTO(sseEmitterDTO, SEND_ROOM_DATA, new SseRoomDataRes(messageDTO.getChatRoomId(), messageDTO.getMessage(), messageDTO.getSender(), unReadMessage)));
-            }
-        });
+        // 채팅방 리스트에 접속중인 판매자, 구매자에게 채팅방 데이터 전송
+        sendRoomData(buyerEmitterList, messageDTO, buyerRead);
+        sendRoomData(sellerEmitterList, messageDTO, sellerRead);
     }
 
     @Override
     public void sendNewRoomData(Long roomId) {
-        List<SseEmitterDTO> emitterList = emitterRepository.findAllByType(CHAT_LIST);
+        // 방아이디로 방 인원 조회
         SellerAndBuyerLoginIdDTO sellerAndBuyerLoginIdDTO = chatRoomQueryRepository.findJoinedMembers(roomId)
                 .orElseThrow(() -> new CustomException(CHAT_ROOM_NOT_FOUND));
 
-        emitterList.forEach(sseEmitterDTO -> {
-            String loginId = sseEmitterDTO.getSseEmitterId().split("-")[1]; // emitterId 에서 loginId 꺼냄
+        List<SseEmitterDTO> buyerEmitterList = emitterRepository.findAllByTypeAndLoginId(CHAT_LIST, sellerAndBuyerLoginIdDTO.getBuyerLoginId());
+        List<SseEmitterDTO> sellerEmitterList = emitterRepository.findAllByTypeAndLoginId(CHAT_LIST, sellerAndBuyerLoginIdDTO.getSellerLoginId());
 
-            // sse 연결된 사용자의 방이 생성되었을 때
-            if(loginId.equals(sellerAndBuyerLoginIdDTO.getSellerLoginId()) || loginId.equals(sellerAndBuyerLoginIdDTO.getBuyerLoginId())) {
-                ChatRoomCreateInfoDTO chatRoomCreateInfoDTO = chatRoomQueryRepository.findRoomInfo(roomId)
-                        .orElseThrow(() -> new CustomException(CHAT_ROOM_NOT_FOUND));
+        ChatRoomCreateInfoDTO chatRoomCreateInfoDTO = chatRoomQueryRepository.findRoomInfo(roomId)
+                .orElseThrow(() -> new CustomException(CHAT_ROOM_NOT_FOUND));
 
-                // 생성된 채팅방 정보 전송
-                send(sseEmitterDTO, SEND_NEW_ROOM_DATA, chatRoomCreateInfoDTO);
-            }
-        });
+        // 채팅방 리스트에 접속중인 판매자, 구매자에게 새로 생성된 채팅방 데이터 전송
+        sendNewRoomData(buyerEmitterList, chatRoomCreateInfoDTO);
+        sendNewRoomData(sellerEmitterList, chatRoomCreateInfoDTO);
     }
 
     @Override
@@ -166,6 +156,18 @@ public class SseEmitterServiceImpl implements SseEmitterService {
         findEmitterList.forEach(sseEmitterDTO -> {
             send(sseEmitterDTO, SEND_NOTIFICATION_DATA, value);
         });
+    }
+
+    private void sendNewRoomData(List<SseEmitterDTO> buyerEmitterList, ChatRoomCreateInfoDTO chatRoomCreateInfoDTO) {
+        buyerEmitterList.forEach(sseEmitterDTO ->
+                send(sseEmitterDTO, SEND_NEW_ROOM_DATA, chatRoomCreateInfoDTO)
+        );
+    }
+
+    private void sendRoomData(List<SseEmitterDTO> sellerEmitterList, ChatMessageDTO messageDTO, boolean sellerRead) {
+        sellerEmitterList.forEach(sseEmitterDTO ->
+                send(new SseSendDTO(sseEmitterDTO, SEND_ROOM_DATA, new SseRoomDataRes(messageDTO.getChatRoomId(), messageDTO.getMessage(), messageDTO.getSender(), sellerRead)))
+        );
     }
 
     private void sendUpdatedBidPrice(Long productId, int price) {

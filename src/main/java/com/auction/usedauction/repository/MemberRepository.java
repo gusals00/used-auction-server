@@ -4,6 +4,8 @@ import com.auction.usedauction.domain.Member;
 import com.auction.usedauction.domain.MemberStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -20,4 +22,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByLoginId(String loginId);
     boolean existsByEmail(String email);
     boolean existsByName(String name);
+
+    @Query(value = "select m.id from Member m where m.loginId = :loginId")
+    Long findIdByLoginId(@Param("loginId") String loginId);
 }

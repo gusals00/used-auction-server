@@ -1,11 +1,13 @@
 package com.auction.usedauction.util;
 
+import com.auction.usedauction.web.dto.ChatMessageSaveDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 public class RedisUtil {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, ChatMessageSaveDTO> chatRedisTemplate;
 
     public void setData(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
@@ -50,5 +53,25 @@ public class RedisUtil {
 
     public void deleteData(String key) {
         redisTemplate.delete(key);
+    }
+
+    public Long incrementData(String key) {
+        return redisTemplate.opsForValue().increment(key);
+    }
+
+    public Long decrementData(String key) {
+        return redisTemplate.opsForValue().decrement(key);
+    }
+
+    public void addSet(String key, ChatMessageSaveDTO dto) {
+        chatRedisTemplate.opsForSet().add(key, dto);
+    }
+    
+    public Set<ChatMessageSaveDTO> getSet(String key) {
+        return chatRedisTemplate.opsForSet().members(key);
+    }
+
+    public void deleteChat(String key) {
+        chatRedisTemplate.delete(key);
     }
 }

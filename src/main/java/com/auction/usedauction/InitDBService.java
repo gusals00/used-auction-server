@@ -421,6 +421,7 @@ public class InitDBService {
                 .chatRoom(chatRoom)
                 .member(member)
                 .readOrNot(read)
+                .createdDate(LocalDateTime.now())
                 .build();
     }
 

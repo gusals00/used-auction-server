@@ -29,8 +29,6 @@ public class ChatRoom extends BaseTimeEntity{
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private int userCount;
-
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessage> chatMessages = new ArrayList<>();
 
@@ -38,14 +36,6 @@ public class ChatRoom extends BaseTimeEntity{
     public ChatRoom(Member member, Product product) {
         this.member = member;
         this.product = product;
-        this.userCount = 0;
     }
 
-    public void addUserCount() {
-        userCount+=1;
-    }
-
-    public void minusUserCount() {
-        userCount-=1;
-    }
 }
