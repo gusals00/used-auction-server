@@ -38,6 +38,7 @@ public class AuctionHistoryController {
     private final AuctionRepository auctionRepository;
     private final NotificationService notificationService;
 
+    
     @PostMapping("/{auctionId}")
     @Operation(summary = "상품 경매 입찰 메서드")
     public ResultRes<MessageRes> bidding(@PathVariable Long auctionId,
