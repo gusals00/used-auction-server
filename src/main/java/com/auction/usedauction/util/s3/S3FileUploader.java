@@ -57,28 +57,16 @@ public class S3FileUploader {
         String originalFileName = getOriginalFileName(multipartFile);
         String storeFileName = createStoreFileName(originalFileName);
 
-        String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, multipartFile);
+        String storeFileFullUrl = sendAwsS3("sdf", subPath + storeFileName, multipartFile);
         log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, storeFileFullUrl);
 
         //backUp 해야 하는 경우 backUp
-        insertBackUp( subPath + storeFileName);
-        return new UploadFileDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
+        insertBackUp(subPath + storeFileName);
+        return new UploadFileDTO(originalFileName, "12323", subPath + "!234", storeFileFullUrl);
     }
 
     private String sendAwsS3(String bucketName, String filePath, MultipartFile uploadFile) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(uploadFile.getContentType());
-        objectMetadata.setContentLength(uploadFile.getSize());
-        try {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, filePath, uploadFile.getInputStream(), objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-            log.error("exception = {}", "IOException", e);
-            throw new CustomException(FileErrorCode.S3_FILE_NOT_TRANSFER);
-        }
-
-        return amazonS3Client.getUrl(bucketName, filePath).toString();
-
+        return "aws-url";
     }
 
     public UploadFileDTO uploadFile(File file, String subPath) {
@@ -90,10 +78,10 @@ public class S3FileUploader {
         String storeFileName = createStoreFileName(originalFileName);
 
         String storeFileFullUrl = sendAwsS3(bucket, subPath + storeFileName, file);
-        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, storeFileFullUrl);
+        log.info("S3에 파일 전송 완료 originalFileName = {},storePath = {}, storeFullUrl={}", originalFileName, subPath + storeFileName, "/s3/" + originalFileName);
 
         //backUp 해야 하는 경우 backUp
-        insertBackUp( subPath + storeFileName);
+        insertBackUp(subPath + storeFileName);
 
         return new UploadFileDTO(originalFileName, storeFileName, subPath + storeFileName, storeFileFullUrl);
     }

@@ -47,7 +47,6 @@ public class AuctionHistoryService {
     @Transactional
     @RedissonLock(key = LockKey.BID_LOCK)
     public AuctionBidResultDTO biddingAuction(Long auctionId, int bidPrice, String loginId) {
-        log.info("비즈니스 로직, isActiveTransaction = {}", TransactionSynchronizationManager.isActualTransactionActive());
 
         // 경매중 인지 확인
         Auction findAuction = auctionRepository.findBidAuctionByAuctionIdWithFetchJoin(auctionId)

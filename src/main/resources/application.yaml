@@ -1,4 +1,8 @@
 server:
+#  tomcat:
+#    threads:
+#      max: 250
+
   servlet:
     session:
       cookie:
@@ -15,6 +19,8 @@ spring:
     username: username
     url: url
     password: pw
+#    hikari:
+#      maximum-pool-size: 250
 
   mail:
     host: smtp.naver.com
@@ -35,7 +41,10 @@ spring:
   redis:
     host: localhost
     port: 6379
-    redisson_bid_lock: bidLock
+#    redisson_bid_lock: bidLock
+    redisson_bid_lock0: bidLock0
+    redisson_bid_lock1: bidLock1
+    redisson_bid_lock2: bidLock2
 
   profiles:
     include:
@@ -44,6 +53,7 @@ spring:
 
   jpa:
     hibernate:
+#      ddl-auto: none
       ddl-auto: create
     properties:
       hibernate:
@@ -78,8 +88,8 @@ cloud:
 jwt:
   header: Authorization
   secret: x
-  access-token-validity-in-seconds: 1800 # 30 min
-  refresh-token-validity-in-seconds: 1209600 # 14 days
+  access-token-validity-in-seconds: 1728000 # 20 days
+  refresh-token-validity-in-seconds: 1800 # 30 min
 
 springdoc:
   packages-to-scan: com.auction.usedauction.web.controller

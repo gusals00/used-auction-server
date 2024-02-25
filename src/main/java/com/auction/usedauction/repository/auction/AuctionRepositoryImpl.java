@@ -3,6 +3,7 @@ package com.auction.usedauction.repository.auction;
 import com.auction.usedauction.domain.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ public class AuctionRepositoryImpl implements AuctionRepositoryCustom {
                         .join(auction.product, product).fetchJoin()
                         .join(product.member, member).fetchJoin()
                         .where(auctionIdEq(auctionId), auctionStatusEq(AuctionStatus.BID))
-//                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne());
     }
 

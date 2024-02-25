@@ -1,6 +1,8 @@
 package com.auction.usedauction.exception;
 
 import com.auction.usedauction.exception.error_code.BindingErrorCode;
+import com.auction.usedauction.exception.error_code.ErrorCode;
+import com.auction.usedauction.exception.error_code.RuntimeErrorCode;
 import com.auction.usedauction.util.ValidatorMessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ControllerAdvice {
 
     private final ValidatorMessageUtils validatorMessageUtils;
+
+    @ExceptionHandler(value = RuntimeException.class)
+    public ResponseEntity<ErrorRes> handleRuntimeException(RuntimeException e) {
+        log.error("[exception] ",e);
+        return ErrorRes.error(RuntimeErrorCode.RUNTIME_ERROR_CODE);
+    }
 
     @ExceptionHandler(value = CustomException.class)
     public ResponseEntity<ErrorRes> handleCustomException(CustomException e) {
