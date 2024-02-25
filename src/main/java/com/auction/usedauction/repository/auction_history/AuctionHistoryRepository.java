@@ -31,4 +31,18 @@ public interface AuctionHistoryRepository extends JpaRepository<AuctionHistory, 
                     " where ah_max.auction_id = ah.auction_id and ah.bid_price = ah_max.max_price", nativeQuery = true)
     List<Long> findAuctionHistoryIdForChangeStatus(@Param("auctionIds") List<Long> auctionIds);
 
+    @Query(value = "select count(*) from auction_history where auction_id= :auctionId", nativeQuery = true)
+    int findAuctionHistoryByAuctionId(@Param("auctionId")Long auctionId);
+
+    @Query(value = "select count(distinct bid_price) from auction_history where auction_id= :auctionId", nativeQuery = true)
+    int findDistinctAuctionHistoryByAuctionId(@Param("auctionId") Long auctionId);
+
+    @Query(value = "SELECT count(*) FROM auction_history where auction_id in (:auction_ids)", nativeQuery = true)
+    int countBidAuctionHistoriesByAuctionIds(@Param("auction_ids") List<Long> auctionIds);
+
+    @Query(value = "select count(*) from auction_history ah, dummy d " +
+            "where ah.member_id = d.member_id and ah.bid_price = d.bid_price and ah.auction_id = d.auction_id", nativeQuery = true)
+    int countBidAuctionHistoriesJoinDummy();
+
+
 }

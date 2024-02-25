@@ -1,0 +1,38 @@
+config:
+  target: 'http://localhost:8080'
+  phases:
+    - duration: 20
+      arrivalRate: 30
+      name: Warm up
+      rampTo: 300
+    - duration: 45 # 40초가 나을 듯
+      arrivalRate: 300
+      name: maximum
+  payload:
+    path: "sample.csv"
+    fields:
+      - "loginId"
+      - "memberId"
+      - "accessToken"
+      - "bidPrice"
+      - "productId"
+      - "auctionId"
+      - "categoryId"
+    order: "iterate"
+scenarios:
+  - name: "select product"
+    flow:
+      - get:
+          url: "/api/products/{{ productId }}"
+          headers:
+            Authorization: "Bearer {{ accessToken }}"
+      - post:
+          url: "/api/auctions/{{ auctionId }}"
+          headers:
+            Authorization: "Bearer {{ accessToken }}"
+          json:
+            bidPrice: "{{ bidPrice }}"
+#  - name: "just login2"
+#    flow:
+#      - post:
+#          url: "/search?query={{ id }}"

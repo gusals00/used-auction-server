@@ -1,5 +1,6 @@
 package com.auction.usedauction.web.controller;
 
+import com.auction.usedauction.loadTest.InitLoadTest;
 import com.auction.usedauction.security.TokenDTO;
 import com.auction.usedauction.service.MemberService;
 import com.auction.usedauction.web.dto.*;
@@ -19,12 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
-
+    private final InitLoadTest loadTest;
     @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResultRes<TokenDTO> login(@RequestBody @Valid LoginReq loginReq) {
         TokenDTO token = memberService.login(loginReq.getLoginId(), loginReq.getPassword());
-
         return new ResultRes(token);
     }
 

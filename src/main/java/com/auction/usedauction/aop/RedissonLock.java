@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit;
 @Target(ElementType.METHOD)
 public @interface RedissonLock {
 
-    long waitTime() default 3;
+    long waitTime() default 5;
 
-    long leaseTime() default 3;
+    long leaseTime() default 5;
 
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
