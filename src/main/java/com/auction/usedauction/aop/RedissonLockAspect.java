@@ -47,7 +47,6 @@ public class RedissonLockAspect {
             log.info("redisson Lock 해제 시도");
             lock.unlock();
             log.info("redisson Lock 해제 성공");
-            //IllegalMonitorStateException, transaction timeout 처리 추가해야 함
         }
     }
 }
