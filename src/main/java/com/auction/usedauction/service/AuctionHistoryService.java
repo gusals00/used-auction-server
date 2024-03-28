@@ -52,6 +52,11 @@ public class AuctionHistoryService {
         Auction findAuction = auctionRepository.findBidAuctionByAuctionIdWithFetchJoin(auctionId)
                 .orElseThrow(() -> new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING));
 
+        // 경매 시간이 지난 경우
+        if (isAfterEndDate(findAuction.getAuctionEndDate())) {
+            throw new CustomException(AuctionErrorCode.AUCTION_NOT_BIDDING);
+        }
+
         //판매자는 입찰 불가능
         Product product = findAuction.getProduct();
         if (isProductSeller(product, loginId)) {
@@ -75,6 +80,10 @@ public class AuctionHistoryService {
 
         return new AuctionBidResultDTO(bidPrice, findAuction.getProduct().getId(), auctionHistory.getId(), product.getMember().getLoginId(), product.getName());
 
+    }
+
+    private boolean isAfterEndDate(LocalDateTime endDate) {
+        return LocalDateTime.now().isAfter(endDate);
     }
 
     @Transactional
