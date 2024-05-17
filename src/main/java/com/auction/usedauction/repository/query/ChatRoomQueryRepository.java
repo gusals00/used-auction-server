@@ -23,7 +23,7 @@ public class ChatRoomQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    @Cacheable(value = "chatRoomLoginIds", key = "#roomId")
+    @Cacheable(value = "chatRoomLoginIds", key = "#roomId", cacheManager = "cacheManager")
     public Optional<SellerAndBuyerLoginIdDTO> findJoinedMembers(Long roomId) {
         QMember productMember = new QMember("member2");
         return Optional.of(

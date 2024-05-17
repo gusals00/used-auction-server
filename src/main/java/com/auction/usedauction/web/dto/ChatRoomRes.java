@@ -1,7 +1,5 @@
 package com.auction.usedauction.web.dto;
 
-import com.auction.usedauction.domain.ChatMessage;
-import com.auction.usedauction.domain.ChatRoom;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,22 +26,4 @@ public class ChatRoomRes {
 
     @Schema(description = "안읽은 메세지 수", example = "10")
     private Long unReadMessages;
-
-    public ChatRoomRes(ChatRoom chatRoom, Long memberId) {
-        this.chatRoomId = chatRoom.getId();
-        this.roomName = chatRoom.getProduct().getName();
-        this.unReadMessages = chatRoom.getChatMessages()
-                .stream()
-                .filter(chatMessage ->  !chatMessage.isReadOrNot() && (chatMessage.getMember().getId() != memberId))
-                .count();
-        int messageSize = chatRoom.getChatMessages().size();
-        if(messageSize == 0) {
-            this.recentMessage = "";
-            this.recentSender = "";
-        } else {
-            ChatMessage chatMessage = chatRoom.getChatMessages().get(messageSize - 1);
-            this.recentMessage = chatMessage.getMessage();
-            this.recentSender = chatMessage.getMember().getName();
-        }
-    }
 }

@@ -15,17 +15,17 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessageSaveDTO {
+public class MessageDTO {
 
     private Long roomId;
 
-    private Long memberId;
+    private String sender;
 
     private String message;
-
-    private boolean readOrNot;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdDate;
+
+    private String uuid;
 }

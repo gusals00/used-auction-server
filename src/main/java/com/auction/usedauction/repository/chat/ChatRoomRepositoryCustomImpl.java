@@ -2,8 +2,12 @@ package com.auction.usedauction.repository.chat;
 
 import com.auction.usedauction.domain.ChatRoom;
 import com.auction.usedauction.domain.QChatMessage;
+import com.auction.usedauction.repository.dto.ChatRoomsDTO;
+import com.auction.usedauction.repository.dto.QChatRoomsDTO;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -28,9 +32,14 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom{
     }
 
     @Override
-    public List<ChatRoom> findChatRoomsByMemberLoginId(String loginId) {
+    @Cacheable(value = "chatrooms", key = "#loginId", cacheManager = "cacheManager")
+    public List<ChatRoomsDTO> findChatRoomsByMemberLoginId(String loginId) {
         return queryFactory
-                .selectFrom(chatRoom)
+                .select(new QChatRoomsDTO(chatRoom.id, product.name,
+                        new CaseBuilder()
+                                .when(chatRoom.member.loginId.eq(loginId)).then(false)
+                                .otherwise(true)))
+                .from(chatRoom)
                 .join(chatRoom.member, member)
                 .join(chatRoom.product, product)
                 .where(chatRoom.member.loginId.eq(loginId).or(product.member.loginId.eq(loginId)))

@@ -6,8 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -29,13 +28,25 @@ public class ChatRoom extends BaseTimeEntity{
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatMessage> chatMessages = new ArrayList<>();
+    private LocalDateTime buyerLastLeftAt;
+
+    private LocalDateTime sellerLastLeftAt;
 
     @Builder
     public ChatRoom(Member member, Product product) {
         this.member = member;
         this.product = product;
+
+        buyerLastLeftAt = LocalDateTime.now();
+        sellerLastLeftAt = LocalDateTime.now();
+    }
+
+    public void updateLastLeftAtToNow(String loginId) {
+        if(member.getLoginId().equals(loginId)) {
+            buyerLastLeftAt = LocalDateTime.now();
+        } else {
+            sellerLastLeftAt = LocalDateTime.now();
+        }
     }
 
 }

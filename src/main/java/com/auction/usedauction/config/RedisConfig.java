@@ -1,6 +1,6 @@
 package com.auction.usedauction.config;
 
-import com.auction.usedauction.web.dto.ChatMessageSaveDTO;
+import com.auction.usedauction.web.dto.MessageDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -51,15 +51,25 @@ public class RedisConfig {
         return redisTemplate;
     }
 
+    /*
     @Bean
-    public RedisTemplate<String, ChatMessageSaveDTO> chatRedisTemplate() {
+    public RedisTemplate<String, ChatMessageSaveDTO> chatMessageSaveRedisTemplate() {
         RedisTemplate<String, ChatMessageSaveDTO> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessageSaveDTO.class));
         return redisTemplate;
     }
+     */
 
+    @Bean
+    public RedisTemplate<String, MessageDTO> chatRedisTemplate() {
+        RedisTemplate<String, MessageDTO> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(MessageDTO.class));
+        return redisTemplate;
+    }
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
@@ -76,7 +86,7 @@ public class RedisConfig {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .entryTtl(Duration.ofHours(3L));
+                .entryTtl(Duration.ofDays(2));
 
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(cf).cacheDefaults(redisCacheConfiguration).build();
     }
