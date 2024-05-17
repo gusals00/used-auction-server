@@ -15,8 +15,8 @@ public class InitDB {
     private final InitProcedure initProcedure;
     @PostConstruct
     public void init() throws IOException {
-        initDBService.init();
-        initDBService.initScheduler();
+        //initDBService.init();
+        //initDBService.initScheduler();
         // 더미 데이터 추가 프로시저 실행 함수
 //        initProcedure.initProcedure();
     }

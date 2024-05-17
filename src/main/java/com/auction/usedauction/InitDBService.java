@@ -9,7 +9,6 @@ import com.auction.usedauction.repository.MemberRepository;
 import com.auction.usedauction.repository.NotificationRepository;
 import com.auction.usedauction.repository.auction_end.AuctionEndRepository;
 import com.auction.usedauction.repository.auction_history.AuctionHistoryRepository;
-import com.auction.usedauction.repository.chat.ChatMessageRepository;
 import com.auction.usedauction.repository.chat.ChatRoomRepository;
 import com.auction.usedauction.repository.dto.ProductIdAndLoginIds;
 import com.auction.usedauction.repository.file.FileRepository;
@@ -64,7 +63,6 @@ public class InitDBService {
     private final EntityManager em;
     private final QuestionService questionService;
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatMessageRepository chatMessageRepository;
     private final AuctionEndRepository auctionEndRepository;
     private final AuctionQueryRepository auctionQueryRepository;
     private final AuctionService auctionService;
@@ -159,14 +157,14 @@ public class InitDBService {
 
         chatRoomRepository.saveAll(Arrays.asList(chatRoom1, chatRoom2, chatRoom3));
 
-        ChatMessage chatMessage1 = createChatMessage("안녕하세요", chatRoom1, member1, true);
-        ChatMessage chatMessage2 = createChatMessage("네 안녕하세요", chatRoom1, findProduct1.getMember(), false);
-        ChatMessage chatMessage3 = createChatMessage("안녕하세요", chatRoom2, member2, true);
-        ChatMessage chatMessage4 = createChatMessage("하이", chatRoom2, findProduct2.getMember(), false);
-        ChatMessage chatMessage5 = createChatMessage("안녕하세요", chatRoom3, member3, true);
-        ChatMessage chatMessage6 = createChatMessage("그래", chatRoom3, findProduct3.getMember(), false);
-
-        chatMessageRepository.saveAll(Arrays.asList(chatMessage1, chatMessage2, chatMessage3, chatMessage4, chatMessage5, chatMessage6));
+//        ChatMessage chatMessage1 = createChatMessage("안녕하세요", chatRoom1, member1, true);
+//        ChatMessage chatMessage2 = createChatMessage("네 안녕하세요", chatRoom1, findProduct1.getMember(), false);
+//        ChatMessage chatMessage3 = createChatMessage("안녕하세요", chatRoom2, member2, true);
+//        ChatMessage chatMessage4 = createChatMessage("하이", chatRoom2, findProduct2.getMember(), false);
+//        ChatMessage chatMessage5 = createChatMessage("안녕하세요", chatRoom3, member3, true);
+//        ChatMessage chatMessage6 = createChatMessage("그래", chatRoom3, findProduct3.getMember(), false);
+//
+//        chatMessageRepository.saveAll(Arrays.asList(chatMessage1, chatMessage2, chatMessage3, chatMessage4, chatMessage5, chatMessage6));
     }
 
     private void insertProducts() {
@@ -415,15 +413,15 @@ public class InitDBService {
                 .build();
     }
 
-    private ChatMessage createChatMessage(String message, ChatRoom chatRoom, Member member, boolean read) {
-        return ChatMessage.builder()
-                .message(message)
-                .chatRoom(chatRoom)
-                .member(member)
-                .readOrNot(read)
-                .createdDate(LocalDateTime.now())
-                .build();
-    }
+//    private ChatMessage createChatMessage(String message, ChatRoom chatRoom, Member member, boolean read) {
+//        return ChatMessage.builder()
+//                .message(message)
+//                .chatRoom(chatRoom)
+//                .member(member)
+//                .readOrNot(read)
+//                .createdDate(LocalDateTime.now())
+//                .build();
+//    }
 
     private void insertNotifications() {
         Product findProduct1 = productRepository.findByName("한화 이글스 티켓").orElseThrow(() -> new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
